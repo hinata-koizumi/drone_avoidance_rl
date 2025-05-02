@@ -1,0 +1,20 @@
+<!-- ────────────────────────────────────────
+     src/angle_bridge/package.xml   ★NEW A-8
+     ──────────────────────────────────────── -->
+<?xml version="3.0"?>
+<package format="3">
+  <name>angle_bridge</name>
+  <version>0.0.1</version>
+  <description>Convert auxiliary-propeller angles to PX4 ActuatorServos.</description>
+  <maintainer email="user@example.com">Your Name</maintainer>
+  <license>Apache 2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>px4_msgs</exec_depend>
+  <exec_depend>drone_msgs</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

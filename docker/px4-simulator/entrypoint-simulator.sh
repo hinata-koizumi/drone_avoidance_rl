@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# entrypoint-simulator.sh   ★2025-05-02 R5
+#   * PX4 ログに ch0-1 (SERVO) を含める
+set -euo pipefail
+source /opt/ros/humble/setup.bash
+
+export SYS_AUTOSTART=${SYS_AUTOSTART:-4500}
+export MODEL_PATH=${MODEL_PATH:-/models/drone_model}
+export GZ_SIM_RESOURCE_PATH=${GZ_SIM_RESOURCE_PATH:-"/models"}
+
+ign gazebo -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering &
+sleep 3
+
+# ---------- model spawn ----------
+if [[ -f "${MODEL_PATH}/model.sdf" ]]; then
+  ign service -s /world/empty/create --reqtype ignition.msgs.EntityFactory \
+      --reptype ignition.msgs.Boolean --timeout 300 \
+      --req "sdf_filename: \"${MODEL_PATH}/model.sdf\" pose: { position:{z:0.25} }"
+else
+  echo "[entrypoint] model.sdf not found – skipping insertion"
+fi
+
+# ---------- PX4 ----------
+px4 -i 0 -d -s etc/init.d-posix/rcS -w build/px4_sitl_rtps &
+until nc -z localhost 11345; do sleep 1; done
+echo "[entrypoint] PX4 RTPS ready."
+
+# --- enable logging of servo outputs (fans) ---
+printf 'param set SDLOG_PROFILE 1\nparam set SDLOG_MODE 1\n' | nc -u -w1 localhost 14556
+
+tail -F /dev/null

@@ -1,0 +1,30 @@
+# docker/px4-bridge/Dockerfile.bridge   ★R3 – add outer_motor_bridge
+FROM base AS builder
+USER root
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ros-humble-ros-ign-bridge && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /bridge_ws
+RUN mkdir -p src
+COPY src/state_bridge       src/state_bridge
+COPY src/command_bridge     src/command_bridge
+COPY src/angle_bridge       src/angle_bridge
+COPY src/outer_motor_bridge src/outer_motor_bridge        
+COPY drone_msgs             drone_msgs
+
+RUN . /opt/ros/humble/setup.sh && \
+    colcon build --packages-select \
+        state_bridge command_bridge angle_bridge outer_motor_bridge drone_msgs   # ★追加
+
+FROM base
+USER root
+COPY --from=builder /bridge_ws/install /bridge_ws/install
+COPY docker/px4-bridge/entrypoint-bridge.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENV ROS_DOMAIN_ID=0
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ros-humble-ros-ign-bridge && \
+    rm -rf /var/lib/apt/lists/*
+ENTRYPOINT ["/entrypoint.sh"]

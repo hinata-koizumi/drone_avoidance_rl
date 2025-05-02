@@ -1,0 +1,58 @@
+# ────────────────────────────────────────────
+# docker/px4-simulator/Dockerfile.simulator  ★R4
+#   * I-1: Ignition Fortress 用 motor plugin (libgz_motor_model.so) をビルド
+#   * I-5: PX4 ログ設定オプションを有効化
+# ────────────────────────────────────────────
+#########################
+# Stage 0 – PX4 build   #
+#########################
+FROM base AS builder
+ARG PX4_BRANCH=v1.15.0
+
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      gcc g++ clang python3-pip python3-numpy cmake git \
+      libgtest-dev protobuf-compiler libprotobuf-dev \
+      ignition-math6-dev ignition-transport11-dev ignition-common3-dev \
+      && rm -rf /var/lib/apt/lists/*
+
+# --- PX4 ---
+RUN git clone --depth 1 --recursive -b ${PX4_BRANCH} \
+      https://github.com/PX4/PX4-Autopilot.git /PX4-Autopilot
+WORKDIR /PX4-Autopilot
+ENV PX4_WITH_GZ_TRANSPORT=ON
+RUN pip install --no-cache-dir pyros-genmsg
+RUN Tools/setup/ubuntu.sh --no-sudo --no-nuttx && \
+    make -j$(nproc) px4_sitl_default px4_sitl_rtps
+
+# --- Ignition motor plugin ---
+RUN git clone --depth 1 https://github.com/PX4/PX4-SITL_gz.git /px4-gz
+WORKDIR /px4-gz
+RUN cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr && \
+    cmake --build build -j$(nproc) && \
+    cmake --install build
+# installs /usr/lib/libgz_motor_model.so
+
+##############################
+# Stage 1 – runtime image    #
+##############################
+FROM base
+LABEL org.opencontainers.image.title="PX4-SITL Runtime"
+
+USER root
+# PX4 binaries
+COPY --from=builder /PX4-Autopilot/build/px4_sitl_default /PX4-Autopilot/build/px4_sitl_default
+COPY --from=builder /PX4-Autopilot/build/px4_sitl_rtps  /PX4-Autopilot/build/px4_sitl_rtps
+COPY --from=builder /PX4-Autopilot/Tools                 /PX4-Autopilot/Tools
+COPY --from=builder /PX4-Autopilot/ROMFS                 /PX4-Autopilot/ROMFS
+COPY --from=builder /airframes                           /airframes
+# Ignition motor plugin
+COPY --from=builder /usr/lib/libgz_motor_model.so        /usr/lib/
+
+ENV LD_LIBRARY_PATH=/usr/lib:${LD_LIBRARY_PATH}
+
+COPY docker/px4-simulator/entrypoint-simulator.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh && chown -R px4user:px4user /PX4-Autopilot
+USER px4user
+WORKDIR /PX4-Autopilot
+ENTRYPOINT ["/entrypoint.sh"]

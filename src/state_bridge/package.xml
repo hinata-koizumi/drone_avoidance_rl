@@ -1,0 +1,20 @@
+<!-- ──────────────────────────────────────────
+     src/state_bridge/package.xml   ★新規
+     ────────────────────────────────────────── -->
+<?xml version="3.0"?>
+<package format="3">
+  <name>state_bridge</name>
+  <version>0.0.1</version>
+  <description>Bridge PX4 VehicleOdometry to custom DroneState.</description>
+  <maintainer email="user@example.com">Your Name</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>px4_msgs</exec_depend>
+  <exec_depend>drone_msgs</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

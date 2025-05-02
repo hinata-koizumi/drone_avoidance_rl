@@ -1,0 +1,59 @@
+# docker/px4-ros2-base/Dockerfile.base
+FROM ubuntu:22.04 AS base
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG SNAP_DATE=2025-04-20      
+
+# ----- Ubuntu snapshot でバイナリを固定 -----
+RUN sed -Ei "s|http://(archive|security).ubuntu.com/ubuntu/?|http://old-releases.ubuntu.com/ubuntu/|g" /etc/apt/sources.list && \
+    mkdir -p /etc/apt/preferences.d && \
+    echo 'Package: *\nPin: release o=Ubuntu\nPin-Priority: 1001' > /etc/apt/preferences.d/99-pin && \
+    apt-get update
+
+# ----- Locale -----
+RUN apt-get install -y --no-install-recommends locales && \
+    locale-gen en_US.UTF-8 && \
+    update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+
+# ----- Common build deps -----
+RUN apt-get install -y --no-install-recommends \
+      ca-certificates curl wget git build-essential cmake ninja-build \
+      python3-pip python3-venv python3-dev gnupg lsb-release \
+      libeigen3-dev libgmp-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# ----- ROS 2 + Ignition apt repo (key fixed) -----
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | \
+      gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
+      http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" \
+      > /etc/apt/sources.list.d/ros2.list
+
+RUN curl -sSL https://packages.osrfoundation.org/gazebo.gpg | \
+      gpg --dearmor -o /usr/share/keyrings/osrf-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/osrf-archive-keyring.gpg] \
+      http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" \
+      > /etc/apt/sources.list.d/gazebo-stable.list
+
+# ----- ROS2 + Ignition fortress (version pin) -----
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      ros-humble-ros-base=0.10.2-1* \
+      ignition-fortress \
+      python3-colcon-common-extensions \
+      geographiclib-tools && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /var/cache/apt/* \
+    && rm -rf /usr/share/doc /usr/share/man /tmp/*     # ★CHANGE A-4
+
+# ----- GeographicLib data -----
+RUN geographiclib-get-geoids egm96-5
+
+# ----- Python venv -----
+RUN python3 -m venv --system-site-packages /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install --no-cache-dir --upgrade pip~=23.2 setuptools~=65.5
+
+# ----- Non-root user -----
+RUN useradd -ms /bin/bash px4user
+USER px4user
+WORKDIR /home/px4user
