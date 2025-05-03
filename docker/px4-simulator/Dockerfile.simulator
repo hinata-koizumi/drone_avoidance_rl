@@ -16,9 +16,10 @@ RUN apt-get update && \
     sh -c 'echo "deb [arch=amd64] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list' && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-    gcc g++ clang python3-pip python3-numpy cmake git \
-    libgtest-dev protobuf-compiler libprotobuf-dev \
-    libgz-math6-dev libgz-transport11-dev libgz-common3-dev && \
+        gcc g++ clang python3-pip python3-numpy cmake git \
+        libgtest-dev protobuf-compiler libprotobuf-dev \
+        libgz-math6-dev libgz-transport11-dev \
+        libignition-common3-dev && \
     rm -rf /var/lib/apt/lists/*
 
 
