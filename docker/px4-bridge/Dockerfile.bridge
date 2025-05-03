@@ -1,5 +1,5 @@
 # docker/px4-bridge/Dockerfile.bridge   ★R3 – add outer_motor_bridge
-FROM base AS builder
+FROM ubuntu:22.04 AS builder
 USER root
 
 RUN apt-get update && \

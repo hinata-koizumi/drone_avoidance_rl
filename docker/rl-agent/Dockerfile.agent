@@ -1,5 +1,5 @@
 # docker/rl-agent/Dockerfile.agent   2025-04-30 R3
-FROM base AS builder
+FROM ubuntu:22.04 AS builder
 USER root
 
 # ---------- Python env ----------
