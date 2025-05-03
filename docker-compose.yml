@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  px4-simulator:
+    build:
+      context: ./docker/px4-simulator
+      dockerfile: Dockerfile.simulator
+    container_name: px4-simulator
+    environment:
+      - HEADLESS=${HEADLESS:-1}
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    ports:
+      - "14556:14556/udp"
+      - "11345:11345/udp"
+    volumes:
+      - ./logs:/work/logs
+      - ./custom_model:/work/custom_model:ro
+      - ./custom_airframes:/work/custom_airframes:ro
+
+  px4-bridge:
+    build:
+      context: ./docker/px4-bridge
+      dockerfile: Dockerfile.bridge
+    depends_on: [px4-simulator]
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+
+  rl-agent:
+    build:
+      context: ./docker/rl-agent
+      dockerfile: Dockerfile.agent
+    depends_on: [px4-bridge]
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    volumes:
+      - ./logs:/work/logs
