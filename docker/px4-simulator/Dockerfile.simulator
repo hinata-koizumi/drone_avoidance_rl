@@ -6,7 +6,7 @@
 #########################
 # Stage 0 – PX4 build   #
 #########################
-FROM base AS builder
+FROM ubuntu:22.04 AS builder
 ARG PX4_BRANCH=v1.15.0
 
 USER root
