@@ -35,14 +35,13 @@ RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
 
 # ─── Ignition motor plugin ───
 # download ZIP via codeload (main → master フォールバック)
-ARG SITLGZ_REF=main
+ARG SITLGZ_TAG=v1.1.0
 RUN set -eux; \
-    curl -L -f "https://codeload.github.com/PX4/PX4-SITL_gz/zip/refs/heads/${SITLGZ_REF}" -o /tmp/sitl_gz.zip || \
-    curl -L -f "https://codeload.github.com/PX4/PX4-SITL_gz/zip/refs/heads/master"          -o /tmp/sitl_gz.zip; \
+    curl -L -f "https://codeload.github.com/PX4/PX4-SITL_gz/zip/refs/tags/${SITLGZ_TAG}" -o /tmp/sitl_gz.zip; \
     unzip /tmp/sitl_gz.zip -d /tmp; \
     mv /tmp/PX4-SITL_gz-* /px4-gz; \
     rm /tmp/sitl_gz.zip
-    
+
 WORKDIR /px4-gz
 RUN cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr && \
     cmake --build build -j$(nproc) && \
