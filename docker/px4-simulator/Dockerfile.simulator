@@ -51,7 +51,7 @@ COPY --from=builder /usr/lib/libgz_motor_model.so        /usr/lib/
 
 ENV LD_LIBRARY_PATH=/usr/lib:${LD_LIBRARY_PATH}
 
-COPY docker/px4-simulator/entrypoint-simulator.sh /entrypoint.sh
+COPY entrypoint-simulator.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh && chown -R px4user:px4user /PX4-Autopilot
 USER px4user
 WORKDIR /PX4-Autopilot
