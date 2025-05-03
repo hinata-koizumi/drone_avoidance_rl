@@ -34,9 +34,13 @@ RUN pip3 install --no-cache-dir pyros-genmsg
 RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     make -j$(nproc) px4_sitl_default
 
-# ─────── Ignition motor plugin ───────
-RUN git config --global credential.helper "" && \
-    git clone --depth 1 https://github.com/PX4/PX4-SITL_gz.git /px4-gz
+# --- Ignition motor plugin ---------------------------------
+# ↓ ここを git clone から zip → unzip 方式に置換
+RUN wget -q https://github.com/PX4/PX4-SITL_gz/archive/refs/heads/master.zip -O /tmp/sitl_gz.zip && \
+    unzip -q /tmp/sitl_gz.zip -d /tmp && \
+    mv /tmp/PX4-SITL_gz-* /px4-gz && \
+    rm /tmp/sitl_gz.zip
+
 WORKDIR /px4-gz
 RUN cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr && \
     cmake --build build -j$(nproc) && \
