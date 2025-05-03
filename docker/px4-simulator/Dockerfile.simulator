@@ -20,7 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libtinyxml2-dev libeigen3-dev libyaml-cpp-dev \
     libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
     libopencv-dev protobuf-compiler libprotobuf-dev \
+    lsb-release \   
  && rm -rf /var/lib/apt/lists/*
+
 
 RUN pip3 install pyulog
 
