@@ -1,19 +1,30 @@
 # .drone.github/workflows/ci.yml
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
-
-      - name: Build & run stack (headless)
-        run: |
-          docker compose --profile cpu up -d --build px4-simulator px4-bridge rl-agent
-          until docker compose ps | grep px4-bridge | grep '(healthy)'; do sleep 5; done
-
-      - name: Run pytest inside rl-agent
-        run: docker compose exec rl-agent pytest -q /work/tests
+      - uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Build & Up
+        run: docker compose --profile cpu up -d --build
+      - name: pytest
+        run: docker compose exec -T rl-agent pytest -q /work/tests
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compose-logs
+          path: logs
