@@ -36,7 +36,7 @@ RUN NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     make -j$(nproc) px4_sitl_default 
 
 # --- Ignition motor plugin ---
-RUN git clone --depth 1 git://github.com/PX4/PX4-SITL_gz.git /px4-gz
+RUN git clone --depth 1 https://github.com/PX4/PX4-SITL_gz.git /px4-gz
 WORKDIR /px4-gz
 RUN cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr && \
     cmake --build build -j$(nproc) && \
