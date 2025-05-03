@@ -37,7 +37,8 @@ RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
 # --- Ignition motor plugin ---------------------------------
 # ↓ ここを git clone から zip → unzip 方式に置換
 RUN apt-get update && apt-get install -y --no-install-recommends unzip && \
-    wget https://github.com/PX4/PX4-SITL_gz/archive/refs/heads/main.zip -O /tmp/sitl_gz.zip && \
+    wget -O /tmp/sitl_gz.zip \
+      https://codeload.github.com/PX4/PX4-SITL_gz/zip/refs/heads/master && \
     unzip /tmp/sitl_gz.zip -d /tmp && \
     mv /tmp/PX4-SITL_gz-* /px4-gz && \
     rm /tmp/sitl_gz.zip
