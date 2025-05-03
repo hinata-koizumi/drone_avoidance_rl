@@ -1,13 +1,12 @@
 # README.md (English version)
-
+[![CI](https://github.com/yourname/drone_avoidance_rl/actions/workflows/ci.yml/badge.svg)](https://github.com/yourname/drone_avoidance_rl/actions)  
+📘 [日本語版はこちら](README.ja.md)
 ## Overview
 
 * **Plug‑and‑play** sample stack for PX4 SITL, ROS 2, and reinforcement learning – drop your `model.sdf` + airframe JSON and start training.
 * **Reproducible builds** – Ubuntu 22.04 snapshot, ROS 2 Humble, Ignition Fortress, PX4‑SITL v1.15 are fixed by explicit dates.
 * **Multi‑stage Docker** splits the stack into *simulator*, *bridge*, and *RL agent*, enabling hot‑reload and Apple Silicon GPU (`--profile gpu`).
 * **Continuous Integration** – GitHub Actions boots the full stack and runs `pytest` in < 10 min on every PR.
-
-## 📘 [Read this document in Japanese (README.ja.md)](README.ja.md)
 
 ## Directory Layout
 
