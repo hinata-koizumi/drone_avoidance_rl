@@ -1,6 +1,6 @@
 # docker/px4-simulator/Dockerfile.simulator
-#   * builds PX4‑SITL + Ignition Gazebo motor plugin (libgz_motor_model.so)
-#   * headless, non‑interactive ‑ designed for CI (GitHub Actions)
+#   * builds PX4‑SITL + Ignition Gazebo motor plugin (libgz_motor_model.so)
+#   * headless / CI‑friendly (GitHub Actions & local Docker)
 
 #########################
 # Stage 0 – PX4 build   #
@@ -8,39 +8,39 @@
 FROM ubuntu:22.04 AS builder
 ARG PX4_BRANCH=v1.15.0
 
-# ─────── base packages ───────
+# ─── base packages ───
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
+    curl unzip wget \
     git cmake ninja-build exiftool \
     python3 python3-pip python3-jinja2 python3-numpy python3-toml python3-dev python3-empy python3-setuptools \
     libtinyxml2-dev libeigen3-dev libyaml-cpp-dev \
     libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
     libopencv-dev protobuf-compiler libprotobuf-dev \
     lsb-release sudo \
-&& rm -rf /var/lib/apt/lists/*
-
+ && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --no-cache-dir pyulog
 
-# ─────── PX4 clone & build ───────
+# ─── PX4 clone & build ───
 RUN git clone --depth 1 --recursive -b ${PX4_BRANCH} \
       https://github.com/PX4/PX4-Autopilot.git /PX4-Autopilot
 WORKDIR /PX4-Autopilot
 ENV PX4_WITH_GZ_TRANSPORT=ON
 RUN pip3 install --no-cache-dir pyros-genmsg
 
-# PX4 setup ‑‑ remove sudo completely (root image)
+# PX4 setup (root inside container → sudo不要)
 RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     make -j$(nproc) px4_sitl_default
 
-# --- Ignition motor plugin ---------------------------------
-# ↓ ここを git clone から zip → unzip 方式に置換
-RUN apt-get update && apt-get install -y --no-install-recommends unzip && \
-    wget -O /tmp/sitl_gz.zip \
-      https://codeload.github.com/PX4/PX4-SITL_gz/zip/refs/heads/master && \
-    unzip /tmp/sitl_gz.zip -d /tmp && \
-    mv /tmp/PX4-SITL_gz-* /px4-gz && \
+# ─── Ignition motor plugin ───
+# download ZIP via codeload (main → master フォールバック)
+ARG SITLGZ_REF=main
+RUN set -eux; \
+    curl -L "https://codeload.github.com/PX4/PX4-SITL_gz/zip/${SITLGZ_REF}" -o /tmp/sitl_gz.zip || \
+    curl -L "https://codeload.github.com/PX4/PX4-SITL_gz/zip/master"      -o /tmp/sitl_gz.zip; \
+    unzip /tmp/sitl_gz.zip -d /tmp; \
+    mv /tmp/PX4-SITL_gz-* /px4-gz; \
     rm /tmp/sitl_gz.zip
 
 WORKDIR /px4-gz
@@ -55,7 +55,6 @@ RUN cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr && \
 FROM ubuntu:22.04 AS runtime
 LABEL org.opencontainers.image.title="PX4‑SITL Runtime"
 
-# PX4 runtime deps (none; keep slim) & copy artefacts
 COPY --from=builder /PX4-Autopilot/build/px4_sitl_default /PX4-Autopilot/build/px4_sitl_default
 COPY --from=builder /PX4-Autopilot/Tools                 /PX4-Autopilot/Tools
 COPY --from=builder /PX4-Autopilot/ROMFS                 /PX4-Autopilot/ROMFS
