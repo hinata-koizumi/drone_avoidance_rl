@@ -1,5 +1,5 @@
 # docker/px4-ros2-base/Dockerfile.base
-FROM ubuntu:22.04 AS base
+FROM ubuntu:22.04 AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG SNAP_DATE=2025-04-20      
