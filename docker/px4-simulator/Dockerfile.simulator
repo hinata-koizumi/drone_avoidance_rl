@@ -33,7 +33,7 @@ WORKDIR /PX4-Autopilot
 ENV PX4_WITH_GZ_TRANSPORT=ON
 RUN pip install --no-cache-dir pyros-genmsg
 RUN NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
-    make -j$(nproc) px4_sitl_default px4_sitl_rtps
+    make -j$(nproc) px4_sitl_default 
 
 # --- Ignition motor plugin ---
 RUN git clone --depth 1 https://github.com/PX4/PX4-SITL_gz.git /px4-gz
