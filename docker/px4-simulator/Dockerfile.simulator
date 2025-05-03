@@ -14,10 +14,11 @@ RUN apt-get update && \
     apt-get install -y wget lsb-release gnupg && \
     wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add - && \
     sh -c 'echo "deb [arch=amd64] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list' && \
-    apt-get update && apt-get install -y --no-install-recommends \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
     gcc g++ clang python3-pip python3-numpy cmake git \
     libgtest-dev protobuf-compiler libprotobuf-dev \
-    ignition-math6-dev ignition-transport11-dev ignition-common3-dev && \
+    libgz-math6-dev libgz-transport11-dev libgz-common3-dev && \
     rm -rf /var/lib/apt/lists/*
 
 
