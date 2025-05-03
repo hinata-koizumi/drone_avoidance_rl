@@ -1,5 +1,5 @@
 # README.md (English version)
-📘 [日本語版はこちら](README.ja.md)
+
 ## Overview
 
 * **Plug‑and‑play** sample stack for PX4 SITL, ROS 2, and reinforcement learning – drop your `model.sdf` + airframe JSON and start training.
