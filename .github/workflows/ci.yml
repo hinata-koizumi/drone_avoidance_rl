@@ -19,7 +19,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Build & Up
-        run: docker compose --profile cpu up -d --build　--no-cache
+        run: docker compose --profile cpu up -d --build --no-cache
       - name: pytest
         run: docker compose exec -T rl-agent pytest -q /work/tests
       - name: Upload logs on failure
