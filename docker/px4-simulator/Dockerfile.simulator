@@ -36,7 +36,7 @@ RUN cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr && \
 ##############################
 # Stage 1 – runtime image    #
 ##############################
-FROM base
+FROM ubuntu:22.04
 LABEL org.opencontainers.image.title="PX4-SITL Runtime"
 
 USER root

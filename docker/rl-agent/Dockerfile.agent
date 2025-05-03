@@ -18,7 +18,8 @@ RUN . /opt/ros/humble/setup.sh && \
     . install/setup.sh
 
 # ---------- runtime ----------
-FROM base
+    
+FROM ubuntu:22.04
 USER root
 # runtime 依存
 RUN apt-get update && \
