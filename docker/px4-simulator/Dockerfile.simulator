@@ -42,7 +42,7 @@ LABEL org.opencontainers.image.title="PX4‑SITL Runtime"
 COPY --from=builder /PX4-Autopilot/build/px4_sitl_default /PX4-Autopilot/build/px4_sitl_default
 COPY --from=builder /PX4-Autopilot/Tools                 /PX4-Autopilot/Tools
 COPY --from=builder /PX4-Autopilot/ROMFS                 /PX4-Autopilot/ROMFS
-COPY --from=builder /airframes                           /airframes
+COPY --from=builder /PX4-Autopilot/airframes             /PX4-Autopilot/airframes
 
 WORKDIR /PX4-Autopilot
 COPY entrypoint-simulator.sh /entrypoint.sh
