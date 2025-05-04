@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-package_name = 'outer_motor_bridge'
+package_name = 'angle_bridge'
 
 setup(
     name=package_name,
