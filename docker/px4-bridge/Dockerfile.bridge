@@ -29,9 +29,8 @@ COPY src/ src/
 COPY drone_msgs/ src/drone_msgs/  
 
 RUN . /opt/ros/humble/setup.sh && \
-    colcon build --packages-select \
-        state_bridge command_bridge angle_bridge outer_motor_bridge drone_msgs
-
+     colcon build --symlink-install \
+        --packages-select state_bridge command_bridge angle_bridge outer_motor_bridge drone_msgs
 ############################
 # Stage 1 – runtime image
 ############################
