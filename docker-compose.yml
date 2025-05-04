@@ -1,6 +1,9 @@
 version: "3.9"
 
 services:
+  # -----------------------------------
+  # PX4 SITL + Ignition Gazebo simulator
+  # -----------------------------------
   px4-simulator:
     build:
       context: ./docker/px4-simulator
@@ -17,19 +20,28 @@ services:
       - ./custom_model:/work/custom_model:ro
       - ./custom_airframes:/work/custom_airframes:ro
 
+  # --------------------------
+  # ROS 2  ↔︎  PX4 SITL bridge
+  # --------------------------
   px4-bridge:
+    # 🔄 ここをプロジェクトルートに変更
     build:
-      context: ./docker/px4-bridge
-      dockerfile: Dockerfile.bridge
-    depends_on: [px4-simulator]
+      context: .                                   # ← リポジトリ全体をコンテキストに
+      dockerfile: docker/px4-bridge/Dockerfile.bridge
+    depends_on:
+      - px4-simulator
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
 
+  # --------------------
+  # RL エージェント環境
+  # --------------------
   rl-agent:
     build:
       context: ./docker/rl-agent
       dockerfile: Dockerfile.agent
-    depends_on: [px4-bridge]
+    depends_on:
+      - px4-bridge
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
     volumes:
