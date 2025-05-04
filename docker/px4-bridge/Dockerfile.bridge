@@ -1,30 +1,43 @@
-# docker/px4-bridge/Dockerfile.bridge   ★R3 – add outer_motor_bridge
+# docker/px4-bridge/Dockerfile.bridge  ★R4 – ROS 2 Humble + Gazebo (ros‑gz)
 FROM ubuntu:22.04 AS builder
-USER root
 
+ENV DEBIAN_FRONTEND=noninteractive
+
+# ─── base ROS 2 bridge packages ───
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ros-humble-ros-ign-bridge && \
+    apt-get install -y --no-install-recommends \
+        curl gnupg lsb-release \
+        ros-humble-ros-gz-bridge && \
     rm -rf /var/lib/apt/lists/*
 
+# ─── workspace ───
 WORKDIR /bridge_ws
 RUN mkdir -p src
 COPY src/state_bridge       src/state_bridge
 COPY src/command_bridge     src/command_bridge
 COPY src/angle_bridge       src/angle_bridge
-COPY src/outer_motor_bridge src/outer_motor_bridge        
+COPY src/outer_motor_bridge src/outer_motor_bridge
 COPY drone_msgs             drone_msgs
 
 RUN . /opt/ros/humble/setup.sh && \
     colcon build --packages-select \
-        state_bridge command_bridge angle_bridge outer_motor_bridge drone_msgs   # ★追加
+        state_bridge command_bridge angle_bridge outer_motor_bridge drone_msgs
 
-        FROM ubuntu:22.04
-USER root
+# ──────────────────────────
+# Runtime stage
+# ──────────────────────────
+FROM ubuntu:22.04 AS runtime
+ENV DEBIAN_FRONTEND=noninteractive
+
+# runtime‑only bridge binary
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ros-humble-ros-gz-bridge && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /bridge_ws/install /bridge_ws/install
 COPY docker/px4-bridge/entrypoint-bridge.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
 ENV ROS_DOMAIN_ID=0
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends ros-humble-ros-ign-bridge && \
-    rm -rf /var/lib/apt/lists/*
 ENTRYPOINT ["/entrypoint.sh"]
