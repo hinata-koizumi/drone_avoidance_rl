@@ -35,21 +35,26 @@ RUN . /opt/ros/humble/setup.sh && \
         state_bridge command_bridge angle_bridge outer_motor_bridge drone_msgs
 
 ############################
-# Stage 1 – runtime image  
+# Stage 1 – runtime image  #
 ############################
 FROM ubuntu:22.04 AS runtime
 ENV DEBIAN_FRONTEND=noninteractive
 
-# same repo + runtime bridge only
+# ─── add ROS 2 repo & install bridge ───
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl gnupg lsb-release && \
-    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | apt-key add - && \
-    echo "deb [arch=amd64] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates curl gnupg lsb-release && \
+    mkdir -p /usr/share/keyrings && \
+    curl -fsSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | \
+        gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
+         http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" \
+         > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends ros-humble-ros-gz-bridge && \
     rm -rf /var/lib/apt/lists/*
 
-# copy built workspace + entrypoint
+# ─── copy artifacts & entrypoint ───
 COPY --from=builder /bridge_ws/install /bridge_ws/install
 COPY docker/px4-bridge/entrypoint-bridge.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
