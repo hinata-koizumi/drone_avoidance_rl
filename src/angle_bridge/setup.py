@@ -1,23 +1,14 @@
-# ────────────────────────────────────────────
-# src/angle_bridge/setup.py   ★FIX I-1
-# ────────────────────────────────────────────
-from setuptools import setup
-
-package_name = "angle_bridge"
-
+from setuptools import setup, find_packages
 setup(
-    name=package_name,
-    version="0.0.1",
-    packages=[package_name],
-    install_requires=["setuptools"],
-    zip_safe=True,
-    maintainer="you",
-    maintainer_email="user@example.com",
-    description="Convert auxiliary-propeller angles to PX4 ActuatorServos",
-    license="Apache 2.0",
+    name='angle_bridge',
+    version='0.1.0',
+    packages=find_packages(),                # ← 固定文字列をやめる
+    data_files=[
+        ('share/ament_index/resource_index/packages', ['resource/angle_bridge']),
+        ('share/angle_bridge', ['package.xml']),
+    ],
+    install_requires=['setuptools', 'rclpy'],
     entry_points={
-        "console_scripts": [
-            "angle_bridge = angle_bridge.angle_bridge:main",
-        ],
+        'console_scripts': ['angle_bridge_node = angle_bridge.main:main'],
     },
 )
