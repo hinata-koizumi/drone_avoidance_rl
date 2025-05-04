@@ -1,16 +1,22 @@
-# docker/px4-bridge/Dockerfile.bridge  ★R4 – ROS 2 Humble + Gazebo (ros‑gz)
+# docker/px4-bridge/Dockerfile.bridge  ★R5 – ROS 2 Humble + Gazebo (ros‑gz)
+
+############################
+# Stage 0 – build workspace
+############################
 FROM ubuntu:22.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# ─── base ROS 2 bridge packages ───
+# ─── add ROS 2 apt repo & install bridge ───
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        curl gnupg lsb-release \
-        ros-humble-ros-gz-bridge && \
+    apt-get install -y --no-install-recommends curl gnupg lsb-release && \
+    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | apt-key add - && \
+    echo "deb [arch=amd64] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends ros-humble-ros-gz-bridge && \
     rm -rf /var/lib/apt/lists/*
 
-# ─── workspace ───
+# ─── colcon workspace ───
 WORKDIR /bridge_ws
 RUN mkdir -p src
 COPY src/state_bridge       src/state_bridge
@@ -23,18 +29,22 @@ RUN . /opt/ros/humble/setup.sh && \
     colcon build --packages-select \
         state_bridge command_bridge angle_bridge outer_motor_bridge drone_msgs
 
-# ──────────────────────────
-# Runtime stage
-# ──────────────────────────
+############################
+# Stage 1 – runtime image  
+############################
 FROM ubuntu:22.04 AS runtime
 ENV DEBIAN_FRONTEND=noninteractive
 
-# runtime‑only bridge binary
+# same repo + runtime bridge only
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        ros-humble-ros-gz-bridge && \
+    apt-get install -y --no-install-recommends curl gnupg lsb-release && \
+    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | apt-key add - && \
+    echo "deb [arch=amd64] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends ros-humble-ros-gz-bridge && \
     rm -rf /var/lib/apt/lists/*
 
+# copy built workspace + entrypoint
 COPY --from=builder /bridge_ws/install /bridge_ws/install
 COPY docker/px4-bridge/entrypoint-bridge.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
