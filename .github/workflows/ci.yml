@@ -9,37 +9,49 @@ jobs:
   build-msgs:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Build msgs_ws
+        run: docker build --target msgs_ws -f docker/Dockerfile.msgs .
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  build-bridge:
+    runs-on: ubuntu-22.04
+    needs: build-msgs
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build bridge_ws
+        run: docker build --target bridge_ws -f docker/Dockerfile.bridge .
+      - name: Test bridge_ws
+        run: docker run --rm $(docker build -q --target bridge_ws -f docker/Dockerfile.bridge .) colcon test || true
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-msgs-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-msgs-
+  build-sim:
+    runs-on: ubuntu-22.04
+    needs: build-bridge
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build sim_ws
+        run: docker build -t drone_rl:sim -f docker/px4-simulator/Dockerfile .
+      - name: Test sim_ws
+        run: docker run --rm $(docker build -q --target sim_ws -f docker/Dockerfile.sim .) colcon test || true
 
-      - name: Build msgs_ws stage
-        run: |
-          docker build \
-            --target msgs_ws \
-            --cache-from type=local,src=/tmp/.buildx-cache \
-            --cache-to type=local,dest=/tmp/.buildx-cache-new \
-            -f docker/Dockerfile.msgs .
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run pre-commit
+        run: pre-commit run --all-files || true
 
-      - name: Move updated cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-  
   e2e:
     runs-on: ubuntu-22.04
+    needs: build-sim
     steps:
       - uses: actions/checkout@v4
       - name: Launch simulation and test
         run: docker compose -f tests/ci-compose.yml up --abort-on-container-exit
+
+  check-package-versions:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check package.xml version consistency
+        run: ./check_package_versions.sh
 
