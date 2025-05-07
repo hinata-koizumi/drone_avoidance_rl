@@ -1,0 +1,32 @@
+FROM ros:humble AS msgs_ws
+
+ENV ROS_DISTRO=humble
+WORKDIR /msgs_ws
+
+# ROS 基本ツールをインストール
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3-rosdep \
+        python3-colcon-common-extensions && \
+    rm -rf /var/lib/apt/lists/*
+
+# rosdep sources 設定を追加
+COPY rosdep/rosdep-msgs.yaml /msgs_ws/rosdep/rosdep-msgs.yaml
+RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
+    echo "yaml file:///msgs_ws/rosdep/rosdep-msgs.yaml" > /etc/ros/rosdep/sources.list.d/10-local.yaml
+
+# rosdep 更新（初期化は不要）
+RUN rosdep update
+
+# drone_msgs パッケージをコピー
+COPY src/drone_msgs src/drone_msgs
+
+# 依存関係を解決（local rosdepも含めて）
+RUN rosdep install --from-paths src --rosdistro ${ROS_DISTRO} -y --ignore-src
+
+# ビルド
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
+    colcon build --packages-select drone_msgs
+
+# 出力パス定義
+ENV OVERLAY_WS=/msgs_ws/install

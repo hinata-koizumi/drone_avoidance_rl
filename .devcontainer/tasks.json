@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Sim",
+      "type": "shell",
+      "command": "ros2 launch my_pkg sim.launch.py",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run RL-train",
+      "type": "shell",
+      "command": "python3 train_agent.py",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run pytest",
+      "type": "shell",
+      "command": "pytest tests/",
+      "problemMatcher": []
+    }
+  ]
+}
+

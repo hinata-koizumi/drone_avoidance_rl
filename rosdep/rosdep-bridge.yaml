@@ -1,0 +1,24 @@
+px4_msgs:
+  ubuntu:
+    apt:
+      packages: [ ros-humble-px4-msgs ]
+pytest:
+  ubuntu:
+    apt:
+      packages: [ python3-pytest ]
+ament_python:
+  ubuntu:
+    apt:
+      packages: [ python3-pip ]
+  debian:
+    apt:
+      packages: [ python3-pip ]
+  arch:
+    pacman:
+      packages: [ python-pip ]
+  fedora:
+    dnf:
+      packages: [ python3-pip ]
+  macos:
+    homebrew:
+      packages: [ python3 ]

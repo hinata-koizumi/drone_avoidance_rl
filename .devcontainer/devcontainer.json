@@ -1,0 +1,25 @@
+{
+  "name": "drone-bridge-dev",
+  "image": "drone_rl:bridge",
+  "runArgs": [
+    "--net=host",
+    "--privileged"
+  ],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-iot.vscode-ros",
+        "ms-python.python"
+      ]
+    }
+  },
+  "settings": {
+    "python.analysis.typeCheckingMode": "basic",
+    "python.pythonPath": "/usr/bin/python3",
+    "ros.distro": "humble"
+  },
+  "postCreateCommand": "(source /opt/ros/humble/setup.sh && cd /bridge_ws && colcon build --symlink-install && colcon test)",
+  "remoteUser": "root"
+}

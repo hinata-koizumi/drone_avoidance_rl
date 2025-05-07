@@ -1,0 +1,6 @@
+source;share/sim_launch/hook/pythonpath.ps1
+source;share/sim_launch/hook/pythonpath.dsv
+source;share/sim_launch/hook/pythonpath.sh
+source;share/sim_launch/hook/ament_prefix_path.ps1
+source;share/sim_launch/hook/ament_prefix_path.dsv
+source;share/sim_launch/hook/ament_prefix_path.sh

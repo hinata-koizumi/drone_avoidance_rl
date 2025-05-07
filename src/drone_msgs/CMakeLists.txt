@@ -19,6 +19,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 
 # 生成されたメッセージ用のランタイム依存関係をエクスポート
-ament_export_dependencies(rosidl_default_runtime)
+ament_export_dependencies(rosidl_default_runtime geometry_msgs builtin_interfaces)
 
 ament_package()

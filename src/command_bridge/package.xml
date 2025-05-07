@@ -1,7 +1,4 @@
-<!-- ────────────────────────────────────────
-     src/command_bridge/package.xml   ★NEW
-     ──────────────────────────────────────── -->
-<?xml version="3.0"?>
+<?xml version="1.0"?>
 <package format="3">
   <name>command_bridge</name>
   <version>0.0.1</version>
@@ -9,7 +6,9 @@
   <maintainer email="user@example.com">Your Name</maintainer>
   <license>Apache 2.0</license>
 
-  <buildtool_depend>ament_python</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>python3-setuptools</buildtool_depend>
+
   <exec_depend>rclpy</exec_depend>
   <exec_depend>px4_msgs</exec_depend>
   <exec_depend>drone_msgs</exec_depend>

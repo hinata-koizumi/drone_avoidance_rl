@@ -1,0 +1,38 @@
+running egg_info
+creating ../../build/sim_launch/sim_launch.egg-info
+writing ../../build/sim_launch/sim_launch.egg-info/PKG-INFO
+writing dependency_links to ../../build/sim_launch/sim_launch.egg-info/dependency_links.txt
+writing entry points to ../../build/sim_launch/sim_launch.egg-info/entry_points.txt
+writing requirements to ../../build/sim_launch/sim_launch.egg-info/requires.txt
+writing top-level names to ../../build/sim_launch/sim_launch.egg-info/top_level.txt
+writing manifest file '../../build/sim_launch/sim_launch.egg-info/SOURCES.txt'
+reading manifest file '../../build/sim_launch/sim_launch.egg-info/SOURCES.txt'
+writing manifest file '../../build/sim_launch/sim_launch.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /workspace/build/sim_launch/build
+creating /workspace/build/sim_launch/build/lib
+creating /workspace/build/sim_launch/build/lib/sim_launch
+copying sim_launch/e2e_test.py -> /workspace/build/sim_launch/build/lib/sim_launch
+copying sim_launch/__init__.py -> /workspace/build/sim_launch/build/lib/sim_launch
+running install
+running install_lib
+creating /workspace/install/lib/python3.10/site-packages/sim_launch
+copying /workspace/build/sim_launch/build/lib/sim_launch/e2e_test.py -> /workspace/install/lib/python3.10/site-packages/sim_launch
+copying /workspace/build/sim_launch/build/lib/sim_launch/__init__.py -> /workspace/install/lib/python3.10/site-packages/sim_launch
+byte-compiling /workspace/install/lib/python3.10/site-packages/sim_launch/e2e_test.py to e2e_test.cpython-310.pyc
+byte-compiling /workspace/install/lib/python3.10/site-packages/sim_launch/__init__.py to __init__.cpython-310.pyc
+running install_data
+copying package.xml -> /workspace/install/share/sim_launch
+creating /workspace/install/share/sim_launch/launch
+copying launch/bridge_launch.py -> /workspace/install/share/sim_launch/launch
+copying launch/sim_all.launch.py -> /workspace/install/share/sim_launch/launch
+creating /workspace/install/share/ament_index
+creating /workspace/install/share/ament_index/resource_index
+creating /workspace/install/share/ament_index/resource_index/packages
+copying resource/sim_launch -> /workspace/install/share/ament_index/resource_index/packages
+running install_egg_info
+Copying ../../build/sim_launch/sim_launch.egg-info to /workspace/install/lib/python3.10/site-packages/sim_launch-0.0.1-py3.10.egg-info
+running install_scripts
+Installing e2e_test script to /workspace/install/lib/sim_launch
+writing list of installed files to '/workspace/build/sim_launch/install.log'

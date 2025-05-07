@@ -1,0 +1,45 @@
+# Stage 0: Base with ROS tools and bridge deps
+FROM ros:humble AS base_bridge
+ENV DEBIAN_FRONTEND=noninteractive
+ENV ROS_DISTRO=humble
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3-pip \
+        python3-rosdep \
+        python3-colcon-common-extensions \
+        ros-${ROS_DISTRO}-ros-gz-bridge \
+        ros-${ROS_DISTRO}-geometry-msgs \
+        ros-${ROS_DISTRO}-rosidl-default-generators \
+        ros-${ROS_DISTRO}-rosidl-default-runtime && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN rosdep update
+
+# Stage 1: Build bridge_ws
+FROM base_bridge AS builder
+WORKDIR /bridge_ws
+COPY src/ src/
+
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
+    rosdep install --from-paths src \
+        --rosdistro ${ROS_DISTRO} -y --ignore-src && \
+    colcon build --symlink-install \
+        --packages-select state_bridge command_bridge angle_bridge outer_motor_bridge drone_msgs
+
+# Stage 2: Runtime
+FROM ros:humble AS runtime
+ENV ROS_DISTRO=humble
+ENV ROS_DOMAIN_ID=0
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ros-${ROS_DISTRO}-ros-gz-bridge \
+        python3-pip && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /bridge_ws/install /bridge_ws/install
+COPY docker/entrypoint-bridge.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

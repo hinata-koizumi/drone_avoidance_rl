@@ -1,12 +1,14 @@
-<?xml version="3.0"?>
+<?xml version="1.0"?>
 <package format="3">
   <name>outer_motor_bridge</name>
   <version>0.0.1</version>
-  <description>Republish outer-rotor PWM for logging & analysis.</description>
+  <description>Republish outer-rotor PWM for logging &amp; analysis.</description>
   <maintainer email="user@example.com">Your Name</maintainer>
   <license>Apache 2.0</license>
 
-  <buildtool_depend>ament_python</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>python3-setuptools</buildtool_depend>
+
   <exec_depend>rclpy</exec_depend>
   <exec_depend>px4_msgs</exec_depend>
 

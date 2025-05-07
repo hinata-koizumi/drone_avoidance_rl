@@ -24,10 +24,9 @@ services:
   # ROS 2  ↔︎  PX4 SITL bridge
   # --------------------------
   px4-bridge:
-    # 🔄 ここをプロジェクトルートに変更
     build:
-      context: .                                   # ← リポジトリ全体をコンテキストに
-      dockerfile: docker/px4-bridge/Dockerfile.bridge
+      context: .
+      dockerfile: docker/Dockerfile.bridge
     depends_on:
       - px4-simulator
     environment:
@@ -46,3 +45,20 @@ services:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
     volumes:
       - ./logs:/work/logs
+
+  # -----------------------------
+  # Gazebo シミュレーション環境（Stage 2）
+  # -----------------------------
+  sim_ws:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.sim
+    image: drone_sim:humble
+    volumes:
+      - ./src:/sim_ws/src
+    working_dir: /sim_ws
+    tty: true
+    stdin_open: true
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    command: /bin/bash

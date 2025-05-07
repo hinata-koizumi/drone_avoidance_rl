@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  sim:
+    image: drone_rl:sim  # ← Stage 2 用イメージ
+    environment:
+      - HEADLESS=1
+      - ROS_DOMAIN_ID=0
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.bash &&
+        source /sim_ws/install/setup.bash &&
+        ros2 launch sim_launch sim_all.launch.py headless:=true &
+        sleep 10 &&
+        ros2 run sim_launch e2e_test"
