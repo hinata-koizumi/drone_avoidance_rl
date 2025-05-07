@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from src.gym_env import DroneSimEnv
+from gym_env import DroneSimEnv
 
 def test_gym_api_basic():
     env = DroneSimEnv(episode_max_steps=10)
