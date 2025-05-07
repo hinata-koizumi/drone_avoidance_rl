@@ -1,5 +1,5 @@
 # Stage 0: Base with ROS tools and bridge deps
-FROM ros:humble AS base_bridge
+FROM ros:humble AS bridge_ws
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ROS_DISTRO=humble
 
