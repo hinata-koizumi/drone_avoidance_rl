@@ -113,10 +113,19 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest gymnasium numpy pyyaml lark
-          pip install -e src/ || true
+      - name: Install ROS 2 dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-colcon-common-extensions
+          rosdep install --from-paths src --ignore-src -r -y --rosdistro=humble
+      - name: Build ROS 2 workspace
+        run: |
+          source /opt/ros/humble/setup.sh
+          colcon build --symlink-install --base-paths src
       - name: Run Gym API tests
         run: |
           source /opt/ros/humble/setup.sh
+          source install/setup.sh
           cd src && PYTHONPATH=$PYTHONPATH:$(pwd) pytest ../tests/test_gym_api.py
         shell: bash
 
