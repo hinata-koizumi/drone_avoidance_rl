@@ -114,8 +114,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest gymnasium numpy
           pip install -e src/ || true
-      - name: Install ROS 2 dependencies
-        run: sudo apt-get update && sudo apt-get install -y python3-rclpy
       - name: Run Gym API tests
-        run: pytest tests/test_gym_api.py
+        run: |
+          source /opt/ros/humble/setup.sh
+          pytest tests/test_gym_api.py
+        shell: bash
 
