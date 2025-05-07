@@ -117,6 +117,6 @@ jobs:
       - name: Run Gym API tests
         run: |
           source /opt/ros/humble/setup.sh
-          pytest tests/test_gym_api.py
+          PYTHONPATH=$PYTHONPATH:$(pwd)/src pytest tests/test_gym_api.py
         shell: bash
 
