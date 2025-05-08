@@ -127,7 +127,7 @@ jobs:
       - name: Build ROS 2 workspace
         run: |
           source /opt/ros/humble/setup.sh
-          colcon build --symlink-install --base-paths src
+          colcon build --merge-install --base-paths src
       - name: Run Gym API tests
         run: |
           source /opt/ros/humble/setup.sh
