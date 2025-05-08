@@ -45,7 +45,7 @@ RUN apt-get update && \
     curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | apt-key add - && \
     echo "deb http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-get update && \
-    apt-get install -y ros-humble-desktop python3-colcon-common-extensions
+    apt-get install -y ros-humble-ros-base python3-colcon-common-extensions
 
 COPY --from=builder /PX4-Autopilot/build/px4_sitl_default /PX4-Autopilot/build/px4_sitl_default
 COPY --from=builder /PX4-Autopilot/Tools                 /PX4-Autopilot/Tools
