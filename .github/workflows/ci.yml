@@ -125,11 +125,13 @@ jobs:
       - name: Build ROS 2 workspace
         run: |
           source /opt/ros/humble/setup.sh
+          export PYTHONPATH=/usr/lib/python3/dist-packages:$PYTHONPATH
           colcon build --merge-install --base-paths src
       - name: Run Gym API tests
         run: |
           source /opt/ros/humble/setup.sh
           source install/setup.sh
+          export PYTHONPATH=/usr/lib/python3/dist-packages:$PYTHONPATH
           cd src && PYTHONPATH=$PYTHONPATH:$(pwd) pytest ../tests/test_gym_api.py
         shell: bash
 
