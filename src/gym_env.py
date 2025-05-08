@@ -105,7 +105,7 @@ class DroneSimEnv(gym.Env):
         rclpy.shutdown()
 
     # ------------------ helpers ------------------------------
-        def _randomize_world(self) -> None:
+    def _randomize_world(self) -> None:
         mass_scale = random.uniform(0.92, 1.08)
         com_shift  = [random.uniform(-0.005, 0.005) for _ in range(3)]
         wind_vec   = [random.uniform(-3.0, 3.0) for _ in range(3)]
