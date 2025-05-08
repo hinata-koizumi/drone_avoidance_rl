@@ -1,9 +1,9 @@
 # docker/px4-simulator/Dockerfile.simulator
 #   * builds PX4‑SITL (Ignition Gazebo motor plugin is now built **inside PX4**)
-#   * headless / CI‑friendly (GitHub Actions & local Docker)
+#   * headless / CI‑friendly (GitHub Actions & local Docker)
 
 #########################
-# Stage 0 – PX4 build   #
+# Stage 0 – PX4 build   #
 #########################
 FROM ubuntu:22.04 AS builder
 ARG PX4_BRANCH=v1.15.0
@@ -34,10 +34,18 @@ RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     make -j$(nproc) px4_sitl_default
 
 ##############################
-# Stage 1 – runtime image    #
+# Stage 1 – runtime image    #
 ##############################
 FROM ubuntu:22.04 AS runtime
 LABEL org.opencontainers.image.title="PX4‑SITL Runtime"
+
+# --- ROS 2 Humble install ---
+RUN apt-get update && \
+    apt-get install -y curl gnupg2 lsb-release && \
+    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | apt-key add - && \
+    echo "deb http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list && \
+    apt-get update && \
+    apt-get install -y ros-humble-desktop python3-colcon-common-extensions
 
 COPY --from=builder /PX4-Autopilot/build/px4_sitl_default /PX4-Autopilot/build/px4_sitl_default
 COPY --from=builder /PX4-Autopilot/Tools                 /PX4-Autopilot/Tools
