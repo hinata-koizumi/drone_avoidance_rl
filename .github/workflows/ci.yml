@@ -45,6 +45,8 @@ jobs:
     needs: build-sim
     steps:
       - uses: actions/checkout@v4
+      - name: Build sim docker image
+        run: docker build -t drone_rl:sim -f docker/px4-simulator/Dockerfile.simulator .
       - name: Launch simulation and test
         run: docker compose -f tests/ci-compose.yml up --abort-on-container-exit
 
@@ -113,6 +115,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest gymnasium numpy pyyaml lark
+      - name: Initialize rosdep
+        run: |
+          sudo rosdep init || true
+          rosdep update
       - name: Install ROS 2 dependencies
         run: |
           sudo apt-get update
