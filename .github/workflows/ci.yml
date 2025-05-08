@@ -114,15 +114,13 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest gymnasium numpy pyyaml lark empy
-      - name: Initialize rosdep
-        run: |
-          sudo rosdep init || true
-          rosdep update
+          pip install pytest gymnasium numpy pyyaml lark
       - name: Install ROS 2 dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-colcon-common-extensions
+          sudo apt-get install -y python3-colcon-common-extensions python3-empy
+          sudo rosdep init || true
+          rosdep update
           rosdep install --from-paths src --ignore-src -r -y --rosdistro=humble
       - name: Build ROS 2 workspace
         run: |
