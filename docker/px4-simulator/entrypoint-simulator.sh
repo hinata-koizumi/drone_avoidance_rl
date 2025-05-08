@@ -2,7 +2,7 @@
 # entrypoint-simulator.sh   ★2025-05-02 R5
 #   * PX4 ログに ch0-1 (SERVO) を含める
 set -euo pipefail
-source /opt/ros/humble/setup.bash
+source /opt/ros/humble/setup.sh
 
 export SYS_AUTOSTART=${SYS_AUTOSTART:-4500}
 export MODEL_PATH=${MODEL_PATH:-/models/drone_model}
