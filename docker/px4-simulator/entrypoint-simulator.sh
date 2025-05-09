@@ -8,12 +8,12 @@ export SYS_AUTOSTART=${SYS_AUTOSTART:-4500}
 export MODEL_PATH=${MODEL_PATH:-/models/drone_model}
 export GZ_SIM_RESOURCE_PATH=${GZ_SIM_RESOURCE_PATH:-"/models"}
 
-ign gazebo -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering &
+gz gazebo -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering &
 sleep 3
 
 # ---------- model spawn ----------
 if [[ -f "${MODEL_PATH}/model.sdf" ]]; then
-  ign service -s /world/empty/create --reqtype ignition.msgs.EntityFactory \
+  gz service -s /world/empty/create --reqtype ignition.msgs.EntityFactory \
       --reptype ignition.msgs.Boolean --timeout 300 \
       --req "sdf_filename: \"${MODEL_PATH}/model.sdf\" pose: { position:{z:0.25} }"
 else
@@ -21,7 +21,7 @@ else
 fi
 
 # ---------- PX4 ----------
-px4 -i 0 -d -s etc/init.d-posix/rcS -w build/px4_sitl_rtps &
+px4 -i 0 -d -s /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS -w build/px4_sitl_rtps &
 until nc -z localhost 11345; do sleep 1; done
 echo "[entrypoint] PX4 RTPS ready."
 
