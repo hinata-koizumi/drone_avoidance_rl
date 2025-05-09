@@ -6,9 +6,9 @@ source /opt/ros/humble/setup.sh
 
 export SYS_AUTOSTART=${SYS_AUTOSTART:-4500}
 export MODEL_PATH=${MODEL_PATH:-/models/drone_model}
-export GZ_SIM_RESOURCE_PATH=${GZ_SIM_RESOURCE_PATH:-"/models"}
+export GZ_SIM_RESOURCE_PATH="/models:${GZ_SIM_RESOURCE_PATH:-}"
 
-gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering --resource-path /models &
+gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering &
 sleep 3
 
 # ---------- model spawn ----------
