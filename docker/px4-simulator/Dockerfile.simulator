@@ -31,6 +31,15 @@ RUN pip3 install --no-cache-dir pyulog pyros-genmsg
 RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     make -j$(nproc) px4_sitl_default
 
+# --- Gazebo Garden, netcat, PX4バイナリのPATH ---
+RUN apt-get update && \
+    apt-get install -y netcat-openbsd wget lsb-release && \
+    wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add - && \
+    echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list && \
+    apt-get update && \
+    apt-get install -y gz-sim && \
+    ln -s /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4
+
 COPY docker/px4-simulator/entrypoint-simulator.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
