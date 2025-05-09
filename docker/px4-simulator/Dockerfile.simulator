@@ -43,7 +43,9 @@ RUN if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.s
 RUN mkdir -p /usr/share/gz/garden/models && \
     ln -s /models/drone_model /usr/share/gz/garden/models/drone_model
 
-RUN sed -i 's|source /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh|if [ -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh ]; then source /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh; fi|g' /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
+RUN sed -i 's|source |. |g' /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
+
+ENV GZ_RESOURCE_PATH="/models:/usr/share/gz/garden/models"
 
 # --- Gazebo Garden, netcat, PX4バイナリのPATH ---
 RUN apt-get update && \
