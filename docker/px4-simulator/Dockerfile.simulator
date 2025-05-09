@@ -36,6 +36,8 @@ RUN if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.s
       chmod +x /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh; \
     fi
 
+RUN sed -i 's|source px4-alias.sh|source /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh|' /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
+
 # --- Gazebo Garden, netcat, PX4バイナリのPATH ---
 RUN apt-get update && \
     apt-get install -y netcat-openbsd wget lsb-release && \

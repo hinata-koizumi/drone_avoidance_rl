@@ -8,7 +8,7 @@ export SYS_AUTOSTART=${SYS_AUTOSTART:-4500}
 export MODEL_PATH=${MODEL_PATH:-/models/drone_model}
 export GZ_SIM_RESOURCE_PATH=${GZ_SIM_RESOURCE_PATH:-"/models"}
 
-gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering &
+gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering --resource-path /models &
 sleep 3
 
 # ---------- model spawn ----------
