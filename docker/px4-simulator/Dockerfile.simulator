@@ -31,6 +31,11 @@ RUN pip3 install --no-cache-dir pyulog pyros-genmsg
 RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     make -j$(nproc) px4_sitl_default
 
+RUN if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh ]; then \
+      echo '#!/bin/sh' > /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh; \
+      chmod +x /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh; \
+    fi
+
 # --- Gazebo Garden, netcat, PX4バイナリのPATH ---
 RUN apt-get update && \
     apt-get install -y netcat-openbsd wget lsb-release && \
@@ -42,5 +47,7 @@ RUN apt-get update && \
 
 COPY docker/px4-simulator/entrypoint-simulator.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+COPY custom_model/drone_model /models/drone_model
 
 ENTRYPOINT ["/entrypoint.sh"]
