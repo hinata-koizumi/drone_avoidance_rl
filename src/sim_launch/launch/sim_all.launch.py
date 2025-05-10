@@ -14,39 +14,31 @@ def generate_launch_description():
 
         # Gazebo Garden 起動（gz sim）
         ExecuteProcess(
-            cmd=["gz", "sim", "-r", "worlds/your_world.sdf"],
+            cmd=["gz", "sim", "-r", "/usr/share/ignition/gazebo/worlds/empty.sdf"],
             output="screen",
             condition=UnlessCondition(LaunchConfiguration("headless"))
         ),
         ExecuteProcess(
-            cmd=["gz", "sim", "-r", "-s", "worlds/your_world.sdf"],
+            cmd=["gz", "sim", "-r", "-s", "/usr/share/ignition/gazebo/worlds/empty.sdf"],
             output="screen",
             condition=IfCondition(LaunchConfiguration("headless"))
         ),
 
         # 各ブリッジノード（ROS2 側）
-        Node(
-            package="command_bridge",
-            executable="command_bridge_node",
-            name="command_bridge",
+        ExecuteProcess(
+            cmd=["python3", "/sim_ws/install/command_bridge/lib/command_bridge/main.py"],
             output="screen"
         ),
-        Node(
-            package="state_bridge",
-            executable="state_bridge_node",
-            name="state_bridge",
+        ExecuteProcess(
+            cmd=["python3", "/sim_ws/install/state_bridge/lib/state_bridge/state_bridge.py"],
             output="screen"
         ),
-        Node(
-            package="angle_bridge",
-            executable="angle_bridge_node",
-            name="angle_bridge",
+        ExecuteProcess(
+            cmd=["python3", "/sim_ws/install/angle_bridge/lib/angle_bridge/main.py"],
             output="screen"
         ),
-        Node(
-            package="outer_motor_bridge",
-            executable="outer_motor_bridge_node",
-            name="outer_motor_bridge",
+        ExecuteProcess(
+            cmd=["python3", "/sim_ws/install/outer_motor_bridge/lib/outer_motor_bridge/main.py"],
             output="screen"
         ),
     ])

@@ -1,13 +1,13 @@
 # ────────────────────────────────────────────
 # src/command_bridge/setup.py   ★NEW
 # ────────────────────────────────────────────
-from setuptools import setup
+from setuptools import setup, find_packages
 package_name = 'command_bridge'
 
 setup(
     name=package_name,
     version='0.0.1',
-    packages=[package_name],
+    packages=['command_bridge'],
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='you',
@@ -16,7 +16,8 @@ setup(
     license='Apache 2.0',
     entry_points={
         'console_scripts': [
-            'command_bridge = command_bridge.command_bridge:main',
+            'command_bridge = command_bridge.main:main',
         ],
     },
+    data_files=[('lib/command_bridge', [])],
 )

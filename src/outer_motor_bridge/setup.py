@@ -4,7 +4,7 @@ package_name = 'outer_motor_bridge'
 setup(
     name=package_name,
     version='0.1.0',
-    packages=find_packages(include=[package_name, f'{package_name}.*']),
+    packages=['outer_motor_bridge'],
     install_requires=['setuptools', 'rclpy'],
     zip_safe=True,
     maintainer='Hinata Koizumi',
@@ -14,7 +14,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            f'{package_name} = {package_name}.__init__:main',
+            'outer_motor_bridge = outer_motor_bridge.main:main',
         ],
     },
 )

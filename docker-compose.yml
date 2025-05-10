@@ -49,16 +49,13 @@ services:
   # -----------------------------
   # Gazebo シミュレーション環境（Stage 2）
   # -----------------------------
-  sim_ws:
+  sim:
     build:
       context: .
-      dockerfile: docker/Dockerfile.sim
-    image: drone_sim:humble
-    volumes:
-      - ./src:/sim_ws/src
-    working_dir: /sim_ws
-    tty: true
-    stdin_open: true
+      dockerfile: docker/Dockerfile.unified
+    image: drone_rl:unified
     environment:
-      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-    command: /bin/bash
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - ./custom_model/drone_model:/models/drone_model:ro
+    command: ["sim"]

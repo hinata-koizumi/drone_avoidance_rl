@@ -1,3 +1,0 @@
-[console_scripts]
-e2e_test = sim_launch.e2e_test:main
-

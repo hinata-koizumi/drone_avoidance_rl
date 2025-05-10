@@ -1,16 +1,32 @@
 import rclpy
 from rclpy.node import Node
 
+REQUIRED_TOPICS = [
+    '/clock',
+    '/servo/fan1_tilt',
+    '/fmu/in/actuator_servos',
+    '/drone/state',
+    '/drone/outer_motor_pwm',
+]
+
 class SmokeTest(Node):
     def __init__(self):
         super().__init__('smoke_test')
-        self.create_timer(1.0, self.check)
+        self.create_timer(2.0, self.check)
+        self.checked = False
 
     def check(self):
-        topics = self.get_topic_names_and_types()
-        assert any('/clock' in t for t, _ in topics), "/clock not found"
-        self.get_logger().info("E2E test passed.")
-        rclpy.shutdown()
+        if self.checked:
+            return
+        topics = dict(self.get_topic_names_and_types())
+        missing = [t for t in REQUIRED_TOPICS if t not in topics]
+        if missing:
+            self.get_logger().error(f"Missing topics: {missing}")
+            assert not missing, f"E2E test failed: missing topics {missing}"
+        else:
+            self.get_logger().info("E2E test passed. All required topics found.")
+            self.checked = True
+            rclpy.shutdown()
 
 def main():
     rclpy.init()
