@@ -50,7 +50,7 @@ ENV GZ_RESOURCE_PATH="/models:/usr/share/gz/garden/models"
 
 # --- Gazebo Garden, netcat, PX4バイナリのPATH ---
 RUN apt-get update && \
-    apt-get install -y netcat-openbsd wget lsb-release mongo-tools && \
+    apt-get install -y netcat wget lsb-release mongo-tools && \
     wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/gazebo-archive-keyring.gpg && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/gazebo-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list && \
     apt-get update && \
