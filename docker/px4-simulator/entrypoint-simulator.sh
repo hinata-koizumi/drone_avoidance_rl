@@ -19,6 +19,17 @@ echo "[entrypoint] PATH(after export)=$PATH"
 echo "[entrypoint] which px4 (after export): $(which px4 || echo not found)"
 echo "[entrypoint] which nc (after export): $(which nc || echo not found)"
 
+if ! command -v nc >/dev/null 2>&1; then
+  echo "[entrypoint] nc not found, trying busybox nc..."
+  if command -v busybox >/dev/null 2>&1; then
+    alias nc="busybox nc"
+    echo "[entrypoint] using busybox nc"
+  else
+    echo "[entrypoint] installing busybox for nc fallback..."
+    apt-get update && apt-get install -y busybox-static && alias nc="busybox nc"
+  fi
+fi
+
 gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering &
 sleep 3
 
