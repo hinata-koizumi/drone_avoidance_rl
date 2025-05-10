@@ -11,6 +11,10 @@ export GZ_SIM_RESOURCE_PATH="/models:/usr/share/gz/garden/models:${GZ_SIM_RESOUR
 ls -lR /models
 ls -lR /usr/share/gz/garden/models
 
+echo "[entrypoint] PATH=$PATH"
+echo "[entrypoint] which px4: $(which px4 || echo not found)"
+echo "[entrypoint] which nc: $(which nc || echo not found)"
+
 gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering &
 sleep 3
 
