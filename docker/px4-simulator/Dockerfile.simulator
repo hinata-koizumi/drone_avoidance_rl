@@ -50,18 +50,13 @@ ENV GZ_RESOURCE_PATH="/models:/usr/share/gz/garden/models"
 
 # --- Gazebo Garden, netcat, PX4バイナリのPATH ---
 RUN apt-get update && \
-    apt-get install -y netcat-openbsd wget lsb-release mongodb-clients && \
+    apt-get install -y netcat-openbsd wget lsb-release mongo-tools && \
     wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/gazebo-archive-keyring.gpg && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/gazebo-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list && \
     apt-get update && \
     apt-get install -y gz-garden && \
     ln -s /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
     ln -s /PX4-Autopilot/build/px4_sitl_default/bin/param /usr/local/bin/param || true
-
-# px4-rc.paramsをPX4ビルド成果物からコピー
-RUN if [ -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-rc.params ]; then \
-      cp /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-rc.params /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/; \
-    fi
 
 COPY docker/px4-simulator/entrypoint-simulator.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
