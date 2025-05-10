@@ -11,8 +11,7 @@ export GZ_SIM_RESOURCE_PATH="/models:/usr/share/gz/garden/models:${GZ_SIM_RESOUR
 ls -lR /models
 ls -lR /usr/share/gz/garden/models
 
-gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering \
-  --resource-path /models --resource-path /usr/share/gz/garden/models &
+gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering &
 sleep 3
 
 # ---------- model spawn ----------
