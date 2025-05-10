@@ -25,7 +25,7 @@ jobs:
       - name: Build bridge_ws
         run: docker build --target bridge_ws -f docker/Dockerfile.bridge .
       - name: Test bridge_ws
-        run: docker run --rm $(docker build -q --target bridge_ws -f docker/Dockerfile.bridge .) colcon test
+        run: docker run --rm $(docker build -q --target bridge_ws -f docker/Dockerfile.bridge .) colcon test --base-paths src --packages-ignore gmock gtest
 
   build-sim:
     runs-on: ubuntu-22.04
