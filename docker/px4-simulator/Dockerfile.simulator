@@ -56,8 +56,10 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y gz-garden && \
     ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
+    ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/px4 /bin/px4 && \
     ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/param /usr/local/bin/param || true && \
-    ln -sf /usr/bin/nc /usr/local/bin/nc || true
+    ln -sf /usr/bin/nc /usr/local/bin/nc || true && \
+    ln -sf /usr/bin/nc /bin/nc || true
 
 COPY docker/px4-simulator/entrypoint-simulator.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
