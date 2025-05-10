@@ -17,4 +17,7 @@ setup(
             'outer_motor_bridge = outer_motor_bridge.main:main',
         ],
     },
+    data_files=[
+        (f'lib/{package_name}', ['outer_motor_bridge/main.py']),
+    ],
 )

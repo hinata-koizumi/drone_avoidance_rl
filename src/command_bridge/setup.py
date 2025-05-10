@@ -19,5 +19,7 @@ setup(
             'command_bridge = command_bridge.main:main',
         ],
     },
-    data_files=[('lib/command_bridge', [])],
+    data_files=[
+        (f'lib/{package_name}', ['command_bridge/main.py']),
+    ],
 )

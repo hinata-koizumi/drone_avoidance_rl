@@ -17,4 +17,7 @@ setup(
             'state_bridge = state_bridge.state_bridge:main',
         ],
     },
+    data_files=[
+        (f'lib/{package_name}', ['state_bridge/state_bridge.py']),
+    ],
 )

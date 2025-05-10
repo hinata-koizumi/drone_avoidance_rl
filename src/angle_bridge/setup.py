@@ -17,4 +17,7 @@ setup(
             'angle_bridge = angle_bridge.main:main',
         ],
     },
+    data_files=[
+        (f'lib/{package_name}', ['angle_bridge/main.py']),
+    ],
 )
