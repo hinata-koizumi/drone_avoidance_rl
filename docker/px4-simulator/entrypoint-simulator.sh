@@ -14,6 +14,10 @@ ls -lR /usr/share/gz/garden/models
 echo "[entrypoint] PATH=$PATH"
 echo "[entrypoint] which px4: $(which px4 || echo not found)"
 echo "[entrypoint] which nc: $(which nc || echo not found)"
+export PATH="/PX4-Autopilot/build/px4_sitl_default/bin:/usr/bin:$PATH"
+echo "[entrypoint] PATH(after export)=$PATH"
+echo "[entrypoint] which px4 (after export): $(which px4 || echo not found)"
+echo "[entrypoint] which nc (after export): $(which nc || echo not found)"
 
 gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering &
 sleep 3
