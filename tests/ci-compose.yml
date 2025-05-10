@@ -1,8 +1,6 @@
-version: "3.9"
-
 services:
   sim:
-    image: drone_rl:sim  # ← Stage 2 用イメージ
+    image: drone_rl:unified
     environment:
       - HEADLESS=1
       - ROS_DOMAIN_ID=0
