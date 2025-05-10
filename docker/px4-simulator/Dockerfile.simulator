@@ -50,16 +50,25 @@ ENV GZ_RESOURCE_PATH="/models:/usr/share/gz/garden/models"
 
 # --- Gazebo Garden, netcat, PX4バイナリのPATH ---
 RUN apt-get update && \
-    apt-get install -y netcat wget lsb-release mongo-tools && \
+    apt-get install -y netcat wget lsb-release mongodb-org-tools && \
     wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/gazebo-archive-keyring.gpg && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/gazebo-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list && \
     apt-get update && \
     apt-get install -y gz-garden && \
     ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
+    ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/bin/px4 && \
     ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/px4 /bin/px4 && \
     ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/param /usr/local/bin/param || true && \
+    ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/param /usr/bin/param || true && \
+    ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/param /bin/param || true && \
+    ln -sf /usr/bin/nc /PX4-Autopilot/build/px4_sitl_default/bin/nc || true && \
     ln -sf /usr/bin/nc /usr/local/bin/nc || true && \
-    ln -sf /usr/bin/nc /bin/nc || true
+    ln -sf /usr/bin/nc /usr/bin/nc || true && \
+    ln -sf /usr/bin/nc /bin/nc || true && \
+    ln -sf /usr/bin/bsondump /PX4-Autopilot/build/px4_sitl_default/bin/bsondump || true && \
+    ln -sf /usr/bin/bsondump /usr/local/bin/bsondump || true && \
+    ln -sf /usr/bin/bsondump /usr/bin/bsondump || true && \
+    ln -sf /usr/bin/bsondump /bin/bsondump || true
 
 COPY docker/px4-simulator/entrypoint-simulator.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
