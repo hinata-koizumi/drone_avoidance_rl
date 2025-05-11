@@ -1,5 +1,5 @@
 # PX4 SITL + ROS 2 Humble + Gazebo Garden + カスタムモデル統合Dockerfile
-FROM --platform=linux/amd64 ubuntu:22.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ROS_DISTRO=humble
@@ -18,7 +18,7 @@ RUN apt-get update && \
 
 # --- ROS 2 Humble install ---
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-get update && \
     apt-get install -y ros-humble-ros-base python3-colcon-common-extensions python3-rosdep && \
     rm -rf /var/lib/apt/lists/*
@@ -54,7 +54,7 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
 RUN apt-get update && \
     apt-get install -y netcat wget lsb-release mongodb-org-tools && \
     wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/gazebo-archive-keyring.gpg && \
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/gazebo-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/gazebo-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list && \
     apt-get update && \
     apt-get install -y gz-garden && \
     ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
