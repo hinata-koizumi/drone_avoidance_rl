@@ -46,8 +46,9 @@ USER builder
 RUN rosdep update --include-eol-distros && \
     rosdep install --from-paths /sim_ws/src --ignore-src --rosdistro ${ROS_DISTRO} -y --include-eol-distros || true
 USER root
+RUN rm -rf build/ install/ log/
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    colcon build --base-paths src --symlink-install
+    colcon build --base-paths src --symlink-install --event-handlers console_direct+
 
 # --- Gazebo Garden, netcat, PX4バイナリのPATH ---
 RUN apt-get update && \
