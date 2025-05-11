@@ -71,4 +71,5 @@ RUN mkdir -p /usr/share/gz/garden/models && \
 COPY docker/entrypoint-unified.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENV ROS_DOMAIN_ID=0
+ENV PYTHONPATH=/sim_ws/install/lib/python3.10/site-packages:$PYTHONPATH
 ENTRYPOINT ["/entrypoint.sh"] 
