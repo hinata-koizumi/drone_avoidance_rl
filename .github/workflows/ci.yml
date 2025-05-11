@@ -68,7 +68,20 @@ jobs:
       - name: Build sim docker image
         run: docker build -t drone_rl:unified -f docker/Dockerfile.unified .
       - name: Launch simulation and test
-        run: docker compose -f tests/ci-compose.yml up --abort-on-container-exit
+        run: |
+          docker compose -f tests/ci-compose.yml up --abort-on-container-exit
+          docker cp $(docker ps -aqf "name=sim"):/root/.ros/rosbag2_latest ./rosbag2_latest || true
+      - name: Upload rosbag2 artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rosbag2-latest
+          path: ./rosbag2_latest
+      - name: Print rerun command on failure
+        if: failure()
+        run: |
+          echo "To reproduce locally:"
+          echo "docker compose -f tests/ci-compose.yml up --abort-on-container-exit"
 
   check-package-versions:
     runs-on: ubuntu-22.04
@@ -170,4 +183,92 @@ jobs:
           export PYTHONPATH=/usr/lib/python3/dist-packages:$PYTHONPATH
           cd src && PYTHONPATH=$PYTHONPATH:$(pwd) pytest ../tests/test_gym_api.py
         shell: bash
+
+  static-analysis:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff mypy
+      - name: Run ruff
+        run: ruff src/ tests/
+      - name: Run mypy
+        run: mypy src/ tests/
+      - name: Set up ROS 2 Humble
+        uses: ros-tooling/setup-ros@v0.7
+        with:
+          required-ros-distributions: humble
+      - name: Install ROS 2 dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-colcon-common-extensions python3-empy
+          sudo rosdep init || true
+          rosdep update
+          rosdep install --from-paths src --ignore-src -r -y --rosdistro=humble
+      - name: Run ament_lint_auto
+        run: |
+          source /opt/ros/humble/setup.sh
+          colcon test --packages-select ament_lint_auto
+
+  coverage:
+    runs-on: ubuntu-22.04
+    needs: build-sim
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Clean workspace
+        run: tools/clean_workspace.sh
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov
+      - name: Run coverage
+        run: |
+          cd src && pytest --cov=../src --cov-report=xml:../coverage.xml
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+  security-scan:
+    runs-on: ubuntu-22.04
+    needs: build-sim
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install Trivy
+        run: |
+          sudo apt-get update && sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update && sudo apt-get install -y trivy
+      - name: Scan Docker image
+        run: trivy image --exit-code 0 --severity HIGH,CRITICAL drone_rl:unified
+
+  release-notes:
+    runs-on: ubuntu-22.04
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate GitHub Release Notes
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
 
