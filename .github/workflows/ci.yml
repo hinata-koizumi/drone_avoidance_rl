@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Build msgs_ws
@@ -20,6 +22,8 @@ jobs:
     needs: build-msgs
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Build bridge_ws
@@ -32,6 +36,8 @@ jobs:
     needs: build-bridge
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Build sim_ws
@@ -43,6 +49,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Run pre-commit
@@ -53,6 +61,8 @@ jobs:
     needs: build-sim
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Build sim docker image
@@ -64,6 +74,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Check package.xml version consistency
@@ -73,6 +85,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Set up ROS 2 Humble
@@ -98,6 +112,8 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Extract tag version
@@ -119,6 +135,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Set up Python 3.10
