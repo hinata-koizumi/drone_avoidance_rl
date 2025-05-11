@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     model = SAC("MlpPolicy", env, verbose=1, device=device)   # ★Fix
 
-    def _term_handler(*_):
+    def _term_handler(*_: object) -> None:
         print("[train_agent] SIGTERM – saving checkpoint")
         model.save("sac_inner_prop_model_partial")
         env.close()

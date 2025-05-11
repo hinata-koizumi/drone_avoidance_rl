@@ -33,5 +33,14 @@ def main():
     node = SmokeTest()
     rclpy.spin(node)
 
+def test_setup() -> None:
+    pass
+
+def test_launch() -> None:
+    pass
+
+def test_teardown() -> None:
+    pass
+
 if __name__ == '__main__':
     main()

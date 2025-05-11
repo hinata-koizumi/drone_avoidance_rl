@@ -8,7 +8,7 @@ from drone_msgs.msg import DroneState
 MSG_LIMIT = 5          # 5 通受信で OK
 TIMEOUT   = 10.0       # 秒
 
-def test_state_topic():
+def test_state_topic() -> None:
     rclpy.init()
     node = Node("state_check")
     msgs = []

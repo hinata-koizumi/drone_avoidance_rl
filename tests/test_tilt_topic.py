@@ -5,7 +5,7 @@ from rclpy.node import Node
 from std_msgs.msg import Float64
 
 
-def test_tilt_topic():
+def test_tilt_topic() -> None:
     rclpy.init()
     node = Node("tilt_check")
     msgs = []

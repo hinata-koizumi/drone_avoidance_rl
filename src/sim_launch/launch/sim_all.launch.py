@@ -4,7 +4,7 @@ from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration
 
 
-def generate_launch_description():
+def generate_launch_description() -> None:
     return LaunchDescription([
         # GUI 表示オプション
         DeclareLaunchArgument(

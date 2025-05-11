@@ -20,7 +20,7 @@ def _clamp(v: float, lo: float, hi: float) -> float:
 
 
 class AngleBridge(Node):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("angle_bridge")
         self.sub = self.create_subscription(
             DroneControlCommand,
@@ -32,7 +32,7 @@ class AngleBridge(Node):
         self.pub2 = self.create_publisher(Float64, "/servo/fan2_tilt", 10)
 
     # ---------- callback ----------
-    def _cb(self, cmd: DroneControlCommand) -> None:
+    def _cb(self, cmd: 'DroneControlCommand') -> None:
         ang1_deg = _clamp(cmd.angle1, _MIN_DEG, _MAX_DEG)
         ang2_deg = _clamp(cmd.angle2, _MIN_DEG, _MAX_DEG)
 

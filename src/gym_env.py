@@ -95,7 +95,7 @@ class DroneSimEnv(gym.Env):
         _wait_udp(11345)
         return self.state.copy(), {}
 
-    def step(self, action: np.ndarray):
+    def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict]:
         cmd = DroneControlCommand()
         cmd.throttle1, cmd.angle1, cmd.throttle2, cmd.angle2 = map(float, action)
         self.cmd_pub.publish(cmd)
@@ -180,3 +180,19 @@ class DroneSimEnv(gym.Env):
         smooth  = np.linalg.norm(action - self.prev_action)
 
         return _REW_ORI * ori_err + _REW_POS * pos_err + _REW_SMOOTH * smooth
+
+    def render(self) -> None:
+        # Implementation of render method
+        pass
+
+    def _clamp(self, x: float, lo: float, hi: float) -> float:
+        # Implementation of _clamp method
+        pass
+
+    def _normalize_angle(self, angle: float) -> float:
+        # Implementation of _normalize_angle method
+        pass
+
+    def _denormalize_angle(self, norm: float) -> float:
+        # Implementation of _denormalize_angle method
+        pass

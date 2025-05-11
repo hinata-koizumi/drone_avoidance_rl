@@ -48,7 +48,7 @@ def quat_to_euler(w: float, x: float, y: float, z: float) -> Tuple[float, float,
 
 class StateBridge(Node):
     """PX4 VehicleOdometry → custom DroneState"""
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("state_bridge")
         self.pub = self.create_publisher(DroneState, "/drone/state", 10)
         self.sub = self.create_subscription(
@@ -80,6 +80,10 @@ class StateBridge(Node):
             return
 
         self.pub.publish(msg)
+
+    def _get_xyz(self, odom: 'VehicleOdometry') -> tuple[float, float, float]:
+        # Implementation of _get_xyz method
+        pass
 
 
 def main() -> None:

@@ -3,7 +3,7 @@ import numpy as np
 from gym_env import DroneSimEnv
 
 
-def test_gym_api_basic():
+def test_gym_api_basic() -> None:
     env = DroneSimEnv(episode_max_steps=10)
     obs, info = env.reset()
     assert isinstance(obs, np.ndarray)
@@ -27,4 +27,10 @@ def test_gym_api_render_not_implemented():
     else:
         # If render() is implemented, that's fine too
         pass
+    env.close()
+
+def test_gym_api_reset() -> None:
+    env = DroneSimEnv()
+    obs, info = env.reset()
+    assert isinstance(obs, np.ndarray)
     env.close() 

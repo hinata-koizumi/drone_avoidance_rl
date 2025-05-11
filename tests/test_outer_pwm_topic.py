@@ -7,7 +7,7 @@ from std_msgs.msg import Float32MultiArray
 MSG_LIMIT = 4      # 4 通受信で合格
 TIMEOUT   = 10.0   # 秒
 
-def test_outer_pwm_topic():
+def test_outer_pwm_topic() -> None:
     rclpy.init()
     node = Node("outer_pwm_check")
     msgs = []
