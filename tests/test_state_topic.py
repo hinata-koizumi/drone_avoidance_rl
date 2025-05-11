@@ -1,8 +1,9 @@
+import time
+
 import rclpy
 from rclpy.node import Node
+
 from drone_msgs.msg import DroneState
-import pytest
-import time
 
 MSG_LIMIT = 5          # 5 通受信で OK
 TIMEOUT   = 10.0       # 秒
@@ -15,7 +16,7 @@ def test_state_topic():
     def cb(msg):
         msgs.append(msg)
 
-    sub = node.create_subscription(DroneState, "/drone/state", cb, 10)
+    node.create_subscription(DroneState, "/drone/state", cb, 10)
 
     start = time.time()
     while rclpy.ok() and time.time() - start < TIMEOUT and len(msgs) < MSG_LIMIT:

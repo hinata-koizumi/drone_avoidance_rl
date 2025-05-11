@@ -4,10 +4,12 @@ command_bridge.py – 内蔵ファン 2 基の PWM を PX4 ActuatorServos ch 0-1
 外周ロータ (motors) とは完全に独立するため、PX4 PID と競合しない
 """
 import math
+
 import rclpy
 from rclpy.node import Node
-from px4_msgs.msg import ActuatorServos       # ★変更点
+
 from drone_msgs.msg import DroneControlCommand
+from px4_msgs.msg import ActuatorServos  # ★変更点
 
 _MOTOR_MIN, _MOTOR_MAX = 0.0, 1.0        # throttle ratio 0–1
 _PWM_MIN,   _PWM_MAX   = 900.0, 2100.0   # PX4 標準 PWM [µs]

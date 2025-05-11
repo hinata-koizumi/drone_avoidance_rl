@@ -6,8 +6,10 @@ std_msgs/Float32MultiArray で /drone/outer_motor_pwm へ転送。
 """
 import rclpy
 from rclpy.node import Node
-from px4_msgs.msg import ActuatorMotors
 from std_msgs.msg import Float32MultiArray
+
+from px4_msgs.msg import ActuatorMotors
+
 
 class OuterMotorBridge(Node):
     def __init__(self):

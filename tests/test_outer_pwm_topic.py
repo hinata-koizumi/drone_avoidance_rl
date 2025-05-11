@@ -1,4 +1,6 @@
-import rclpy, time
+import time
+
+import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray
 
@@ -13,7 +15,7 @@ def test_outer_pwm_topic():
     def cb(msg):
         msgs.append(msg)
 
-    sub = node.create_subscription(
+    node.create_subscription(
         Float32MultiArray, "/drone/outer_motor_pwm", cb, 10
     )
 
@@ -21,5 +23,6 @@ def test_outer_pwm_topic():
     while time.time() - start < TIMEOUT and len(msgs) < MSG_LIMIT:
         rclpy.spin_once(node, timeout_sec=0.1)
 
-    node.destroy_node(); rclpy.shutdown()
+    node.destroy_node()
+    rclpy.shutdown()
     assert len(msgs) >= MSG_LIMIT, f"outer_motor_pwm msgs received: {len(msgs)}"

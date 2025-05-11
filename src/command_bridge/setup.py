@@ -1,7 +1,8 @@
 # ────────────────────────────────────────────
 # src/command_bridge/setup.py   ★NEW
 # ────────────────────────────────────────────
-from setuptools import setup, find_packages
+from setuptools import setup
+
 package_name = 'command_bridge'
 
 setup(

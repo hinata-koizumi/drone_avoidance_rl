@@ -4,14 +4,21 @@
 #   * I-1  roll-pitch-yaw 順へ合わせる
 #   * I-2  set_physics_properties → set_physics へ変更
 # ────────────────────────────────────────────
-import os, shutil, subprocess, time, socket, random
+import os
+import random
+import shutil
+import socket
+import subprocess
+import time
 from typing import Dict, Tuple
-import numpy as np
+
 import gymnasium as gym
-from gymnasium import spaces
+import numpy as np
 import rclpy
-from rclpy.node import Node
+from gymnasium import spaces
+
 from drone_msgs.msg import DroneControlCommand, DroneState
+
 
 # ---------------- util ----------------
 def _wait_udp(port: int, timeout: float = 5.0) -> None:

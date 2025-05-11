@@ -3,10 +3,12 @@
 # train_agent.py   ★CHANGE A-3
 #   * SAC に policy/env/device を明示
 # ────────────────────────────────────────────
-import os, signal
+import signal
+
 import torch
-from stable_baselines3 import SAC
 from gymnasium.wrappers import RecordEpisodeStatistics
+from stable_baselines3 import SAC
+
 from gym_env import DroneSimEnv
 
 if __name__ == "__main__":
@@ -30,7 +32,8 @@ if __name__ == "__main__":
     def _term_handler(*_):
         print("[train_agent] SIGTERM – saving checkpoint")
         model.save("sac_inner_prop_model_partial")
-        env.close(); exit(0)
+        env.close()
+        exit(0)
 
     signal.signal(signal.SIGTERM, _term_handler)
 

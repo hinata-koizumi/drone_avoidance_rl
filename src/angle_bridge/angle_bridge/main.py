@@ -4,9 +4,11 @@ angle_bridge.py – 内側可変プロペラ角度を Gazebo JointController へ
 Topic : /servo/fan1_tilt , /servo/fan2_tilt   (std_msgs/Float64, 単位 rad)
 """
 import math
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64
+
 from drone_msgs.msg import DroneControlCommand
 
 _MIN_DEG, _MAX_DEG = -30.0, 30.0              # 制御範囲 [deg]
@@ -34,8 +36,10 @@ class AngleBridge(Node):
         ang1_deg = _clamp(cmd.angle1, _MIN_DEG, _MAX_DEG)
         ang2_deg = _clamp(cmd.angle2, _MIN_DEG, _MAX_DEG)
 
-        msg1 = Float64(); msg1.data = ang1_deg * _DEG2RAD
-        msg2 = Float64(); msg2.data = ang2_deg * _DEG2RAD
+        msg1 = Float64()
+        msg1.data = ang1_deg * _DEG2RAD
+        msg2 = Float64()
+        msg2.data = ang2_deg * _DEG2RAD
         self.pub1.publish(msg1)
         self.pub2.publish(msg2)
 

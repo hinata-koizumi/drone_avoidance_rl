@@ -1,4 +1,5 @@
-from setuptools import setup, find_packages
+from setuptools import setup
+
 package_name = 'angle_bridge'
 
 setup(
