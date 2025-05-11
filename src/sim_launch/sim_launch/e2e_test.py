@@ -15,7 +15,7 @@ class SmokeTest(Node):
         self.create_timer(2.0, self.check)
         self.checked = False
 
-    def check(self):
+    def check(self) -> None:
         if self.checked:
             return
         topics = dict(self.get_topic_names_and_types())

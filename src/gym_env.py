@@ -72,7 +72,7 @@ class DroneSimEnv(gym.Env):
                 raise RuntimeError(f"Required tool '{tool}' not found in RL-agent image")
 
     # ----------------------- Callbacks -----------------------
-    def _state_cb(self, msg: DroneState) -> None:
+    def _state_cb(self, msg: 'DroneState') -> None:
         # ★ roll, pitch, yaw の順で格納（state_bridge と一致）
         self.state = np.array([
             msg.roll, msg.pitch, msg.yaw,
@@ -85,7 +85,7 @@ class DroneSimEnv(gym.Env):
             self.crashed = True
 
     # ------------------ Gym API ------------------------------
-    def reset(self, *, seed=None, options=None) -> Tuple[np.ndarray, Dict]:
+    def reset(self, *, seed=None, options=None) -> tuple[np.ndarray, dict]:
         super().reset(seed=seed)
         self._randomize_world()
         self._world_reset()

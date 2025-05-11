@@ -12,7 +12,7 @@ from px4_msgs.msg import ActuatorMotors
 
 
 class OuterMotorBridge(Node):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("outer_motor_bridge")
         self.sub = self.create_subscription(
             ActuatorMotors,

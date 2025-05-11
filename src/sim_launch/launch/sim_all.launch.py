@@ -1,4 +1,4 @@
-from launch import LaunchDescription
+from launch.launch_description import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration
