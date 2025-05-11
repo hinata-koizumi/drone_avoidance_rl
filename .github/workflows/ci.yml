@@ -199,7 +199,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install ruff mypy
       - name: Run ruff
-        run: ruff src tests
+        run: ruff check src tests
       - name: Run mypy
         run: mypy src/ tests/
       - name: Set up ROS 2 Humble
