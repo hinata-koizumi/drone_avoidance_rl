@@ -82,8 +82,7 @@ class StateBridge(Node):
         self.pub.publish(msg)
 
     def _get_xyz(self, odom: 'VehicleOdometry') -> tuple[float, float, float]:
-        # Implementation of _get_xyz method
-        pass
+        return (0.0, 0.0, 0.0)
 
 
 def main() -> None:

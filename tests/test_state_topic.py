@@ -13,7 +13,7 @@ def test_state_topic() -> None:
     node = Node("state_check")
     msgs = []
 
-    def cb(msg):
+    def cb(msg: DroneState) -> None:
         msgs.append(msg)
 
     node.create_subscription(DroneState, "/drone/state", cb, 10)

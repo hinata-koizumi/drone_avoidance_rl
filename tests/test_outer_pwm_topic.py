@@ -12,7 +12,7 @@ def test_outer_pwm_topic() -> None:
     node = Node("outer_pwm_check")
     msgs = []
 
-    def cb(msg):
+    def cb(msg: Float32MultiArray) -> None:
         msgs.append(msg)
 
     node.create_subscription(

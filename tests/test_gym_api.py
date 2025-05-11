@@ -16,7 +16,7 @@ def test_gym_api_basic() -> None:
         assert isinstance(truncated, bool)
     env.close()
 
-def test_gym_api_render_not_implemented():
+def test_gym_api_render_not_implemented() -> None:
     env = DroneSimEnv()
     try:
         env.render()

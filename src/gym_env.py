@@ -182,17 +182,13 @@ class DroneSimEnv(gym.Env):
         return _REW_ORI * ori_err + _REW_POS * pos_err + _REW_SMOOTH * smooth
 
     def render(self) -> None:
-        # Implementation of render method
         pass
 
     def _clamp(self, x: float, lo: float, hi: float) -> float:
-        # Implementation of _clamp method
-        pass
+        return x
 
     def _normalize_angle(self, angle: float) -> float:
-        # Implementation of _normalize_angle method
-        pass
+        return angle
 
     def _denormalize_angle(self, norm: float) -> float:
-        # Implementation of _denormalize_angle method
-        pass
+        return norm

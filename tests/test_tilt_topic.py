@@ -9,7 +9,7 @@ def test_tilt_topic() -> None:
     rclpy.init()
     node = Node("tilt_check")
     msgs = []
-    def cb(msg): msgs.append(msg)
+    def cb(msg: Float64) -> None: msgs.append(msg)
     node.create_subscription(Float64, "/servo/fan1_tilt", cb, 10)
     node.create_subscription(Float64, "/servo/fan2_tilt", cb, 10)
 
