@@ -48,7 +48,7 @@ RUN rosdep update --include-eol-distros && \
 USER root
 RUN rm -rf build/ install/ log/
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    colcon build --base-paths src --symlink-install --event-handlers console_direct+
+    colcon build --base-paths src --symlink-install --event-handlers console_direct+ --packages-select px4_msgs drone_msgs state_bridge command_bridge angle_bridge outer_motor_bridge
 
 # --- Gazebo Garden, netcat, PX4バイナリのPATH ---
 RUN apt-get update && \
