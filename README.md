@@ -7,11 +7,11 @@
 
 ## Overview
 
-- **PX4 SITL + ROS 2 Humble + Gazebo Garden + RL (Gym API) 統合スタック**
-- **完全再現性**: Ubuntu 22.04, ROS 2 Humble, PX4 v1.15, Gazebo Garden, multi-stage Docker
-- **CI/CD自動化**: GitHub Actionsでビルド・テスト・静的解析・E2E・カバレッジ・セキュリティ・リリースノート自動生成
-- **カスタムモデル/エアフレーム差し替え対応**
-- **型安全・コード品質ゲート・ドキュメント自動生成**
+- **PX4 SITL + ROS 2 Humble + Gazebo Garden + RL (Gym API) Unified Stack**
+- **Reproducibility**: Ubuntu 22.04, ROS 2 Humble, PX4 v1.15, Gazebo Garden, multi-stage Docker
+- **CI/CD Automation**: GitHub Actions for build, test, static analysis, E2E, coverage, security, release notes
+- **Custom model/airframe support**
+- **Type safety, code quality gates, auto-generated docs**
 
 ---
 
@@ -25,19 +25,19 @@ drone_avoidance_rl/
 ├── custom_airframes/# PX4 airframe JSON
 ├── tests/           # Integration/E2E tests (pytest)
 ├── docs/            # mkdocs/Sphinx auto-docs
-├── .github/         # CI/CD, PRテンプレート等
-└── tools/           # 開発補助スクリプト
+├── .github/         # CI/CD, PR templates, etc.
+└── tools/           # Dev helper scripts
 ```
 
 ---
 
 ## Prerequisites
 
-- Docker Desktop 4.30+ (BuildKit有効)
+- Docker Desktop 4.30+ (BuildKit enabled)
 - 12GB+ RAM
 - macOS 12+, Linux, Windows (WSL2)
-- Apple Silicon (arm64) / x86_64両対応
-- (Optional) GPU: Apple Mシリーズ or NVIDIA CUDA 12
+- Apple Silicon (arm64) / x86_64 supported
+- (Optional) Apple M-series or NVIDIA CUDA 12
 
 ---
 
@@ -67,17 +67,17 @@ docker compose down
 
 ## Customization
 
-- **Reward weights**: `REWARD_ORI`, `REWARD_POS`, `REWARD_SMOOTH` 環境変数（`src/gym_env.py`参照）
-- **Domain randomization**: `DroneSimEnv._randomize_world()`を拡張
-- **PX4 parameters**: `custom_airframes/`のJSON編集
-- **Telemetry**: UDP 14550をQGroundControl等に転送
+- **Reward weights**: `REWARD_ORI`, `REWARD_POS`, `REWARD_SMOOTH` env vars (see `src/gym_env.py`)
+- **Domain randomization**: extend `DroneSimEnv._randomize_world()`
+- **PX4 parameters**: edit JSON in `custom_airframes/`
+- **Telemetry**: forward UDP 14550 to QGroundControl
 
 ---
 
 ## Testing & CI
 
-- **全自動CI/CD**: GitHub Actionsで全ビルド・テスト・静的解析・E2E・カバレッジ・セキュリティスキャン・リリースノート自動生成
-- **ローカルテスト例**:
+- **Full CI/CD**: GitHub Actions for build, test, static analysis, E2E, coverage, security scan, release notes
+- **Local test example**:
   ```bash
   tools/clean_workspace.sh
   docker build -t drone_rl:unified -f docker/Dockerfile.unified .
@@ -93,18 +93,18 @@ docker compose down
 
 ## Documentation
 
-- **自動生成ドキュメント**: [docs/](docs/) 配下にmkdocs構成
-- **GitHub Pages自動公開対応**
-- 開発フロー・運用ルール・FAQ・トラブルシューティング等も集約
+- **Auto-generated docs**: [docs/](docs/) (mkdocs structure)
+- **GitHub Pages auto-publish**
+- Architecture, dev flow, FAQ, troubleshooting, etc.
 
 ---
 
 ## Contribution
 
-- PRテンプレート・CONTRIBUTING.md必須
-- コード品質ゲート（ruff, mypy, ament_lint_auto）必須
-- Semantic Versioning運用
-- 詳細は[docs/](docs/)参照
+- PR template & CONTRIBUTING.md required
+- Code quality gates (ruff, mypy, ament_lint_auto) required
+- Semantic Versioning
+- See [docs/](docs/) for details
 
 ---
 

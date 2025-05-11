@@ -6,8 +6,11 @@
 
 ## Project Overview
 
-- Unified stack: PX4 SITL, ROS 2 Humble, Gazebo Garden, RL (Gym API)
-- Reproducible, multi-stage Docker, CI/CD, custom model/airframe support
+- PX4 SITL + ROS 2 Humble + Gazebo Garden + RL (Gym API) Unified Stack
+- Reproducibility: Ubuntu 22.04, ROS 2 Humble, PX4 v1.15, Gazebo Garden, multi-stage Docker
+- CI/CD Automation: GitHub Actions for build, test, static analysis, E2E, coverage, security, release notes
+- Custom model/airframe support
+- Type safety, code quality gates, auto-generated docs
 
 ---
 

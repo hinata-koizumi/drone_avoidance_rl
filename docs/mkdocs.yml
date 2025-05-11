@@ -1,9 +1,0 @@
-site_name: Drone Avoidance RL Docs
-nav:
-  - Home: index.md
-  - Architecture: architecture.md
-  - 開発フロー: devflow.md
-  - トラブルシューティング: troubleshooting.md
-  - FAQ: faq.md
-theme:
-  name: material 
