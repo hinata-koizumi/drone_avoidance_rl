@@ -14,12 +14,12 @@ def generate_launch_description():
 
         # Gazebo Garden 起動（gz sim）
         ExecuteProcess(
-            cmd=["gz", "sim", "-r", "/usr/share/ignition/gazebo/worlds/empty.sdf"],
+            cmd=["gz", "sim", "-r", "/usr/share/gz/gz-sim7/worlds/empty.sdf"],
             output="screen",
             condition=UnlessCondition(LaunchConfiguration("headless"))
         ),
         ExecuteProcess(
-            cmd=["gz", "sim", "-r", "-s", "/usr/share/ignition/gazebo/worlds/empty.sdf"],
+            cmd=["gz", "sim", "-r", "-s", "/usr/share/gz/gz-sim7/worlds/empty.sdf"],
             output="screen",
             condition=IfCondition(LaunchConfiguration("headless"))
         ),
