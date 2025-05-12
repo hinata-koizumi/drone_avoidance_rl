@@ -38,9 +38,12 @@ class DroneSimEnv(gym.Env):
     metadata = {"render_modes": ["human"]}
     ORI_TARGET = np.zeros(3, dtype=np.float32)
 
-    def __init__(self, episode_max_steps: int = 2_000, target_alt: float = 3.0):
+    def __init__(self, episode_max_steps: int = 2_000, target_alt: float = 3.0, wind_max: float = 0.0, gust_max: float = 0.0, gust_prob: float = 0.0):
         super().__init__()
         self.POS_TARGET = np.array([0.0, 0.0, target_alt], dtype=np.float32)
+        self.wind_max = wind_max
+        self.gust_max = gust_max
+        self.gust_prob = gust_prob
 
         self.action_space = spaces.Box(
             low=np.array([0.0, -30.0, 0.0, -30.0], dtype=np.float32),
