@@ -1,5 +1,4 @@
 import os
-from ament_index_python.packages import get_package_share_directory
 from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description import LaunchDescription
