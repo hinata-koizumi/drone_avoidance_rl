@@ -16,7 +16,7 @@ import numpy as np
 import rclpy
 from gymnasium import spaces
 
-from drone_msgs.msg import DroneControlCommand, DroneState
+from drone_msgs.msg import DroneControlCommand as _DroneControlCommand, DroneState as _DroneState
 
 
 # ---------------- util ----------------
@@ -60,10 +60,10 @@ class DroneSimEnv(gym.Env):
         rclpy.init(args=None)
         self.node = rclpy.create_node("inner_prop_rl_env")
         self.cmd_pub = self.node.create_publisher(
-            DroneControlCommand, "/drone/inner_propeller_cmd", 10
+            _DroneControlCommand, "/drone/inner_propeller_cmd", 10
         )
         self.state_sub = self.node.create_subscription(
-            DroneState, "/drone/state", self._state_cb, 10
+            _DroneState, "/drone/state", self._state_cb, 10
         )
 
         for tool in ("ign", "nc"):
@@ -71,7 +71,7 @@ class DroneSimEnv(gym.Env):
                 raise RuntimeError(f"Required tool '{tool}' not found in RL-agent image")
 
     # ----------------------- Callbacks -----------------------
-    def _state_cb(self, msg: object) -> None:
+    def _state_cb(self, msg: _DroneState) -> None:
         # ★ roll, pitch, yaw の順で格納（state_bridge と一致）
         self.state = np.array([
             msg.roll, msg.pitch, msg.yaw,
@@ -84,7 +84,7 @@ class DroneSimEnv(gym.Env):
             self.crashed = True
 
     # ------------------ Gym API ------------------------------
-    def reset(self, *, seed: int = None, options: dict = None) -> tuple[np.ndarray, dict]:
+    def reset(self, *, seed: int | None = None, options: dict | None = None) -> tuple[np.ndarray, dict]:
         super().reset(seed=seed)
         self._randomize_world()
         self._world_reset()
@@ -95,7 +95,7 @@ class DroneSimEnv(gym.Env):
         return self.state.copy(), {}
 
     def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict]:
-        cmd = DroneControlCommand()
+        cmd = _DroneControlCommand()
         cmd.throttle1, cmd.angle1, cmd.throttle2, cmd.angle2 = map(float, action)
         self.cmd_pub.publish(cmd)
         rclpy.spin_once(self.node, timeout_sec=0.03)
