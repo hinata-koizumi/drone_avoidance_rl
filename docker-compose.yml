@@ -55,7 +55,14 @@ services:
       dockerfile: docker/Dockerfile.unified
     image: drone_rl:unified
     environment:
+      - HEADLESS=1
       - ROS_DOMAIN_ID=0
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.sh &&
+        source /sim_ws/install/setup.sh &&
+        ros2 launch sim_launch sim_all.launch.py headless:=true &
+        sleep 10 &&
+        ros2 run sim_launch e2e_test"
     volumes:
       - ./custom_model/drone_model:/models/drone_model:ro
-    command: ["sim"]

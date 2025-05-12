@@ -2,9 +2,13 @@ from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description import LaunchDescription
 from launch.substitutions import LaunchConfiguration
+from ament_index_python.packages import get_package_share_directory
+import os
 
 
 def generate_launch_description() -> LaunchDescription:
+    sim_launch_dir = get_package_share_directory('sim_launch')
+    install_dir = os.environ.get('INSTALL_DIR', '/sim_ws/install')
     return LaunchDescription([
         # GUI 表示オプション
         DeclareLaunchArgument(
@@ -26,19 +30,19 @@ def generate_launch_description() -> LaunchDescription:
 
         # 各ブリッジノード（ROS2 側）
         ExecuteProcess(
-            cmd=["python3", "/sim_ws/install/command_bridge/lib/command_bridge/main.py"],
+            cmd=["python3", os.path.join(install_dir, "command_bridge/lib/command_bridge/main.py")],
             output="screen"
         ),
         ExecuteProcess(
-            cmd=["python3", "/sim_ws/install/state_bridge/lib/state_bridge/state_bridge.py"],
+            cmd=["python3", os.path.join(install_dir, "state_bridge/lib/state_bridge/state_bridge.py")],
             output="screen"
         ),
         ExecuteProcess(
-            cmd=["python3", "/sim_ws/install/angle_bridge/lib/angle_bridge/main.py"],
+            cmd=["python3", os.path.join(install_dir, "angle_bridge/lib/angle_bridge/main.py")],
             output="screen"
         ),
         ExecuteProcess(
-            cmd=["python3", "/sim_ws/install/outer_motor_bridge/lib/outer_motor_bridge/main.py"],
+            cmd=["python3", os.path.join(install_dir, "outer_motor_bridge/lib/outer_motor_bridge/main.py")],
             output="screen"
         ),
     ])
