@@ -1,4 +1,6 @@
 [tool.ruff]
 line-length = 120
-select = ["E", "F", "I", "B"]
-ignore = [] 
+
+[tool.ruff.lint]
+ignore = []
+select = ["E", "F", "I"] 
