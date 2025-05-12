@@ -28,7 +28,7 @@ class SmokeTest(Node):
             self.checked = True
             rclpy.shutdown()
 
-def main():
+def main() -> None:
     rclpy.init()
     node = SmokeTest()
     rclpy.spin(node)

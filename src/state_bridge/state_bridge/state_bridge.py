@@ -5,7 +5,7 @@
 #   * topic QoS, NaN ガードは現状維持
 # ────────────────────────────────────────────
 import math
-from typing import Tuple
+from typing import Tuple, Any
 
 import rclpy
 from geometry_msgs.msg import Vector3
@@ -81,7 +81,7 @@ class StateBridge(Node):
 
         self.pub.publish(msg)
 
-    def _get_xyz(self, odom: 'VehicleOdometry') -> tuple[float, float, float]:
+    def _get_xyz(self, odom: 'VehicleOdometry') -> Any:
         return (0.0, 0.0, 0.0)
 
 

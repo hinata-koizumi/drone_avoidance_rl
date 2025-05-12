@@ -8,7 +8,7 @@ import math
 import rclpy
 from rclpy.node import Node
 
-from drone_msgs.msg import DroneControlCommand
+from drone_msgs.msg import DroneControlCommand as _DroneControlCommand
 from px4_msgs.msg import ActuatorServos  # ★変更点
 
 _MOTOR_MIN, _MOTOR_MAX = 0.0, 1.0        # throttle ratio 0–1
@@ -28,12 +28,12 @@ class CommandBridge(Node):
     def __init__(self) -> None:
         super().__init__("command_bridge")
         self.sub = self.create_subscription(
-            DroneControlCommand, "/drone/inner_propeller_cmd", self._cb, 10
+            _DroneControlCommand, "/drone/inner_propeller_cmd", self._cb, 10
         )
         self.pub = self.create_publisher(ActuatorServos, "/fmu/in/actuator_servos", 10)
 
     # ---------- callback ----------
-    def _cb(self, cmd: 'DroneControlCommand') -> None:
+    def _cb(self, cmd: '_DroneControlCommand') -> None:
         p1 = _clamp(cmd.throttle1, _MOTOR_MIN, _MOTOR_MAX)
         p2 = _clamp(cmd.throttle2, _MOTOR_MIN, _MOTOR_MAX)
         if any(math.isnan(x) for x in (p1, p2)):

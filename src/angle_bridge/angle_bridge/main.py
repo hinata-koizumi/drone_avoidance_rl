@@ -9,7 +9,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64
 
-from drone_msgs.msg import DroneControlCommand
+from drone_msgs.msg import DroneControlCommand as _DroneControlCommand
 
 _MIN_DEG, _MAX_DEG = -30.0, 30.0              # 制御範囲 [deg]
 _DEG2RAD = math.pi / 180.0
@@ -23,7 +23,7 @@ class AngleBridge(Node):
     def __init__(self) -> None:
         super().__init__("angle_bridge")
         self.sub = self.create_subscription(
-            DroneControlCommand,
+            _DroneControlCommand,
             "/drone/inner_propeller_cmd",
             self._cb,
             10,
@@ -32,7 +32,7 @@ class AngleBridge(Node):
         self.pub2 = self.create_publisher(Float64, "/servo/fan2_tilt", 10)
 
     # ---------- callback ----------
-    def _cb(self, cmd: 'DroneControlCommand') -> None:
+    def _cb(self, cmd: '_DroneControlCommand') -> None:
         ang1_deg = _clamp(cmd.angle1, _MIN_DEG, _MAX_DEG)
         ang2_deg = _clamp(cmd.angle2, _MIN_DEG, _MAX_DEG)
 
