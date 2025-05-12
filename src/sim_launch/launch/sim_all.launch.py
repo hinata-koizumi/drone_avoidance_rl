@@ -7,6 +7,11 @@ from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description() -> LaunchDescription:
     install_dir = os.environ.get('INSTALL_DIR', '/sim_ws/install')
+    pythonpath = os.pathsep.join([
+        os.path.join(install_dir, "px4_msgs/lib/python3.10/site-packages"),
+        os.path.join(install_dir, "drone_msgs/lib/python3.10/site-packages"),
+        os.environ.get("PYTHONPATH", "")
+    ])
     return LaunchDescription([
         # GUI 表示オプション
         DeclareLaunchArgument(
@@ -29,18 +34,22 @@ def generate_launch_description() -> LaunchDescription:
         # 各ブリッジノード（ROS2 側）
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "command_bridge/lib/command_bridge/main.py")],
-            output="screen"
+            output="screen",
+            env={"PYTHONPATH": pythonpath}
         ),
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "state_bridge/lib/state_bridge/state_bridge.py")],
-            output="screen"
+            output="screen",
+            env={"PYTHONPATH": pythonpath}
         ),
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "angle_bridge/lib/angle_bridge/main.py")],
-            output="screen"
+            output="screen",
+            env={"PYTHONPATH": pythonpath}
         ),
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "outer_motor_bridge/lib/outer_motor_bridge/main.py")],
-            output="screen"
+            output="screen",
+            env={"PYTHONPATH": pythonpath}
         ),
     ])
