@@ -5,7 +5,7 @@
 #   * topic QoS, NaN ガードは現状維持
 # ────────────────────────────────────────────
 import math
-from typing import Any, Tuple
+from typing import Tuple
 
 import rclpy
 from geometry_msgs.msg import Vector3
