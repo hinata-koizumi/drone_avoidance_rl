@@ -1,13 +1,12 @@
+import os
+from ament_index_python.packages import get_package_share_directory
 from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description import LaunchDescription
 from launch.substitutions import LaunchConfiguration
-from ament_index_python.packages import get_package_share_directory
-import os
 
 
 def generate_launch_description() -> LaunchDescription:
-    sim_launch_dir = get_package_share_directory('sim_launch')
     install_dir = os.environ.get('INSTALL_DIR', '/sim_ws/install')
     return LaunchDescription([
         # GUI 表示オプション

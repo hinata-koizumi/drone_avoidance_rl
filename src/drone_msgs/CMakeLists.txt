@@ -16,6 +16,23 @@ set(msg_files
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
   DEPENDENCIES geometry_msgs builtin_interfaces
+  ADD_LINTER_TESTS
+)
+
+# Pythonバージョン取得
+execute_process(
+  COMMAND python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
+  OUTPUT_VARIABLE PYTHON_VERSION
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+string(REPLACE "." ";" PYTHON_VERSION_LIST ${PYTHON_VERSION})
+list(GET PYTHON_VERSION_LIST 0 PYTHON_VERSION_MAJOR)
+list(GET PYTHON_VERSION_LIST 1 PYTHON_VERSION_MINOR)
+
+# Pythonバインディングのインストール
+install(
+  DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_py/drone_msgs
+  DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages
 )
 
 # 生成されたメッセージ用のランタイム依存関係をエクスポート
