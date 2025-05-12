@@ -16,7 +16,8 @@ import numpy as np
 import rclpy
 from gymnasium import spaces
 
-from drone_msgs.msg import DroneControlCommand as _DroneControlCommand, DroneState as _DroneState
+from drone_msgs.msg import DroneControlCommand as _DroneControlCommand
+from drone_msgs.msg import DroneState as _DroneState
 
 
 # ---------------- util ----------------
