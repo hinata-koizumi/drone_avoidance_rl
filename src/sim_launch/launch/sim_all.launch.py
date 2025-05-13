@@ -12,6 +12,11 @@ def generate_launch_description() -> LaunchDescription:
         os.path.join(install_dir, "drone_msgs/lib/python3.10/site-packages"),
         os.environ.get("PYTHONPATH", "")
     ])
+    ld_library_path = os.pathsep.join([
+        "/opt/ros/humble/lib",
+        "/opt/ros/humble/local/lib",
+        os.environ.get("LD_LIBRARY_PATH", "")
+    ])
     return LaunchDescription([
         # GUI 表示オプション
         DeclareLaunchArgument(
@@ -35,21 +40,21 @@ def generate_launch_description() -> LaunchDescription:
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "command_bridge/lib/command_bridge/main.py")],
             output="screen",
-            env={"PYTHONPATH": pythonpath}
+            env={"PYTHONPATH": pythonpath, "LD_LIBRARY_PATH": ld_library_path}
         ),
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "state_bridge/lib/state_bridge/state_bridge.py")],
             output="screen",
-            env={"PYTHONPATH": pythonpath}
+            env={"PYTHONPATH": pythonpath, "LD_LIBRARY_PATH": ld_library_path}
         ),
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "angle_bridge/lib/angle_bridge/main.py")],
             output="screen",
-            env={"PYTHONPATH": pythonpath}
+            env={"PYTHONPATH": pythonpath, "LD_LIBRARY_PATH": ld_library_path}
         ),
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "outer_motor_bridge/lib/outer_motor_bridge/main.py")],
             output="screen",
-            env={"PYTHONPATH": pythonpath}
+            env={"PYTHONPATH": pythonpath, "LD_LIBRARY_PATH": ld_library_path}
         ),
     ])
