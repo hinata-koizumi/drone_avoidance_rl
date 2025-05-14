@@ -12,7 +12,7 @@ from geometry_msgs.msg import Vector3
 from rclpy.node import Node
 from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 
-from drone_msgs.msg import DroneState
+from drone_msgs.msg import DroneState  # type: ignore
 from px4_msgs.msg import VehicleOdometry
 
 _QOS = QoSProfile(
