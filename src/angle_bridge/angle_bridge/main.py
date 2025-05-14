@@ -9,7 +9,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64
 
-from drone_msgs.msg import DroneControlCommand as _DroneControlCommand
+from drone_msgs.msg import DroneControlCommand  # type: ignore
 
 _MIN_DEG, _MAX_DEG = -30.0, 30.0              # 制御範囲 [deg]
 _DEG2RAD = math.pi / 180.0

@@ -8,7 +8,7 @@ import math
 import rclpy
 from rclpy.node import Node
 
-from drone_msgs.msg import DroneControlCommand as _DroneControlCommand
+from drone_msgs.msg import DroneControlCommand as _DroneControlCommand  # type: ignore
 from px4_msgs.msg import ActuatorServos  # ★変更点
 
 _MOTOR_MIN, _MOTOR_MAX = 0.0, 1.0        # throttle ratio 0–1
