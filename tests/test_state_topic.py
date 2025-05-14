@@ -3,7 +3,7 @@ import time
 import rclpy
 from rclpy.node import Node
 
-from drone_msgs.msg import DroneState
+from drone_msgs.msg import DroneState  # type: ignore
 
 MSG_LIMIT = 5          # 5 通受信で OK
 TIMEOUT   = 10.0       # 秒
