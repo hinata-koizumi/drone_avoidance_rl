@@ -1,4 +1,6 @@
 import os
+import sys
+
 from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description import LaunchDescription
@@ -7,9 +9,10 @@ from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description() -> LaunchDescription:
     install_dir = os.environ.get('INSTALL_DIR', '/sim_ws/install')
+    py_version = f"{sys.version_info.major}.{sys.version_info.minor}"
     pythonpath = os.pathsep.join([
-        os.path.join(install_dir, "px4_msgs/lib/python3.10/site-packages"),
-        os.path.join(install_dir, "drone_msgs/lib/python3.10/site-packages"),
+        os.path.join(install_dir, f"px4_msgs/lib/python{py_version}/site-packages"),
+        os.path.join(install_dir, f"drone_msgs/lib/python{py_version}/site-packages"),
         os.environ.get("PYTHONPATH", "")
     ])
     ld_library_path = os.pathsep.join([
@@ -17,6 +20,10 @@ def generate_launch_description() -> LaunchDescription:
         "/opt/ros/humble/local/lib",
         os.environ.get("LD_LIBRARY_PATH", "")
     ])
+    base_env = os.environ.copy()
+    base_env["PYTHONPATH"] = pythonpath
+    base_env["LD_LIBRARY_PATH"] = ld_library_path
+    base_env["RCUTILS_LOGGING_DIRECTORY"] = "/tmp/.ros/log"
     return LaunchDescription([
         # GUI 表示オプション
         DeclareLaunchArgument(
@@ -40,21 +47,21 @@ def generate_launch_description() -> LaunchDescription:
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "command_bridge/lib/command_bridge/main.py")],
             output="screen",
-            env={"PYTHONPATH": pythonpath, "LD_LIBRARY_PATH": ld_library_path}
+            env=base_env
         ),
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "state_bridge/lib/state_bridge/state_bridge.py")],
             output="screen",
-            env={"PYTHONPATH": pythonpath, "LD_LIBRARY_PATH": ld_library_path}
+            env=base_env
         ),
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "angle_bridge/lib/angle_bridge/main.py")],
             output="screen",
-            env={"PYTHONPATH": pythonpath, "LD_LIBRARY_PATH": ld_library_path}
+            env=base_env
         ),
         ExecuteProcess(
             cmd=["python3", os.path.join(install_dir, "outer_motor_bridge/lib/outer_motor_bridge/main.py")],
             output="screen",
-            env={"PYTHONPATH": pythonpath, "LD_LIBRARY_PATH": ld_library_path}
+            env=base_env
         ),
     ])
