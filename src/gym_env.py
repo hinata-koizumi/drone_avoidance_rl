@@ -118,7 +118,7 @@ class DroneSimEnv(gym.Env):
         truncated = self.step_count >= self.max_steps
         return self.state.copy(), reward, terminated, truncated, {}
 
-    def close(self):
+    def close(self) -> None:
         rclpy.shutdown()
 
     # ------------------ helpers ------------------------------
