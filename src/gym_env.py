@@ -46,7 +46,7 @@ class DroneSimEnv(gym.Env):
         wind_max: float = 0.0,
         gust_max: float = 0.0,
         gust_prob: float = 0.0,
-    ):
+    ) -> None:
         super().__init__()
         self.POS_TARGET = np.array([0.0, 0.0, target_alt], dtype=np.float32)
         self.wind_max = wind_max

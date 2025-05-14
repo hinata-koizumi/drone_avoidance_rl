@@ -10,7 +10,7 @@ REQUIRED_TOPICS = [
 ]
 
 class SmokeTest(Node):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('smoke_test')
         self.create_timer(2.0, self.check)
         self.checked = False
