@@ -1,3 +1,6 @@
 [submodule "src/px4_msgs"]
 	path = src/px4_msgs
 	url = https://github.com/PX4/px4_msgs.git
+[submodule "drone_avoidance_rl"]
+	path = drone_avoidance_rl
+	url = https://github.com/hinata-koizumi/drone_avoidance_rl.git
