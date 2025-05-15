@@ -81,7 +81,7 @@ class StateBridge(Node):
 
         self.pub.publish(msg)
 
-    def get_xyz(self) -> tuple[float, float, float]:
+    def get_xyz(self) -> Tuple[float, float, float]:
         return (0.0, 0.0, 0.0)
 
 
