@@ -34,8 +34,6 @@ RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
 # --- ROS 2 workspace setup ---
 WORKDIR /sim_ws
 COPY src/ src/
-# サブモジュール初期化
-RUN git submodule update --init --recursive
 # px4_msgs明示的にコピー（冪等性担保）
 COPY src/px4_msgs src/px4_msgs
 RUN ls -lR src/

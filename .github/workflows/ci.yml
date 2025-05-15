@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Build msgs_ws
@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Build bridge_ws
@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Build sim_ws
@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Run pre-commit
@@ -62,7 +62,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Build sim docker image
@@ -88,7 +88,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Check package.xml version consistency
@@ -99,7 +99,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Set up ROS 2 Humble
@@ -126,7 +126,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Extract tag version
@@ -149,7 +149,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Set up Python 3.10
@@ -189,7 +189,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
@@ -224,7 +224,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Clean workspace
         run: tools/clean_workspace.sh
       - name: Set up Python 3.10
@@ -250,7 +250,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: recursive
       - name: Install Trivy
         run: |
           sudo apt-get update && sudo apt-get install -y wget apt-transport-https gnupg lsb-release
