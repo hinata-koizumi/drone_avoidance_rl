@@ -182,14 +182,12 @@ class DroneSimEnv(gym.Env):
         )
 
     def _calc_reward(self, action: np.ndarray) -> float:
-        roll, pitch, yaw = self.state[:3]          # ★順番更新
+        roll, pitch, yaw = self.state[:3]
         pos = self.state[3:6]
-
         ori_err = np.linalg.norm(np.array([roll, pitch, yaw]) - self.ORI_TARGET)
         pos_err = np.linalg.norm(pos - self.POS_TARGET)
         smooth  = np.linalg.norm(action - self.prev_action)
-
-        return _REW_ORI * ori_err + _REW_POS * pos_err + _REW_SMOOTH * smooth
+        return float(_REW_ORI * ori_err + _REW_POS * pos_err + _REW_SMOOTH * smooth)
 
     def render(self) -> None:
         pass

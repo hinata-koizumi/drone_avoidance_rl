@@ -13,7 +13,7 @@ from rclpy.node import Node
 from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 
 from drone_msgs.msg import DroneState  # type: ignore
-from px4_msgs.msg import VehicleOdometry  # type: ignore
+from px4_msgs.msg import VehicleOdometry
 
 _QOS = QoSProfile(
     reliability=ReliabilityPolicy.RELIABLE,
@@ -82,7 +82,6 @@ class StateBridge(Node):
         self.pub.publish(msg)
 
     def get_xyz(self) -> tuple[float, float, float]:
-        # 実装例: 必ずfloatのタプルを返すように修正
         return (0.0, 0.0, 0.0)
 
 
