@@ -22,3 +22,6 @@ ament_python:
   macos:
     homebrew:
       packages: [ python3 ]
+symforce:
+  pip:
+    packages: [symforce]
