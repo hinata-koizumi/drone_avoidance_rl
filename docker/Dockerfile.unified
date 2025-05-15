@@ -34,6 +34,7 @@ RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
 # --- ROS 2 workspace setup ---
 WORKDIR /sim_ws
 COPY src/ src/
+RUN ls -lR src/
 COPY rosdep/rosdep-bridge.yaml rosdep/rosdep-msgs.yaml /rosdep/
 RUN useradd -m builder
 RUN rm -f /etc/ros/rosdep/sources.list.d/20-default.list && \
