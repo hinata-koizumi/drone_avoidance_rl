@@ -7,7 +7,7 @@ shift || true
 source /opt/ros/humble/setup.bash
 [ -f /sim_ws/install/setup.bash ] && source /sim_ws/install/setup.bash
 PYTHON_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
-export PYTHONPATH="/sim_ws/install/px4_msgs/lib/python${PYTHON_VERSION}/site-packages:$PYTHONPATH"
+export PYTHONPATH="$(find /sim_ws/install -type d -name site-packages | tr '\n' ':'):$PYTHONPATH"
 export PATH="/sim_ws/install/command_bridge/bin:/sim_ws/install/state_bridge/bin:/sim_ws/install/angle_bridge/bin:/sim_ws/install/outer_motor_bridge/bin:$PATH"
 echo "[entrypoint] PATH=$PATH"
 
