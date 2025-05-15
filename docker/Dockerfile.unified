@@ -48,6 +48,7 @@ RUN rosdep update --include-eol-distros && \
 USER root
 RUN rm -rf build/ install/ log/
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
+    colcon list && \
     colcon build --base-paths src --symlink-install --event-handlers console_direct+ --packages-select px4_msgs
 
 # --- px4_msgsのPythonバインディングが存在するかチェック ---
