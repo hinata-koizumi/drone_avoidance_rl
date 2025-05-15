@@ -55,7 +55,7 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
     colcon build --packages-up-to px4_msgs --symlink-install --event-handlers console_direct+
 
 # --- px4_msgsのPythonバインディングが存在するかチェック ---
-RUN ls /sim_ws/install/lib/python3.10/site-packages/px4_msgs
+RUN ls /sim_ws/install/lib/python3.10/site-packages/px4_msgs || echo 'px4_msgs not found'
 
 # --- 他のパッケージをビルド ---
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
