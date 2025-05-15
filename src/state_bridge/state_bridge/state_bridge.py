@@ -31,7 +31,8 @@ except ImportError:
 def quat_to_euler(w: float, x: float, y: float, z: float) -> Tuple[float, float, float]:
     if _ROT_AVAILABLE:
         r = R.from_quat([x, y, z, w])      # scipy は [x, y, z, w]
-        return r.as_euler("xyz", degrees=False)
+        euler = r.as_euler("xyz", degrees=False)
+        return (float(euler[0]), float(euler[1]), float(euler[2]))
     # 汎用式
     sinr_cosp = 2 * (w * x + y * z)
     cosr_cosp = 1 - 2 * (x * x + y * y)
@@ -43,7 +44,7 @@ def quat_to_euler(w: float, x: float, y: float, z: float) -> Tuple[float, float,
     siny_cosp = 2 * (w * z + x * y)
     cosy_cosp = 1 - 2 * (y * y + z * z)
     yaw = math.atan2(siny_cosp, cosy_cosp)
-    return roll, pitch, yaw
+    return (float(roll), float(pitch), float(yaw))
 
 
 class StateBridge(Node):
