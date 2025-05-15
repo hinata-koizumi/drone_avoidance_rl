@@ -13,7 +13,7 @@ from rclpy.node import Node
 from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 
 from drone_msgs.msg import DroneState  # type: ignore
-from px4_msgs.msg import VehicleOdometry
+from px4_msgs.msg import VehicleOdometry  # type: ignore
 
 _QOS = QoSProfile(
     reliability=ReliabilityPolicy.RELIABLE,
