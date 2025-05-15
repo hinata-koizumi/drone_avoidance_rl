@@ -13,12 +13,14 @@ echo "[entrypoint] PATH=$PATH"
 
 export GZ_RESOURCE_PATH="/models:/usr/share/gz/garden/models:${GZ_RESOURCE_PATH:-}"
 export GZ_SIM_RESOURCE_PATH="/models:/usr/share/gz/garden/models:${GZ_SIM_RESOURCE_PATH:-}"
+export GAZEBO_MODEL_PATH="/models:/usr/share/gz/garden/models:${GAZEBO_MODEL_PATH:-}"
 export IGN_IP=127.0.0.1
+export GZ_IP=127.0.0.1
 
 case "$MODE" in
   sim)
     # Gazebo起動
-    gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering &
+    timeout 180s gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering --verbose &
     sleep 3
     # モデルスポーン
     if [[ -f "/models/drone_model/model.sdf" ]]; then
