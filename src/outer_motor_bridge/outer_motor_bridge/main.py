@@ -8,7 +8,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray
 
-from px4_msgs.msg import ActuatorMotors
+from px4_msgs.msg import ActuatorMotors  # type: ignore
 
 
 class OuterMotorBridge(Node):
