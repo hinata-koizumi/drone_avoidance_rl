@@ -54,6 +54,15 @@ def generate_launch_description() -> LaunchDescription:
             output="screen",
             condition=IfCondition(LaunchConfiguration("headless"))
         ),
+        # PX4 SITL 起動
+        ExecuteProcess(
+            cmd=[
+                "px4", "-i", "0", "-d",
+                "-s", "/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS",
+                "-w", "build/px4_sitl_rtps"
+            ],
+            output="screen"
+        ),
 
         # 各ブリッジノード（ROS2 側）
         ExecuteProcess(
