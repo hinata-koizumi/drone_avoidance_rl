@@ -33,12 +33,12 @@ def generate_launch_description() -> LaunchDescription:
 
         # Gazebo Garden 起動（gz sim）
         ExecuteProcess(
-            cmd=["timeout", "60s", "gz", "sim", "-r", "/usr/share/gz/gz-sim7/worlds/empty.sdf"],
+            cmd=["timeout", "180s", "gz", "sim", "-r", "/usr/share/ignition/gazebo/worlds/empty.sdf", "--headless-rendering", "--verbose"],
             output="screen",
             condition=UnlessCondition(LaunchConfiguration("headless"))
         ),
         ExecuteProcess(
-            cmd=["timeout", "60s", "gz", "sim", "-r", "-s", "/usr/share/gz/gz-sim7/worlds/empty.sdf"],
+            cmd=["timeout", "180s", "gz", "sim", "-r", "-s", "/usr/share/ignition/gazebo/worlds/empty.sdf", "--headless-rendering", "--verbose"],
             output="screen",
             condition=IfCondition(LaunchConfiguration("headless"))
         ),
