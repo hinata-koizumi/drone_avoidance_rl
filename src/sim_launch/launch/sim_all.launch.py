@@ -61,7 +61,8 @@ def generate_launch_description() -> LaunchDescription:
                 "-s", "/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS",
                 "-w", "build/px4_sitl_rtps"
             ],
-            output="screen"
+            output="screen",
+            env=base_env
         ),
 
         # 各ブリッジノード（ROS2 側）
