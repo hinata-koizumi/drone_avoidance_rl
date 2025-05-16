@@ -6,6 +6,10 @@ from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description import LaunchDescription
 from launch.substitutions import LaunchConfiguration
 
+WORLD_PATH = "/usr/share/gz/gz-sim7/worlds/empty.sdf"
+if not os.path.exists(WORLD_PATH):
+    raise RuntimeError(f"World file not found: {WORLD_PATH}")
+
 
 def generate_launch_description() -> LaunchDescription:
     install_dir = os.environ.get('INSTALL_DIR', '/sim_ws/install')
@@ -35,7 +39,7 @@ def generate_launch_description() -> LaunchDescription:
         ExecuteProcess(
             cmd=[
                 "timeout", "180s", "gz", "sim", "-r",
-                "/usr/share/ignition/gazebo/worlds/empty.sdf",
+                WORLD_PATH,
                 "--headless-rendering", "--verbose"
             ],
             output="screen",
@@ -44,7 +48,7 @@ def generate_launch_description() -> LaunchDescription:
         ExecuteProcess(
             cmd=[
                 "timeout", "180s", "gz", "sim", "-r", "-s",
-                "/usr/share/ignition/gazebo/worlds/empty.sdf",
+                WORLD_PATH,
                 "--headless-rendering", "--verbose"
             ],
             output="screen",

@@ -20,7 +20,7 @@ export GZ_IP=127.0.0.1
 case "$MODE" in
   sim)
     # Gazebo起動
-    timeout 180s gz sim -r /usr/share/ignition/gazebo/worlds/empty.sdf --headless-rendering --verbose &
+    timeout 180s gz sim -r /usr/share/gz/gz-sim7/worlds/empty.sdf --headless-rendering --verbose &
     sleep 3
     # モデルスポーン
     if [[ -f "/models/drone_model/model.sdf" ]]; then
