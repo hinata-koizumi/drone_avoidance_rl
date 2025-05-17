@@ -110,8 +110,9 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y python3-rosdep
       - name: Initialize rosdep
         run: |
+          sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list
           sudo rosdep init || true
-          rosdep update
+          for i in {1..5}; do rosdep update && break || sleep 5; done || true
       - name: Add local rosdep sources
         run: |
           mkdir -p ~/.ros/rosdep/sources.list.d
@@ -168,8 +169,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-colcon-common-extensions python3-empy
+          sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list
           sudo rosdep init || true
-          rosdep update
+          for i in {1..5}; do rosdep update && break || sleep 5; done || true
           rosdep install --from-paths src --ignore-src -r -y --rosdistro=humble
       - name: Build ROS 2 workspace
         run: |
@@ -210,8 +212,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-colcon-common-extensions python3-empy
+          sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list
           sudo rosdep init || true
-          rosdep update
+          for i in {1..5}; do rosdep update && break || sleep 5; done || true
           rosdep install --from-paths src --ignore-src -r -y --rosdistro=humble
       - name: Run ament_lint_auto
         run: |
