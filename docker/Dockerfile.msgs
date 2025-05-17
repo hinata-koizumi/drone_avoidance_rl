@@ -16,7 +16,7 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     echo "yaml file:///msgs_ws/rosdep/rosdep-msgs.yaml" > /etc/ros/rosdep/sources.list.d/10-local.yaml
 
 # rosdep 更新（初期化は不要）
-RUN rosdep update
+RUN rosdep update || true
 
 # drone_msgs パッケージをコピー
 COPY src/drone_msgs src/drone_msgs

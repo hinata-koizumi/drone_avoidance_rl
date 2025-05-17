@@ -46,7 +46,7 @@ RUN rm -f /etc/ros/rosdep/sources.list.d/20-default.list && \
     mkdir -p /root/.ros && \
     chown -R builder:builder /etc/ros /root/.ros /rosdep
 USER builder
-RUN rosdep update --include-eol-distros && \
+RUN rosdep update --include-eol-distros || true && \
     rosdep install --from-paths /sim_ws/src --ignore-src --rosdistro ${ROS_DISTRO} -y --include-eol-distros || true
 USER root
 RUN rm -rf build/ install/ log/ CMakeFiles/ CMakeCache.txt
