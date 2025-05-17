@@ -30,7 +30,8 @@ case "$MODE" in
     fi
     # PX4起動
     mkdir -p /PX4-Autopilot/build/px4_sitl_default/build/px4_sitl_rtps
-    px4 -i 0 -d -s /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS -w build/px4_sitl_rtps &
+    cd /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix
+    px4 -i 0 -d -s rcS -w build/px4_sitl_rtps &
     until nc -z localhost 11345; do sleep 1; done
     echo "[entrypoint] PX4 RTPS ready."
     tail -F /dev/null

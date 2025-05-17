@@ -63,12 +63,12 @@ def generate_launch_description() -> LaunchDescription:
         ExecuteProcess(
             cmd=[
                 "/usr/local/bin/px4", "-i", "0", "-d",
-                "-s", "/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS",
+                "-s", "rcS",
                 "-w", "build/px4_sitl_rtps"
             ],
             output="screen",
             env=base_env,
-            cwd="/PX4-Autopilot/build/px4_sitl_default"
+            cwd="/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix"
         ),
 
         # 各ブリッジノード（ROS2 側）
