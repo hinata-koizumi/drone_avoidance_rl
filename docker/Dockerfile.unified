@@ -70,9 +70,7 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y gz-garden && \
     ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
-    cp /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
-    chmod +x /usr/local/bin/px4 && \
-    test -x /usr/local/bin/px4 || (echo "px4 binary not found!" && exit 1) && \
+    if [ ! -f /usr/local/bin/px4 ]; then cp /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && chmod +x /usr/local/bin/px4; fi && \
     ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/param /usr/local/bin/param || true && \
     ln -sf /usr/bin/nc /PX4-Autopilot/build/px4_sitl_default/bin/nc || true && \
     ln -sf /usr/bin/bsondump /PX4-Autopilot/build/px4_sitl_default/bin/bsondump || true

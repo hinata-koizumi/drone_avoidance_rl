@@ -57,7 +57,7 @@ def generate_launch_description() -> LaunchDescription:
         # PX4 SITL 起動
         ExecuteProcess(
             cmd=[
-                "px4", "-i", "0", "-d",
+                "/usr/local/bin/px4", "-i", "0", "-d",
                 "-s", "/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS",
                 "-w", "build/px4_sitl_rtps"
             ],
