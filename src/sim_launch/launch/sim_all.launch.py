@@ -54,6 +54,11 @@ def generate_launch_description() -> LaunchDescription:
             output="screen",
             condition=IfCondition(LaunchConfiguration("headless"))
         ),
+        # PX4 SITL用ディレクトリ作成
+        ExecuteProcess(
+            cmd=["mkdir", "-p", "build/px4_sitl_rtps"],
+            cwd="/PX4-Autopilot/build/px4_sitl_default"
+        ),
         # PX4 SITL 起動
         ExecuteProcess(
             cmd=[
