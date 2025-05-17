@@ -31,7 +31,11 @@ WORKDIR /PX4-Autopilot
 ENV PX4_WITH_GZ_TRANSPORT=ON
 RUN pip3 install --no-cache-dir pyulog pyros-genmsg symforce
 RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
-    make -j$(nproc) px4_sitl_default
+    make -j$(nproc) px4_sitl_default && \
+    ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
+    cp /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
+    chmod +x /usr/local/bin/px4 && \
+    ls -l /usr/local/bin/px4
 
 # --- ROS 2 workspace setup ---
 WORKDIR /sim_ws
