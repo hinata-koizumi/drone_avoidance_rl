@@ -38,7 +38,7 @@ def generate_launch_description() -> LaunchDescription:
         # Gazebo Garden 起動（gz sim）
         ExecuteProcess(
             cmd=[
-                "timeout", "180s", "gz", "sim", "-r",
+                "gz", "sim", "-r",
                 WORLD_PATH,
                 "--headless-rendering", "--verbose"
             ],
@@ -47,7 +47,7 @@ def generate_launch_description() -> LaunchDescription:
         ),
         ExecuteProcess(
             cmd=[
-                "timeout", "180s", "gz", "sim", "-r", "-s",
+                "gz", "sim", "-r", "-s",
                 WORLD_PATH,
                 "--headless-rendering", "--verbose"
             ],
@@ -57,7 +57,7 @@ def generate_launch_description() -> LaunchDescription:
         # PX4 SITL 起動
         ExecuteProcess(
             cmd=[
-                "/usr/local/bin/px4", "-i", "0", "-d",
+                "px4", "-i", "0", "-d",
                 "-s", "/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS",
                 "-w", "build/px4_sitl_rtps"
             ],
