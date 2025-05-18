@@ -29,7 +29,7 @@ RUN apt-get update && \
 RUN git clone --depth 1 --recursive -b v1.15.0 https://github.com/PX4/PX4-Autopilot.git /PX4-Autopilot
 WORKDIR /PX4-Autopilot
 ENV PX4_WITH_GZ_TRANSPORT=ON
-RUN pip3 install --no-cache-dir pyulog pyros-genmsg symforce
+RUN pip3 install --no-cache-dir pyulog pyros-genmsg
 RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     make -j$(nproc) px4_sitl_default && \
     ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
