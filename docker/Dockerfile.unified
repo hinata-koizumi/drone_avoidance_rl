@@ -37,6 +37,9 @@ RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     chmod +x /usr/local/bin/px4 && \
     ls -l /usr/local/bin/px4 && \
     mkdir -p /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/build/px4_sitl_rtps
+RUN if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS ]; then \
+      cp /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS; \
+    fi
 
 # --- ROS 2 workspace setup ---
 WORKDIR /sim_ws
