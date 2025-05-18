@@ -30,6 +30,9 @@ case "$MODE" in
     fi
     # PX4起動
     cd /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix
+    if [ ! -f rcS ]; then
+      cp /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS rcS
+    fi
     mkdir -p build/px4_sitl_rtps
     px4 -i 0 -d -s rcS -w build/px4_sitl_rtps &
     until nc -z localhost 11345; do sleep 1; done
