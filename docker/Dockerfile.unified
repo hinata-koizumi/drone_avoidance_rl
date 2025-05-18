@@ -59,7 +59,6 @@ USER builder
 RUN rosdep update --include-eol-distros || true && \
     rosdep install --from-paths /sim_ws/src --ignore-src --rosdistro ${ROS_DISTRO} -y --include-eol-distros || true
 USER root
-RUN rm -rf build/ install/ log/ CMakeFiles/ CMakeCache.txt
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
     colcon list && \
     colcon build --packages-up-to px4_msgs --symlink-install --event-handlers console_direct+
