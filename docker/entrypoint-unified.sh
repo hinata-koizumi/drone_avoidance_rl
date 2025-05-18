@@ -29,12 +29,15 @@ case "$MODE" in
         --req "sdf_filename: \"/models/drone_model/model.sdf\" pose: { position:{z:0.25} }"
     fi
     # PX4起動
+    set -e
     cd /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix
     if [ ! -f rcS ]; then
       cp /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS rcS
     fi
     mkdir -p build/px4_sitl_rtps
+    ls -l build/px4_sitl_rtps
     cp rcS build/px4_sitl_rtps/rcS
+    ls -l build/px4_sitl_rtps
     px4 -i 0 -d -s build/px4_sitl_rtps/rcS -w build/px4_sitl_rtps &
     until nc -z localhost 11345; do sleep 1; done
     echo "[entrypoint] PX4 RTPS ready."
