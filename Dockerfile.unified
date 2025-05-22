@@ -105,4 +105,7 @@ RUN chmod +x /entrypoint.sh
 ENV ROS_DOMAIN_ID=0
 ENTRYPOINT ["/entrypoint.sh"]
 
-RUN apt-get update && apt-get install -y --no-install-recommends ros-humble-ros-gz-sim ros-humble-ros-gz-bridge && rm -rf /var/lib/apt/lists/* 
+RUN apt-get update && apt-get install -y --no-install-recommends ros-humble-ros-gz-sim ros-humble-ros-gz-bridge && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m pip install --upgrade pip \
+ && python3 -m pip install 'setuptools==59.6.0' 
