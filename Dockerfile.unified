@@ -69,8 +69,10 @@ RUN rosdep update --include-eol-distros || true && \
     rosdep install --from-paths /sim_ws/src --ignore-src --rosdistro ${ROS_DISTRO} -y --include-eol-distros || true
 USER root
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    colcon list && \
-    colcon build --packages-up-to px4_msgs --symlink-install --event-handlers console_direct+
+    rosdep init || true && \
+    rosdep update && \
+    rosdep install --from-paths /sim_ws/src --rosdistro ${ROS_DISTRO} -y --ignore-src && \
+    colcon build --symlink-install --event-handlers console_direct+
 
 # --- px4_msgsのPythonバインディングが存在するかチェック ---
 RUN ls /sim_ws/install/lib/python3.10/site-packages/px4_msgs || echo 'px4_msgs not found'

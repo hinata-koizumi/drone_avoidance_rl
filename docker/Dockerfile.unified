@@ -19,6 +19,6 @@ RUN . /opt/ros/humble/setup.sh && \
     rosdep init || true && \
     rosdep update && \
     rosdep install --from-paths src --rosdistro=humble -y --ignore-src && \
-    colcon build --symlink-install
+    colcon build --symlink-install --event-handlers console_direct+
 ENV PYTHONPATH=/sim_ws/install/lib/python3.10/site-packages:$PYTHONPATH
 RUN ls -l /sim_ws/install/share/sim_launch || echo notfound 
