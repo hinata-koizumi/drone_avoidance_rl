@@ -6,7 +6,8 @@ RUN apt-get update && apt-get install -y wget lsb-release gnupg2 \
     && echo "deb [arch=amd64] https://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list \
     && apt-get update
 
-RUN apt-get install -y --no-install-recommends ros-humble-ros-gz-sim python3-colcon-common-extensions python3-pip python3-rosdep \
+RUN apt-get install -y --no-install-recommends ros-humble-ros-gz-bridge \
+    && apt-get install -y --no-install-recommends ros-humble-ros-gz-sim python3-colcon-common-extensions python3-pip python3-rosdep \
     && apt-get clean && rm -rf /var/lib/apt/lists/* 
 
 WORKDIR /sim_ws
