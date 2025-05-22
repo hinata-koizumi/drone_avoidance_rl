@@ -39,7 +39,7 @@ def generate_launch_description() -> Any:
         # 必要に応じて他のブリッジも追加
     ]
 
-    return LaunchDescription([
+    return [
         ign_gazebo_launch,
         *bridge_nodes,
-    ]) 
+    ] 
