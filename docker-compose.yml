@@ -1,68 +1,57 @@
-version: "3.9"
-
 services:
-  # -----------------------------------
-  # PX4 SITL + Ignition Gazebo simulator
-  # -----------------------------------
-  px4-simulator:
-    build:
-      context: ./docker/px4-simulator
-      dockerfile: Dockerfile.simulator
-    container_name: px4-simulator
-    environment:
-      - HEADLESS=${HEADLESS:-1}
-      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-    ports:
-      - "14556:14556/udp"
-      - "11345:11345/udp"
-    volumes:
-      - ./logs:/work/logs
-      - ./custom_model:/work/custom_model:ro
-      - ./custom_airframes:/work/custom_airframes:ro
-
-  # --------------------------
-  # ROS 2  ↔︎  PX4 SITL bridge
-  # --------------------------
-  px4-bridge:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.bridge
-    depends_on:
-      - px4-simulator
-    environment:
-      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-
-  # --------------------
-  # RL エージェント環境
-  # --------------------
-  rl-agent:
-    build:
-      context: ./docker/rl-agent
-      dockerfile: Dockerfile.agent
-    depends_on:
-      - px4-bridge
-    environment:
-      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-    volumes:
-      - ./logs:/work/logs
-
-  # -----------------------------
-  # Gazebo シミュレーション環境（Stage 2）
-  # -----------------------------
   sim:
     build:
       context: .
-      dockerfile: docker/Dockerfile.unified
+      dockerfile: Dockerfile.unified
     image: drone_rl:unified
     environment:
-      - HEADLESS=1
       - ROS_DOMAIN_ID=0
-    command: >
-      bash -c "
-        source /opt/ros/humble/setup.sh &&
-        source /sim_ws/install/setup.sh &&
-        ros2 launch sim_launch sim_all.launch.py headless:=true &
-        sleep 10 &&
-        ros2 run sim_launch e2e_test"
+      - HEADLESS=1
     volumes:
-      - ./custom_model/drone_model:/models/drone_model:ro
+      - "./custom_model:/models:ro"
+    command: bash -c "source /opt/ros/humble/setup.sh && /entrypoint.sh"
+    networks:
+      - default
+    depends_on:
+      - msgs
+      - bridge
+
+  bridge:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.bridge
+    image: drone_rl:bridge
+    environment:
+      - ROS_DOMAIN_ID=0
+    command: bash -c "/entrypoint.sh"
+    networks:
+      - default
+    depends_on:
+      - msgs
+
+  rl-agent:
+    build:
+      context: .
+      dockerfile: docker/rl-agent/Dockerfile.agent
+    image: drone_rl:rl-agent
+    environment:
+      - ROS_DOMAIN_ID=0
+    working_dir: /drone_ws
+    networks:
+      - default
+    depends_on:
+      - sim
+      - bridge
+      - msgs
+
+  msgs:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.msgs
+    image: drone_rl:msgs
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge 

@@ -24,3 +24,8 @@ state_bridge:
       - ros-${ROS_DISTRO}-std-msgs
 
 # 他の bridge も同様に必要な依存を追加
+
+sim_launch:
+  ubuntu:
+    jammy:
+      - python3

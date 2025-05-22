@@ -1,1 +1,8 @@
- 
+import rclpy
+from rclpy.node import Node
+
+def main():
+    rclpy.init()
+    node = Node('state_bridge_node')
+    rclpy.spin(node)
+    rclpy.shutdown() 

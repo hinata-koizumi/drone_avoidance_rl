@@ -11,7 +11,7 @@ ament_python:
   type: "package"
   ubuntu:
     apt:
-      packages: [ python3-pip ]
+      packages: [ python3-pip, python3-ament-package ]
   debian:
     apt:
       packages: [ python3-pip ]
@@ -27,3 +27,39 @@ ament_python:
 symforce:
   pip:
     packages: [symforce]
+ros_gz_bridge:
+  ubuntu:
+    apt:
+      packages: [ ros-gz-bridge ]
+  debian:
+    apt:
+      packages: [ ros-gz-bridge ]
+  arch:
+    pacman:
+      packages: [ ros-gz-bridge ]
+  fedora:
+    dnf:
+      packages: [ ros-gz-bridge ]
+  macos:
+    homebrew:
+      packages: [ ros-gz-bridge ]
+ros-humble-ros-gz-bridge:
+  ubuntu:
+    apt:
+      packages: [ ros-gz-bridge ]
+setuptools:
+  ubuntu:
+    apt:
+      packages: [python3-setuptools]
+  debian:
+    apt:
+      packages: [python3-setuptools]
+  arch:
+    pacman:
+      packages: [python-setuptools]
+  fedora:
+    dnf:
+      packages: [python3-setuptools]
+  macos:
+    homebrew:
+      packages: [setuptools]

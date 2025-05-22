@@ -1,56 +1,33 @@
-#!/usr/bin/env bash
-set -eo pipefail
+#!/bin/bash
+set -e
 
-MODE=${1:-sim}
-shift || true
-
+# Source ROS 2 Humble
 source /opt/ros/humble/setup.bash
-[ -f /sim_ws/install/setup.bash ] && source /sim_ws/install/setup.bash
-PYTHON_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
-export PYTHONPATH="$(find /sim_ws/install -type d -name site-packages | tr '\n' ':'):$PYTHONPATH"
-export PATH="/sim_ws/install/command_bridge/bin:/sim_ws/install/state_bridge/bin:/sim_ws/install/angle_bridge/bin:/sim_ws/install/outer_motor_bridge/bin:$PATH"
-echo "[entrypoint] PATH=$PATH"
 
-export GZ_RESOURCE_PATH="/models:/usr/share/gz/garden/models:${GZ_RESOURCE_PATH:-}"
-export GZ_SIM_RESOURCE_PATH="/models:/usr/share/gz/garden/models:${GZ_SIM_RESOURCE_PATH:-}"
-export GAZEBO_MODEL_PATH="/models:/usr/share/gz/garden/models:${GAZEBO_MODEL_PATH:-}"
-export IGN_IP=127.0.0.1
-export GZ_IP=127.0.0.1
+# PX4環境変数
+export PX4_HOME_LAT=35.6586
+export PX4_HOME_LON=139.7454
+export PX4_HOME_ALT=10.0
+export PX4_SIM_MODEL=drone_model
 
-case "$MODE" in
-  sim)
-    # Gazebo起動
-    timeout 180s gz sim -r /usr/share/gz/gz-sim7/worlds/empty.sdf --headless-rendering --verbose &
-    sleep 3
-    # モデルスポーン
-    if [[ -f "/models/drone_model/model.sdf" ]]; then
-      gz service -s /world/empty/create --reqtype ignition.msgs.EntityFactory \
-        --reptype ignition.msgs.Boolean --timeout 300 \
-        --req "sdf_filename: \"/models/drone_model/model.sdf\" pose: { position:{z:0.25} }"
-    fi
-    # PX4起動
-    set -e
-    cd /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix
-    if [ ! -f rcS ]; then
-      cp /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS rcS
-    fi
-    mkdir -p build/px4_sitl_rtps
-    ls -l build/px4_sitl_rtps
-    cp rcS build/px4_sitl_rtps/rcS
-    ls -l build/px4_sitl_rtps
-    px4 -i 0 -d -s build/px4_sitl_rtps/rcS -w build/px4_sitl_rtps &
-    until nc -z localhost 11345; do sleep 1; done
-    echo "[entrypoint] PX4 RTPS ready."
-    tail -F /dev/null
-    ;;
-  ros)
-    # ROS 2 launch (例: sim_all.launch.py)
-    ros2 launch sim_launch sim_all.launch.py "$@"
-    ;;
-  bash)
-    exec "/bin/bash" "$@"
-    ;;
-  *)
-    exec "$MODE" "$@"
-    ;;
-esac 
+# PX4 SITL起動（バックグラウンド）
+if [ -x /usr/local/bin/px4 ]; then
+  /usr/local/bin/px4 &
+  PX4_PID=$!
+fi
+
+# ROS 2ワークスペースのsource
+if [ -f /sim_ws/install/setup.bash ]; then
+  source /sim_ws/install/setup.bash
+fi
+
+# Gazebo Garden起動（必要なら）
+# gz sim ... &
+
+# シミュレーションlaunch
+ros2 launch sim_launch sim_all.launch.py headless:=${HEADLESS:-false}
+
+# PX4プロセスの監視
+if [ -n "$PX4_PID" ]; then
+  wait $PX4_PID
+fi 

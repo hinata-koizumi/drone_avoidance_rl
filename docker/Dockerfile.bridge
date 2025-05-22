@@ -3,27 +3,47 @@ FROM ros:humble AS bridge_ws
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ROS_DISTRO=humble
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        python3-pip \
-        python3-rosdep \
-        python3-colcon-common-extensions \
-        ros-${ROS_DISTRO}-ros-gz-bridge \
-        ros-${ROS_DISTRO}-geometry-msgs \
-        ros-${ROS_DISTRO}-rosidl-default-generators \
-        ros-${ROS_DISTRO}-rosidl-default-runtime && \
-    rm -rf /var/lib/apt/lists/*
+RUN function robust_apt_install() { \
+      for i in {1..5}; do \
+        apt-get update --fix-missing && \
+        apt-get install -y --no-install-recommends "$@" && break || sleep 10; \
+      done; \
+    };
+RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+      robust_apt_install python3-pip python3-rosdep python3-colcon-common-extensions ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-geometry-msgs ros-${ROS_DISTRO}-rosidl-default-generators ros-${ROS_DISTRO}-rosidl-default-runtime python3-ament-package; \
+    else \
+      echo "[WARNING] Gazebo Garden/ros-gz-bridgeはamd64のみ公式サポート。arm64ではビルド・起動をスキップします。"; \
+    fi
 
 RUN rosdep update || true
 
 # Stage 1: Build bridge_ws
-FROM base_bridge AS builder
+FROM ros:humble AS builder
+ENV ROS_DISTRO=humble
 WORKDIR /bridge_ws
 COPY src/ src/
+COPY rosdep/rosdep-bridge.yaml /rosdep/rosdep-bridge.yaml
+
+RUN rm -rf /etc/ros/rosdep/sources.list.d/* && \
+    rosdep init || true && \
+    echo "yaml file:///bridge_ws/rosdep/rosdep-bridge.yaml" > /etc/ros/rosdep/sources.list.d/10-local.yaml && \
+    cat /etc/ros/rosdep/sources.list.d/10-local.yaml && cat /bridge_ws/rosdep/rosdep-bridge.yaml && \
+    rosdep update && \
+    rosdep db | grep ament_python || echo '[DEBUG] ament_python not found in rosdep db'
+
+RUN apt-get update && apt-get install -y wget lsb-release gnupg2
+RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+RUN echo "deb [arch=amd64] https://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list
+RUN apt-get update
+RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+      apt-get install -y ros-gz-bridge; \
+    else \
+      echo "[WARNING] ros-gz-bridge is not available for $(dpkg --print-architecture). Skipping."; \
+    fi
 
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
     rosdep install --from-paths src \
-        --rosdistro ${ROS_DISTRO} -y --ignore-src && \
+        --rosdistro=humble -y --ignore-src --skip-keys ros_gz_bridge,ament_python && \
     colcon build --symlink-install \
         --packages-select state_bridge command_bridge angle_bridge outer_motor_bridge drone_msgs
 
@@ -38,8 +58,10 @@ RUN apt-get update && \
         python3-pip && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /bridge_ws/install /bridge_ws/install
+COPY --from=builder /bridge_ws /bridge_ws
 COPY docker/entrypoint-bridge.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+RUN . /opt/ros/humble/setup.sh && cd /bridge_ws && colcon build --symlink-install
 
 ENTRYPOINT ["/entrypoint.sh"]

@@ -1,33 +1,32 @@
 # docker/rl-agent/Dockerfile.agent   2025-04-30 R3
-FROM ubuntu:22.04 AS builder
+FROM ros:humble AS builder
+SHELL ["/bin/bash", "-c"]
 USER root
 
 # ---------- Python env ----------
+RUN apt-get update && apt-get install -y python3-pip
 COPY docker/rl-agent/requirements.lock /tmp/requirements.lock
-RUN source /opt/venv/bin/activate && \
-    pip install --no-cache-dir -r /tmp/requirements.lock
+RUN pip install --no-cache-dir --retries 10 --timeout 120 -r /tmp/requirements.lock
+RUN apt-get update && apt-get install -y ros-humble-rclpy
 
 # ---------- build workspace ----------
 WORKDIR /drone_ws
 RUN mkdir -p src
 COPY src/                 src/
-COPY drone_msgs/          drone_msgs/
-# message packageだけビルドして site-packages へ
+COPY src/drone_msgs/      src/drone_msgs/
 RUN . /opt/ros/humble/setup.sh && \
     colcon build --packages-select drone_msgs && \
+    echo 'from ._drone_control_command import DroneControlCommand' >> /drone_ws/install/drone_msgs/lib/python3.10/site-packages/drone_msgs/msg/__init__.py && \
     . install/setup.sh
 
 # ---------- runtime ----------
-    
-FROM ubuntu:22.04
-USER root
-# runtime 依存
+FROM ros:humble as runtime
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ignition-tools netcat-openbsd && \
+    apt-get install -y --no-install-recommends ca-certificates python3 python3-pip ignition-tools netcat-openbsd && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /drone_ws /drone_ws
-ENV PATH="/opt/venv/bin:$PATH" PYTHONUNBUFFERED=1
 WORKDIR /drone_ws
-USER px4user
-ENTRYPOINT ["python3", "src/train_agent.py"]
+COPY docker/rl-agent/requirements.lock /tmp/requirements.lock
+RUN pip install --no-cache-dir --retries 10 --timeout 120 -r /tmp/requirements.lock
+COPY --from=builder /drone_ws/install /drone_ws/install
+ENTRYPOINT ["/bin/bash", "-c", "export PYTHONPATH=/drone_ws/install/drone_msgs/lib/python3.10/site-packages; cp /drone_ws/src/gym_env.py /drone_ws/install/gym_env.py; ls /drone_ws/install/drone_msgs/lib/python3.10/site-packages/drone_msgs/msg/; python3 -c 'import sys; print(sys.path)'; source /opt/ros/humble/setup.bash && source /drone_ws/install/setup.bash && python3 /drone_ws/install/gym_env.py"]

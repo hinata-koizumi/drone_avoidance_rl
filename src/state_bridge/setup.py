@@ -15,10 +15,11 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'state_bridge = state_bridge.state_bridge:main',
+            'state_bridge_node = state_bridge.state_bridge:main',
         ],
     },
     data_files=[
-        (f'lib/{package_name}', ['state_bridge/state_bridge.py']),
+        (f'share/{package_name}', ['package.xml']),
+        (f'share/{package_name}/resource', ['resource/state_bridge']),
     ],
 )

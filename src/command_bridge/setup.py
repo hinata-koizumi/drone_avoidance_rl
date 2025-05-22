@@ -17,10 +17,8 @@ setup(
     license='Apache 2.0',
     entry_points={
         'console_scripts': [
-            'command_bridge = command_bridge.main:main',
+            'command_bridge_node = command_bridge.command_bridge:main',
         ],
     },
-    data_files=[
-        (f'lib/{package_name}', ['command_bridge/main.py']),
-    ],
+    data_files=[],
 )

@@ -15,10 +15,11 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'outer_motor_bridge = outer_motor_bridge.main:main',
+            'outer_motor_bridge_node = outer_motor_bridge.main:main',
         ],
     },
     data_files=[
-        (f'lib/{package_name}', ['outer_motor_bridge/main.py']),
+        (f'share/{package_name}', ['package.xml']),
+        (f'share/{package_name}/resource', ['resource/outer_motor_bridge']),
     ],
 )

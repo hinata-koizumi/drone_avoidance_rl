@@ -6,12 +6,11 @@
   <maintainer email="you@example.com">Your Name</maintainer>
   <license>MIT</license>
 
-  <buildtool_depend>ament_python</buildtool_depend>
+  <buildtool_depend>python3-setuptools</buildtool_depend>
 
   <exec_depend>rclpy</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
-  <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>ros_gz_bridge</exec_depend>
   <exec_depend>rosgraph_msgs</exec_depend>
 

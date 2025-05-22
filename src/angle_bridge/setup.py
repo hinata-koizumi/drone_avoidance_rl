@@ -15,10 +15,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'angle_bridge = angle_bridge.main:main',
+            'angle_bridge_node = angle_bridge.angle_bridge:main',
         ],
     },
-    data_files=[
-        (f'lib/{package_name}', ['angle_bridge/main.py']),
-    ],
+    data_files=[],
 )

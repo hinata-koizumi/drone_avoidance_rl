@@ -1,95 +1,43 @@
 import os
-import sys
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from ament_index_python.packages import get_package_share_directory
 
-from launch.actions import DeclareLaunchArgument, ExecuteProcess
-from launch.conditions import IfCondition, UnlessCondition
-from launch.launch_description import LaunchDescription
-from launch.substitutions import LaunchConfiguration
+def generate_launch_description():
+    # パラメータ取得
+    use_sim_time = os.environ.get('USE_SIM_TIME', 'true').lower() == 'true'
+    gz_world = os.environ.get('IGN_GAZEBO_WORLD', 'empty.sdf')
 
-WORLD_PATH = "/usr/share/gz/gz-sim7/worlds/empty.sdf"
-if not os.path.exists(WORLD_PATH):
-    raise RuntimeError(f"World file not found: {WORLD_PATH}")
+    # Ignition Gazebo起動
+    ign_gazebo_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(
+                get_package_share_directory('ros_gz_sim'),
+                'launch',
+                'gz_sim.launch.py'
+            )
+        ]),
+        launch_arguments={
+            'gz_args': f'-r {gz_world}'.split(),
+            'use_sim_time': str(use_sim_time).lower(),
+        }.items(),
+    )
 
+    # ブリッジノード群
+    bridge_nodes = [
+        Node(
+            package='ros_gz_bridge',
+            executable='parameter_bridge',
+            name='clock_bridge',
+            arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'],
+            output='screen',
+        ),
+        # 必要に応じて他のブリッジも追加
+    ]
 
-def generate_launch_description() -> LaunchDescription:
-    install_dir = os.environ.get('INSTALL_DIR', '/sim_ws/install')
-    py_version = f"{sys.version_info.major}.{sys.version_info.minor}"
-    pythonpath = os.pathsep.join([
-        os.path.join(install_dir, f"px4_msgs/lib/python{py_version}/site-packages"),
-        os.path.join(install_dir, f"drone_msgs/lib/python{py_version}/site-packages"),
-        os.environ.get("PYTHONPATH", "")
-    ])
-    ld_library_path = os.pathsep.join([
-        "/opt/ros/humble/lib",
-        "/opt/ros/humble/local/lib",
-        os.environ.get("LD_LIBRARY_PATH", "")
-    ])
-    base_env = os.environ.copy()
-    base_env["PYTHONPATH"] = pythonpath
-    base_env["LD_LIBRARY_PATH"] = ld_library_path
-    base_env["RCUTILS_LOGGING_DIRECTORY"] = "/tmp/.ros/log"
     return LaunchDescription([
-        # GUI 表示オプション
-        DeclareLaunchArgument(
-            "headless", default_value="true",
-            description="Run simulation without GUI"
-        ),
-
-        # Gazebo Garden 起動（gz sim）
-        ExecuteProcess(
-            cmd=[
-                "gz", "sim", "-r",
-                WORLD_PATH,
-                "--headless-rendering", "--verbose"
-            ],
-            output="screen",
-            condition=UnlessCondition(LaunchConfiguration("headless"))
-        ),
-        ExecuteProcess(
-            cmd=[
-                "gz", "sim", "-r", "-s",
-                WORLD_PATH,
-                "--headless-rendering", "--verbose"
-            ],
-            output="screen",
-            condition=IfCondition(LaunchConfiguration("headless"))
-        ),
-        # PX4 SITL用ディレクトリ作成
-        ExecuteProcess(
-            cmd=["mkdir", "-p", "build/px4_sitl_rtps"],
-            cwd="/PX4-Autopilot/build/px4_sitl_default"
-        ),
-        # PX4 SITL 起動
-        ExecuteProcess(
-            cmd=[
-                "/usr/local/bin/px4", "-i", "0", "-d",
-                "-s", "rcS",
-                "-w", "build/px4_sitl_rtps"
-            ],
-            output="screen",
-            env=base_env,
-            cwd="/PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix"
-        ),
-
-        # 各ブリッジノード（ROS2 側）
-        ExecuteProcess(
-            cmd=["python3", os.path.join(install_dir, "command_bridge/lib/command_bridge/main.py")],
-            output="screen",
-            env=base_env
-        ),
-        ExecuteProcess(
-            cmd=["python3", os.path.join(install_dir, "state_bridge/lib/state_bridge/state_bridge.py")],
-            output="screen",
-            env=base_env
-        ),
-        ExecuteProcess(
-            cmd=["python3", os.path.join(install_dir, "angle_bridge/lib/angle_bridge/main.py")],
-            output="screen",
-            env=base_env
-        ),
-        ExecuteProcess(
-            cmd=["python3", os.path.join(install_dir, "outer_motor_bridge/lib/outer_motor_bridge/main.py")],
-            output="screen",
-            env=base_env
-        ),
-    ])
+        ign_gazebo_launch,
+        *bridge_nodes,
+    ]) 
