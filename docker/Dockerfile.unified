@@ -6,7 +6,17 @@ RUN apt-get update && apt-get install -y wget lsb-release gnupg2 \
     && echo "deb [arch=amd64] https://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list \
     && apt-get update
 
-RUN apt-get install -y --no-install-recommends ros-humble-ros-gz-sim \
+RUN apt-get install -y --no-install-recommends ros-humble-ros-gz-sim python3-colcon-common-extensions python3-pip python3-rosdep \
     && apt-get clean && rm -rf /var/lib/apt/lists/* 
-RUN . /opt/ros/humble/setup.sh 
-RUN ls -l /opt/ros/humble/share/ros_gz_sim || echo notfound 
+
+WORKDIR /sim_ws
+COPY src/ src/
+COPY rosdep/rosdep-bridge.yaml /rosdep/rosdep-bridge.yaml
+RUN python3 -m pip install --upgrade pip setuptools
+RUN . /opt/ros/humble/setup.sh && \
+    rosdep init || true && \
+    rosdep update && \
+    rosdep install --from-paths src --rosdistro=humble -y --ignore-src && \
+    colcon build --symlink-install
+ENV PYTHONPATH=/sim_ws/install/lib/python3.10/site-packages:$PYTHONPATH
+RUN ls -l /sim_ws/install/share/sim_launch || echo notfound 
