@@ -39,3 +39,5 @@ install(
 ament_export_dependencies(rosidl_default_runtime geometry_msgs builtin_interfaces)
 
 ament_package()
+
+set(BUILD_TESTING OFF)
