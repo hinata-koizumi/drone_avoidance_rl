@@ -12,8 +12,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Clean workspace
-        run: tools/clean_workspace.sh
       - name: Build msgs_ws
         run: docker build --target msgs_ws -f docker/Dockerfile.msgs .
 
@@ -24,8 +22,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Clean workspace
-        run: tools/clean_workspace.sh
       - name: Build bridge_ws
         run: docker build --target bridge_ws -f docker/Dockerfile.bridge .
       - name: Test bridge_ws
@@ -38,8 +34,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Clean workspace
-        run: tools/clean_workspace.sh
       - name: Build sim_ws
         run: docker build -t drone_rl:unified -f docker/Dockerfile.unified .
       - name: Test sim_ws
@@ -51,8 +45,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Clean workspace
-        run: tools/clean_workspace.sh
       - name: Run pre-commit
         run: pre-commit run --all-files || true
 
@@ -63,8 +55,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Clean workspace
-        run: tools/clean_workspace.sh
       - name: Build sim docker image
         run: docker build -t drone_rl:unified -f docker/Dockerfile.unified .
       - name: Launch simulation and test
@@ -89,8 +79,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Clean workspace
-        run: tools/clean_workspace.sh
       - name: Check package.xml version consistency
         run: ./check_package_versions.sh
 
@@ -100,8 +88,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Clean workspace
-        run: tools/clean_workspace.sh
       - name: Set up ROS 2 Humble
         uses: ros-tooling/setup-ros@v0.7
         with:
@@ -128,8 +114,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Clean workspace
-        run: tools/clean_workspace.sh
       - name: Extract tag version
         id: tag
         run: echo "TAG_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
@@ -151,8 +135,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Clean workspace
-        run: tools/clean_workspace.sh
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
@@ -228,8 +210,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Clean workspace
-        run: tools/clean_workspace.sh
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
