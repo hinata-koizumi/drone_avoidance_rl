@@ -13,10 +13,7 @@ setup(
     include_package_data=True,
 
     entry_points={
-        'console_scripts': [
-            # "ros2 run sim_launch e2e_test" で呼べるようになります
-            'e2e_test = sim_launch.e2e_test:main',
-        ],
+        'console_scripts': [],
     },
 
     data_files=[
