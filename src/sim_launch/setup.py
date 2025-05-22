@@ -7,7 +7,7 @@ package_name = 'sim_launch'
 
 setup(
     name=package_name,
-    version='0.0.1',
+    version='2.0.1',
     # Python モジュールを自動で検出
     packages=find_packages(include=[package_name, f'{package_name}.*']),
     include_package_data=True,
