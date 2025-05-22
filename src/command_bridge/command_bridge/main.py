@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-def main():
+def main() -> None:
     print("command_bridge main entrypoint (placeholder)")
 
 if __name__ == "__main__":

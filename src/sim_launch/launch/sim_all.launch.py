@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -7,7 +8,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
 
-def generate_launch_description():
+def generate_launch_description() -> Any:
     # パラメータ取得
     use_sim_time = os.environ.get('USE_SIM_TIME', 'true').lower() == 'true'
     gz_world = os.environ.get('IGN_GAZEBO_WORLD', 'empty.sdf')
