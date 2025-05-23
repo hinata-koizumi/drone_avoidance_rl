@@ -15,7 +15,6 @@
 """Launch Gazebo Sim with command line arguments."""
 
 import os
-from os import environ
 
 from ament_index_python.packages import get_package_share_directory
 from catkin_pkg.package import InvalidPackage
@@ -81,21 +80,21 @@ def generate_launch_description():
     model_paths, plugin_paths = GazeboRosPaths.get_paths()
     env = {
         "GZ_SIM_SYSTEM_PLUGIN_PATH": os.pathsep.join([
-            environ.get("GZ_SIM_SYSTEM_PLUGIN_PATH", default=""),
-            environ.get("LD_LIBRARY_PATH", default=""),
+            os.environ.get("GZ_SIM_SYSTEM_PLUGIN_PATH", default=""),
+            os.environ.get("LD_LIBRARY_PATH", default=""),
             plugin_paths,
         ]),
         "IGN_GAZEBO_SYSTEM_PLUGIN_PATH": os.pathsep.join([
-            environ.get("IGN_GAZEBO_SYSTEM_PLUGIN_PATH", default=""),
-            environ.get("LD_LIBRARY_PATH", default=""),
+            os.environ.get("IGN_GAZEBO_SYSTEM_PLUGIN_PATH", default=""),
+            os.environ.get("LD_LIBRARY_PATH", default=""),
             plugin_paths,
         ]),
         "GZ_SIM_RESOURCE_PATH": os.pathsep.join([
-            environ.get("GZ_SIM_RESOURCE_PATH", default=""),
+            os.environ.get("GZ_SIM_RESOURCE_PATH", default=""),
             model_paths,
         ]),
         "IGN_GAZEBO_RESOURCE_PATH": os.pathsep.join([
-            environ.get("IGN_GAZEBO_RESOURCE_PATH", default=""),
+            os.environ.get("IGN_GAZEBO_RESOURCE_PATH", default=""),
             model_paths,
         ]),
     }
