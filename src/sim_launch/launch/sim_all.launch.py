@@ -11,6 +11,10 @@ def generate_launch_description() -> LaunchDescription:
     # パラメータ取得
     use_sim_time = os.environ.get('USE_SIM_TIME', 'true').lower() == 'true'
     gz_world = os.environ.get('IGN_GAZEBO_WORLD', 'empty.sdf')
+    headless = os.environ.get('GAZEBO_HEADLESS', 'true').lower() == 'true'
+
+    # Gazebo起動引数
+    gz_args = f'-r {gz_world} --headless-rendering' if headless else f'-r {gz_world}'
 
     # Ignition Gazebo起動
     ign_gazebo_launch = IncludeLaunchDescription(
@@ -22,7 +26,7 @@ def generate_launch_description() -> LaunchDescription:
             )
         ),
         launch_arguments=[
-            ('gz_args', f'-r {gz_world}'),
+            ('gz_args', gz_args),
             ('use_sim_time', str(use_sim_time).lower()),
         ],
     )
