@@ -20,10 +20,10 @@ def generate_launch_description() -> LaunchDescription:
                 'gz_sim.launch.py'
             )
         ),
-        launch_arguments={
+        launch_arguments=dict({
             'gz_args': f'-r {gz_world}',
             'use_sim_time': str(use_sim_time).lower(),
-        },
+        }),
     )
 
     # ブリッジノード群
