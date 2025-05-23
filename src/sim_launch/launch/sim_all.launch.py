@@ -6,6 +6,7 @@ from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
+
 def generate_launch_description() -> LaunchDescription:
     # パラメータ取得
     use_sim_time = os.environ.get('USE_SIM_TIME', 'true').lower() == 'true'
@@ -20,10 +21,10 @@ def generate_launch_description() -> LaunchDescription:
                 'gz_sim.launch.py'
             )
         ),
-        launch_arguments=dict({
-            'gz_args': f'-r {gz_world}',
-            'use_sim_time': str(use_sim_time).lower(),
-        }),
+        launch_arguments=[
+            ('gz_args', f'-r {gz_world}'),
+            ('use_sim_time', str(use_sim_time).lower()),
+        ],
     )
 
     # ブリッジノード群
