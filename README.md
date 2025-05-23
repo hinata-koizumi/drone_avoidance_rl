@@ -7,8 +7,8 @@
 
 ## Overview
 
-- **PX4 SITL + ROS 2 Humble + Gazebo Garden + RL (Gym API) Unified Stack**
-- **Reproducibility**: Ubuntu 22.04, ROS 2 Humble, PX4 v1.15, Gazebo Garden, multi-stage Docker
+- **PX4 SITL + ROS 2 Humble + Gazebo Fortress (LTS) + RL (Gym API) Unified Stack**
+- **Reproducibility**: Ubuntu 22.04, ROS 2 Humble, PX4 v1.15, Gazebo Fortress (LTS), ros_gz, multi-stage Docker
 - **CI/CD Automation**: GitHub Actions for build, test, static analysis, E2E, coverage, security, release notes
 - **Custom model/airframe support**
 - **Type safety, code quality gates, auto-generated docs**

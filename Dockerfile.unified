@@ -1,4 +1,4 @@
-# PX4 SITL + ROS 2 Humble + Gazebo Garden + カスタムモデル統合Dockerfile
+# PX4 SITL + ROS 2 Humble + Gazebo Fortress + カスタムモデル統合Dockerfile
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -53,9 +53,6 @@ RUN if [ -f /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/px4-alias.sh ]; then
 # --- ROS 2 workspace setup ---
 WORKDIR /sim_ws
 COPY src/ src/
-# px4_msgs明示的にコピー（冪等性担保）
-COPY src/px4_msgs src/px4_msgs
-RUN ls -lR src/
 COPY rosdep/rosdep-bridge.yaml rosdep/rosdep-msgs.yaml /rosdep/
 RUN useradd -m builder
 RUN rm -f /etc/ros/rosdep/sources.list.d/20-default.list && \
@@ -69,26 +66,15 @@ RUN rosdep update --include-eol-distros || true && \
     rosdep install --from-paths /sim_ws/src --ignore-src --rosdistro ${ROS_DISTRO} -y --include-eol-distros || true
 USER root
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    rosdep init || true && \
-    rosdep update && \
     rosdep install --from-paths /sim_ws/src --rosdistro ${ROS_DISTRO} -y --ignore-src && \
     colcon build --symlink-install --event-handlers console_direct+
 
 # --- px4_msgsのPythonバインディングが存在するかチェック ---
 RUN ls /sim_ws/install/lib/python3.10/site-packages/px4_msgs || echo 'px4_msgs not found'
 
-# --- 他のパッケージをビルド ---
-RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    . install/setup.sh && \
-    colcon build --base-paths src --symlink-install --event-handlers console_direct+ --packages-skip px4_msgs
-
-# --- Gazebo Garden, netcat, PX4バイナリのPATH ---
+# --- Gazebo Fortress, netcat, PX4バイナリのPATH ---
 RUN apt-get update && \
     robust_apt_install --fix-missing netcat wget lsb-release mongodb-org-tools && \
-    wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/gazebo-archive-keyring.gpg && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/gazebo-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list && \
-    apt-get update && \
-    robust_apt_install --fix-missing gz-garden && \
     apt-get clean && \
     ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
     if [ ! -f /usr/local/bin/px4 ]; then cp /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && chmod +x /usr/local/bin/px4; fi && \
@@ -98,16 +84,14 @@ RUN apt-get update && \
 
 # --- カスタムモデル配置 ---
 COPY custom_model/drone_model /models/drone_model
-RUN mkdir -p /usr/share/gz/garden/models && \
-    ln -s /models/drone_model /usr/share/gz/garden/models/drone_model
+RUN mkdir -p /usr/share/gz/fortress/models && \
+    ln -s /models/drone_model /usr/share/gz/fortress/models/drone_model
 
 # --- Entrypoint ---
 COPY docker/entrypoint-unified.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENV ROS_DOMAIN_ID=0
 ENTRYPOINT ["/entrypoint.sh"]
-
-RUN apt-get update && apt-get install -y --no-install-recommends ros-humble-ros-gz-sim ros-humble-ros-gz-bridge && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m pip install --upgrade pip \
  && python3 -m pip install 'setuptools==59.6.0' 
