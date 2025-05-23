@@ -16,12 +16,17 @@
 
 import os
 from os import environ
+
 from ament_index_python.packages import get_package_share_directory
-from catkin_pkg.package import InvalidPackage, PACKAGE_MANIFEST_FILENAME, parse_package
-from ros2pkg.api import get_package_names
+from catkin_pkg.package import (
+    InvalidPackage,
+    PACKAGE_MANIFEST_FILENAME,
+    parse_package,
+)
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.substitutions import LaunchConfiguration
+from ros2pkg.api import get_package_names
 
 # Copied from https://github.com/ros-simulation/gazebo_ros_pkgs/blob/79fd94c6da76781a91499bc0f54b70560b90a9d2/gazebo_ros/scripts/gazebo_ros_paths.py
 """
