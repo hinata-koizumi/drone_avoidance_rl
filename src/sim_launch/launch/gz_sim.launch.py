@@ -106,7 +106,7 @@ def generate_launch_description():
     on_exit = None
     # Declare launch arguments
     ld = LaunchDescription([
-        DeclareLaunchArgument('gz_args', default_value='', description='Arguments to be passed to Gazebo Sim'),
+        DeclareLaunchArgument('gz_args', default_value='--headless-rendering', description='Arguments to be passed to Gazebo Sim'),
         DeclareLaunchArgument('gz_version', default_value='6', description="Gazebo Sim's major version"),
         DeclareLaunchArgument(
             'ign_args', default_value='',
