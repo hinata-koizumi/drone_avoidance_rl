@@ -16,12 +16,11 @@
 
 import os
 from os import environ
-
 from ament_index_python.packages import get_package_share_directory
 from catkin_pkg.package import InvalidPackage, PACKAGE_MANIFEST_FILENAME, parse_package
 from ros2pkg.api import get_package_names
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, Shutdown
+from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.substitutions import LaunchConfiguration
 
 # Copied from https://github.com/ros-simulation/gazebo_ros_pkgs/blob/79fd94c6da76781a91499bc0f54b70560b90a9d2/gazebo_ros/scripts/gazebo_ros_paths.py
@@ -40,13 +39,11 @@ e.g.  install(DIRECTORY models
 """
 
 class GazeboRosPaths:
-
     @staticmethod
     def get_paths():
         gazebo_model_path = []
         gazebo_plugin_path = []
         gazebo_media_path = []
-
         for package_name in get_package_names():
             package_share_path = get_package_share_directory(package_name)
             package_file_path = os.path.join(package_share_path, PACKAGE_MANIFEST_FILENAME)
@@ -69,21 +66,14 @@ class GazeboRosPaths:
                             xml_path = export.attributes['gazebo_media_path']
                             xml_path = xml_path.replace('${prefix}', package_share_path)
                             gazebo_media_path.append(xml_path)
-
         gazebo_model_path = os.pathsep.join(gazebo_model_path + gazebo_media_path)
         gazebo_plugin_path = os.pathsep.join(gazebo_plugin_path)
-
         return gazebo_model_path, gazebo_plugin_path
 
 def generate_launch_description():
     # Launch arguments
     gz_args = LaunchConfiguration('gz_args')
     gz_version = LaunchConfiguration('gz_version')
-    ign_args = LaunchConfiguration('ign_args')
-    ign_version = LaunchConfiguration('ign_version')
-    debugger = LaunchConfiguration('debugger')
-    on_exit_shutdown = LaunchConfiguration('on_exit_shutdown')
-
     model_paths, plugin_paths = GazeboRosPaths.get_paths()
     env = {
         "GZ_SIM_SYSTEM_PLUGIN_PATH": os.pathsep.join([
@@ -105,23 +95,26 @@ def generate_launch_description():
             model_paths,
         ]),
     }
-
     # Compose the command
     exec_args = gz_args
     exec = 'gz sim'
     debug_prefix = None
     on_exit = None
-
     # Declare launch arguments
     ld = LaunchDescription([
         DeclareLaunchArgument('gz_args', default_value='', description='Arguments to be passed to Gazebo Sim'),
-        DeclareLaunchArgument('gz_version', default_value='6', description='Gazebo Sim\'s major version'),
-        DeclareLaunchArgument('ign_args', default_value='', description='Deprecated: Arguments to be passed to Gazebo Sim'),
-        DeclareLaunchArgument('ign_version', default_value='', description='Deprecated: Gazebo Sim\'s major version'),
+        DeclareLaunchArgument('gz_version', default_value='6', description="Gazebo Sim's major version"),
+        DeclareLaunchArgument(
+            'ign_args', default_value='',
+            description='Deprecated: Arguments to be passed to Gazebo Sim'
+        ),
+        DeclareLaunchArgument(
+            'ign_version', default_value='',
+            description="Deprecated: Gazebo Sim's major version"
+        ),
         DeclareLaunchArgument('debugger', default_value='false', description='Run in Debugger'),
         DeclareLaunchArgument('on_exit_shutdown', default_value='false', description='Shutdown on gz-sim exit'),
     ])
-
     # Add the main process
     ld.add_action(ExecuteProcess(
         cmd=[exec, exec_args, '--force-version', gz_version],
