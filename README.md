@@ -89,21 +89,37 @@ docker compose down
   mypy src/ tests/
   ```
 
-## ローカルテスト環境の推奨手順
+## ローカルでCI/CDと全く同じテストを走らせる手順
 
 1. 必ずDockerとdocker composeを使ってテストしてください。
    ```sh
+   docker compose build --no-cache
+   bash tools/setup_rosdep_local.sh
    docker compose -f tests/ci-compose.yml up --abort-on-container-exit
    ```
    これによりCIと同じ環境・コマンドでテストできます。
 
-2. 依存解決は必ずlocal rosdep yamlを反映してください。
+2. Gym APIテストや静的解析もCI/CDと同じコマンドで実行してください。
+   - Python 3.10系を推奨（pyenvで合わせる）
+   - 依存インストール:
+     ```sh
+     python3 -m pip install --upgrade pip
+     python3 -m pip install pytest gymnasium numpy pyyaml lark ruff mypy
+     ```
+   - テスト:
+     ```sh
+     cd src
+     PYTHONPATH=$PYTHONPATH:$(pwd) pytest ../tests/test_gym_api.py
+     ruff src/ tests/
+     mypy src/ tests/
+     ```
+
+3. rosdep依存解決は必ずlocal rosdep yamlを反映してください。
    ```sh
    bash tools/setup_rosdep_local.sh
    ```
-   これによりrosdep/配下のyamlが必ず参照されます。
 
-3. PythonバージョンはCIと同じ3.10を推奨します。
+4. PythonバージョンはCIと同じ3.10を推奨します。
    ```sh
    pyenv install 3.10.12
    pyenv local 3.10.12

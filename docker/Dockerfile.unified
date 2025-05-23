@@ -62,7 +62,10 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     echo "yaml file:///rosdep/rosdep-bridge.yaml trusted: true" > /etc/ros/rosdep/sources.list.d/10-local.yaml && \
     mkdir -p /root/.ros && \
     chown -R builder:builder /etc/ros /root/.ros /rosdep
+# rootでrosdep update
+RUN rosdep update --include-eol-distros || true
 USER builder
+# builderユーザでもrosdep update
 RUN rosdep update --include-eol-distros || true
 USER root
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
@@ -86,6 +89,16 @@ RUN apt-get update && \
 COPY custom_model/drone_model /models/drone_model
 RUN mkdir -p /usr/share/gz/fortress/models && \
     ln -s /models/drone_model /usr/share/gz/fortress/models/drone_model
+
+# --- Gazebo Garden install ---
+RUN apt-get update && apt-get install -y lsb-release wget gnupg2
+RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      gz-garden libgz-sim8 libgz-sim8-plugins libogre-next-2.3.0
+# 必要に応じてros-gz-bridge等も
+RUN apt-get install -y --no-install-recommends ros-humble-ros-gz-bridge ros-humble-ros-gz-sim
 
 # --- Entrypoint ---
 COPY docker/entrypoint-unified.sh /entrypoint.sh

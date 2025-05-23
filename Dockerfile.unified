@@ -91,7 +91,7 @@ RUN mkdir -p /usr/share/gz/fortress/models && \
 COPY docker/entrypoint-unified.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENV ROS_DOMAIN_ID=0
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"] 
 
 RUN python3 -m pip install --upgrade pip \
  && python3 -m pip install 'setuptools==59.6.0' 
