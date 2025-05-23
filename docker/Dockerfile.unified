@@ -94,4 +94,8 @@ ENV ROS_DOMAIN_ID=0
 ENTRYPOINT ["/entrypoint.sh"]
 
 RUN python3 -m pip install --upgrade pip \
- && python3 -m pip install 'setuptools==59.6.0' 
+ && python3 -m pip install 'setuptools==59.6.0'
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ros-humble-ros-gz-sim && \
+    rm -rf /var/lib/apt/lists/* 
