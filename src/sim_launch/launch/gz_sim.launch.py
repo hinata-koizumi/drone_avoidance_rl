@@ -17,9 +17,13 @@
 import os
 
 from ament_index_python.packages import get_package_share_directory
-from catkin_pkg.package import InvalidPackage, PACKAGE_MANIFEST_FILENAME, parse_package
+from catkin_pkg.package import (
+    PACKAGE_MANIFEST_FILENAME,
+    InvalidPackage,
+    parse_package,
+)
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, OpaqueFunction, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from ros2pkg.api import get_package_names
 
@@ -70,10 +74,10 @@ class GazeboRosPaths:
         gazebo_plugin_path = os.pathsep.join(gazebo_plugin_path)
         return gazebo_model_path, gazebo_plugin_path
 
-def generate_launch_description():
-    # Launch arguments
-    gz_args = LaunchConfiguration('gz_args')
-    gz_version = LaunchConfiguration('gz_version')
+def launch_gz_sim(context, *args, **kwargs):
+    gz_args = LaunchConfiguration('gz_args').perform(context)
+    gz_version = LaunchConfiguration('gz_version').perform(context)
+    headless = LaunchConfiguration('headless').perform(context).lower() in ('true', '1', 'yes')
     model_paths, plugin_paths = GazeboRosPaths.get_paths()
     env = {
         "GZ_SIM_SYSTEM_PLUGIN_PATH": os.pathsep.join([
@@ -95,12 +99,22 @@ def generate_launch_description():
             model_paths,
         ]),
     }
-    # Compose the command
     exec_args = gz_args
-    exec = 'gz sim'
-    debug_prefix = None
-    on_exit = None
-    # Declare launch arguments
+    if headless and '--headless-rendering' not in exec_args:
+        exec_args += ' --headless-rendering'
+    cmd = ["gz sim", exec_args, "--force-version", gz_version]
+    actions = []
+    if headless:
+        actions.append(SetEnvironmentVariable('DISPLAY', ''))
+    actions.append(ExecuteProcess(
+        cmd=cmd,
+        output='screen',
+        additional_env=env,
+        shell=True
+    ))
+    return actions
+
+def generate_launch_description():
     ld = LaunchDescription([
         DeclareLaunchArgument(
             'gz_args',
@@ -118,14 +132,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument('debugger', default_value='false', description='Run in Debugger'),
         DeclareLaunchArgument('on_exit_shutdown', default_value='false', description='Shutdown on gz-sim exit'),
+        DeclareLaunchArgument('headless', default_value='false', description='Run in headless mode'),
+        OpaqueFunction(function=launch_gz_sim)
     ])
-    # Add the main process
-    ld.add_action(ExecuteProcess(
-        cmd=[exec, exec_args, '--force-version', gz_version],
-        output='screen',
-        additional_env=env,
-        shell=True,
-        prefix=debug_prefix,
-        on_exit=on_exit
-    ))
     return ld
