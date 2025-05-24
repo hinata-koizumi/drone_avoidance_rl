@@ -12,6 +12,11 @@ export PX4_SIM_MODEL=drone_model
 
 # PX4 SITL起動（バックグラウンド）
 if [ -x /usr/local/bin/px4 ]; then
+  # px4-alias.shがなければtouchして空ファイルを作る
+  if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh ]; then
+    touch /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh
+    chmod +x /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh
+  fi
   /usr/local/bin/px4 &
   PX4_PID=$!
 fi

@@ -17,12 +17,9 @@
 import os
 
 from ament_index_python.packages import get_package_share_directory
-from catkin_pkg.package import InvalidPackage
-from catkin_pkg.package import PACKAGE_MANIFEST_FILENAME
-from catkin_pkg.package import parse_package
+from catkin_pkg.package import InvalidPackage, PACKAGE_MANIFEST_FILENAME, parse_package
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
-from launch.actions import ExecuteProcess
+from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.substitutions import LaunchConfiguration
 from ros2pkg.api import get_package_names
 
