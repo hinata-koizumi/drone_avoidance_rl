@@ -47,7 +47,7 @@ RUN if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS ]; then
 RUN if [ -f /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/px4-alias.sh ]; then \
       cp /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/px4-alias.sh /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh; \
     else \
-      echo '[WARNING] px4-alias.sh not found, skipping.'; \
+      echo '[ERROR] px4-alias.sh not found, build failed.'; exit 1; \
     fi
 
 # --- ROS 2 workspace setup ---

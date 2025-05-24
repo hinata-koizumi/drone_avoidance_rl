@@ -101,19 +101,22 @@ def launch_gz_sim(context, *args, **kwargs):
         ]),
     }
     exec_args = gz_args
-    if headless and '--headless-rendering' not in exec_args:
-        exec_args += ' --headless-rendering'
-    cmd = f"gz sim {exec_args} --force-version {gz_version}"
-    actions = []
     if headless:
+        actions = []
         actions.append(SetEnvironmentVariable('DISPLAY', ''))
-    actions.append(ExecuteProcess(
-        cmd=cmd,
-        output='screen',
-        additional_env=env,
-        shell=True
-    ))
-    return actions
+        # DISPLAY未設定時も必ずヘッドレス
+        if not os.environ.get('DISPLAY') and '--headless-rendering' not in exec_args:
+            exec_args += ' --headless-rendering'
+        cmd = f"gz sim {exec_args} --force-version {gz_version}"
+        actions.append(ExecuteProcess(
+            cmd=cmd,
+            output='screen',
+            additional_env=env,
+            shell=True
+        ))
+        return actions
+    else:
+        return []
 
 def generate_launch_description():
     ld = LaunchDescription([

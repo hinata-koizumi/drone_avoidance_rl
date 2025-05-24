@@ -34,6 +34,10 @@ install(
   DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_py/drone_msgs
   DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages
 )
+# 型ヒント(py.typed)と__init__.pyもインストール
+install(FILES msg/py.typed msg/__init__.py
+  DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/drone_msgs/msg
+)
 
 # 生成されたメッセージ用のランタイム依存関係をエクスポート
 ament_export_dependencies(rosidl_default_runtime geometry_msgs builtin_interfaces)
