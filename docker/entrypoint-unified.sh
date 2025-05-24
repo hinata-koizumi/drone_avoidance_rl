@@ -30,7 +30,7 @@ fi
 # gz sim ... &
 
 # シミュレーションlaunch
-ros2 launch sim_launch sim_all.launch.py headless:=${HEADLESS:-false}
+ros2 launch sim_launch sim_all.launch.py headless:=true
 
 # PX4プロセスの監視
 if [ -n "$PX4_PID" ]; then
