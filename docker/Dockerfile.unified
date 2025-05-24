@@ -44,6 +44,7 @@ RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
 RUN if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS ]; then \
       cp /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS; \
     fi
+RUN sed -i '/px4-alias.sh/d' /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
 RUN if [ -f /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/px4-alias.sh ]; then \
       cp /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/px4-alias.sh /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh; \
     else \
