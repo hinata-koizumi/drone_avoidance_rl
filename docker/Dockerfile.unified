@@ -111,4 +111,5 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends ros-humble-ros-gz-sim && \
     rm -rf /var/lib/apt/lists/*
 
-COPY custom_airframes/4001_drone_model /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_drone_model 
+COPY custom_airframes/4001_drone_model /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_drone_model
+COPY custom_airframes/4001_drone_model /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_drone_model 
