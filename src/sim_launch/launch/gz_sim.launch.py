@@ -102,7 +102,7 @@ def launch_gz_sim(context, *args, **kwargs):
     exec_args = gz_args
     if headless and '--headless-rendering' not in exec_args:
         exec_args += ' --headless-rendering'
-    cmd = ["gz sim", exec_args, "--force-version", gz_version]
+    cmd = f"gz sim {exec_args} --force-version {gz_version}"
     actions = []
     if headless:
         actions.append(SetEnvironmentVariable('DISPLAY', ''))
