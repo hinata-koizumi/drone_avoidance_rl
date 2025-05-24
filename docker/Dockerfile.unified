@@ -51,8 +51,9 @@ WORKDIR /sim_ws
 COPY src/ src/
 COPY rosdep/rosdep-bridge.yaml rosdep/rosdep-msgs.yaml /rosdep/
 RUN rm -f /etc/ros/rosdep/sources.list.d/20-default.list && \
-    rosdep init || true && \
-    rosdep update --include-eol-distros || true
+    rosdep init && \
+    rosdep update --include-eol-distros && \
+    rosdep install --from-paths /sim_ws/src --rosdistro ${ROS_DISTRO} -y --ignore-src
 RUN useradd -m builder
 RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     echo "yaml file:///rosdep/rosdep-bridge.yaml trusted: true" > /etc/ros/rosdep/sources.list.d/10-local.yaml && \
