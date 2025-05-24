@@ -108,4 +108,6 @@ RUN python3 -m pip install --upgrade pip \
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ros-humble-ros-gz-sim && \
-    rm -rf /var/lib/apt/lists/* 
+    rm -rf /var/lib/apt/lists/*
+
+COPY custom_airframes/4001_drone_model /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_drone_model 

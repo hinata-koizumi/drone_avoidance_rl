@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# @name Drone Model
+# @type Quadrotor
+# @class 4001
+# @info Custom drone model for RL
+#
+
+set -e
+
+# Example: set parameters
+param set MC_ROLL_P 6.0
+param set MC_PITCH_P 6.0
+param set MC_YAW_P 3.5
+
+param set SERVO1_FUNCTION 94
+param set SERVO2_FUNCTION 95
+param set SERVO1_MIN 900
+param set SERVO1_MAX 2100
+param set SERVO2_MIN 900
+param set SERVO2_MAX 2100 
