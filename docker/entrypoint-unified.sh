@@ -8,7 +8,7 @@ source /opt/ros/humble/setup.bash
 export PX4_HOME_LAT=35.6586
 export PX4_HOME_LON=139.7454
 export PX4_HOME_ALT=10.0
-export PX4_SIM_MODEL=drone_model
+export PX4_SIM_MODEL=4001_drone_model
 
 # PX4 SITL起動（バックグラウンド）
 if [ -x /usr/local/bin/px4 ]; then
