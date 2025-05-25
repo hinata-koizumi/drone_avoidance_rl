@@ -69,8 +69,9 @@ docker compose down
 - 例:
   ```
   ROS_DISTRO=humble
-  IGNITION_VERSION=garden
+  IGNITION_VERSION=fortress
   ```
+- `.env.example` を `.env` にコピーして編集してください。
 - Dockerfileやdocker-compose.ymlはこの値を参照してビルドされます。
 - バージョンアップ時は`.env`の値を変更するだけで全体に反映されます。
 
@@ -162,3 +163,21 @@ Apache License 2.0 — `LICENSE`参照。
 ---
 
 *コントリビューション・Issue歓迎！*
+
+## Gym API仕様
+- 観測空間: 15次元（姿勢, 位置, 速度, 角速度, 風）
+- 行動空間: 4次元（2モーターのスロットル・角度）
+- 報酬関数: REWARD_ORI, REWARD_POS, REWARD_SMOOTH で加重和
+- カスタマイズ例: 
+  - 環境変数で報酬重み変更
+  - DroneSimEnv._randomize_world() を拡張してドメインランダム化
+
+## 主要ROS 2ノード・トピック
+- /drone{N}/inner_propeller_cmd (DroneControlCommand)
+- /drone{N}/state (DroneState)
+- launchファイルやノードパラメータでトピック名は変更可能
+
+## ドキュメント生成・閲覧
+mkdocs serve
+# または
+sphinx-build -b html docs/ docs/_build/html
