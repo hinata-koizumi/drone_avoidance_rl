@@ -16,6 +16,10 @@ setup(
                 'launch/sim_all.launch.py',
             ],
         ),
+        (
+            'share/' + package_name + '/resource',
+            ['resource/empty_custom.sdf'],
+        ),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
