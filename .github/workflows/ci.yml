@@ -214,7 +214,7 @@ jobs:
           source /opt/ros/${{ env.ROS_DISTRO || 'humble' }}/setup.sh
           source install/setup.sh
           export PYTHONPATH=/usr/lib/python3/dist-packages:$PYTHONPATH:$(pwd)/src
-          cd src && PYTHONPATH=$PYTHONPATH:$(pwd) pytest ../tests/test_gym_api.py
+          pytest tests/test_gym_api.py
         shell: bash
 
   static-analysis:

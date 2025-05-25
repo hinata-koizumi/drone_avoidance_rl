@@ -90,6 +90,9 @@ COPY custom_model/drone_model /models/drone_model
 RUN mkdir -p /usr/share/gz/fortress/models && \
     ln -s /models/drone_model /usr/share/gz/fortress/models/drone_model
 
+# --- Gazebo Garden 標準モデルのダウンロード ---
+RUN gz model --download ground_plane && gz model --download sun || true
+
 # --- Entrypoint ---
 COPY docker/entrypoint-unified.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
