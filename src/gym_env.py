@@ -17,8 +17,8 @@ import numpy as np
 import rclpy
 from gymnasium import spaces
 
-from drone_msgs.msg import DroneControlCommand as _DroneControlCommand  # type: ignore
-from drone_msgs.msg import DroneState as _DroneState  # type: ignore
+from drone_msgs.msg import DroneControlCommand as _DroneControlCommand
+from drone_msgs.msg import DroneState as _DroneState
 from src.common.utils import clamp
 
 

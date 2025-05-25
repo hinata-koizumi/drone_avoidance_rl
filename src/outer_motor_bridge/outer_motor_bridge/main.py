@@ -6,7 +6,7 @@ std_msgs/Float32MultiArray で /drone/outer_motor_pwm へ転送。
 """
 import rclpy
 from std_msgs.msg import Float32MultiArray
-from px4_msgs.msg import ActuatorMotors  # type: ignore
+from px4_msgs.msg import ActuatorMotors
 from rclpy.executors import MultiThreadedExecutor
 from src.common.bridge_base import BridgeBase
 

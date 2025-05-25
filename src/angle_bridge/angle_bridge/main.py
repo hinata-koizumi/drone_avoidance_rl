@@ -7,7 +7,7 @@ import math
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
 from std_msgs.msg import Float64
-from drone_msgs.msg import DroneControlCommand as _DroneControlCommand  # type: ignore
+from drone_msgs.msg import DroneControlCommand as _DroneControlCommand
 from src.common.bridge_base import BridgeBase
 from src.common.utils import clamp
 
