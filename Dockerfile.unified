@@ -53,8 +53,10 @@ RUN if [ -f /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/px4-alias.sh ]; then
 # --- PX4カスタムairframe再コピー（ビルド後にも確実に配置） ---
 COPY custom_airframes/4001_drone_model /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_drone_model
 COPY custom_airframes/4001_drone_model /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_drone_model
+RUN mkdir -p /etc/init.d-posix/airframes && cp /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_drone_model /etc/init.d-posix/airframes/4001_drone_model
 RUN ls -l /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_drone_model || (echo 'ERROR: 4001_drone_model not found in build/px4_sitl_default/etc/init.d-posix/airframes/' && exit 1)
 RUN ls -l /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_drone_model || (echo 'ERROR: 4001_drone_model not found in ROMFS/px4fmu_common/init.d-posix/airframes/' && exit 1)
+RUN ls -l /etc/init.d-posix/airframes/4001_drone_model || (echo 'ERROR: 4001_drone_model not found in /etc/init.d-posix/airframes/' && exit 1)
 
 # --- ROS 2 workspace setup ---
 WORKDIR /sim_ws
