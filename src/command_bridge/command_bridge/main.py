@@ -28,7 +28,10 @@ class CommandBridgeNode(BridgeBase):
             self.qos_profile,
         )
         if self.log_level == 'debug':
-            self.get_logger().debug(f"Subscribed to: {input_topic}, Publishing to: {output_topic}, QoS: {self.qos_profile}")
+            self.get_logger().debug(
+                f"Subscribed to: {input_topic}, Publishing to: {output_topic}, "
+                f"QoS: {self.qos_profile}"
+            )
     def _cb(self, msg):
         pass  # TODO: 実装
 

@@ -8,7 +8,14 @@ setup(
     packages=[],
     data_files=[
         ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name + '/launch', ['launch/gz_sim.launch.py', 'launch/bridge_launch.py', 'launch/sim_all.launch.py']),
+        (
+            'share/' + package_name + '/launch',
+            [
+                'launch/gz_sim.launch.py',
+                'launch/bridge_launch.py',
+                'launch/sim_all.launch.py',
+            ],
+        ),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

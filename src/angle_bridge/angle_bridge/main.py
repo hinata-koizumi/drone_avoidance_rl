@@ -37,7 +37,10 @@ class AngleBridge(BridgeBase):
         self.pub1 = self.create_publisher(Float64, fan1_topic, self.qos_profile)
         self.pub2 = self.create_publisher(Float64, fan2_topic, self.qos_profile)
         if self.log_level == "debug":
-            self.get_logger().debug(f"Subscribed to: {cmd_topic}, Publishing to: {fan1_topic}, {fan2_topic}, QoS: {self.qos_profile}")
+            self.get_logger().debug(
+                f"Subscribed to: {cmd_topic}, Publishing to: {fan1_topic}, {fan2_topic}, "
+                f"QoS: {self.qos_profile}"
+            )
 
     def _cb(self, cmd: _DroneControlCommand) -> None:
         ang1_deg = clamp(cmd.angle1, _MIN_DEG, _MAX_DEG)

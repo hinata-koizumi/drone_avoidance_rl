@@ -1,9 +1,9 @@
-[tool.ruff]
+[tool.ruff.lint]
 line-length = 120
 select = ["E", "F", "I"]
 fix = true
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 combine-as-imports = true
 force-sort-within-sections = true
 
