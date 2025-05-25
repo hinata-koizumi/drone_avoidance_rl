@@ -43,61 +43,21 @@ e.g.  install(DIRECTORY models
           DESTINATION share/${PROJECT_NAME})
 """
 
-class GazeboRosPaths:
-    @staticmethod
-    def get_paths():
-        gazebo_model_path = []
-        gazebo_plugin_path = []
-        gazebo_media_path = []
-        for package_name in get_package_names():
-            package_share_path = get_package_share_directory(package_name)
-            package_file_path = os.path.join(package_share_path, PACKAGE_MANIFEST_FILENAME)
-            if os.path.isfile(package_file_path):
-                try:
-                    package = parse_package(package_file_path)
-                except InvalidPackage:
-                    continue
-                for export in package.exports:
-                    if export.tagname == 'gazebo_ros':
-                        if 'gazebo_model_path' in export.attributes:
-                            xml_path = export.attributes['gazebo_model_path']
-                            xml_path = xml_path.replace('${prefix}', package_share_path)
-                            gazebo_model_path.append(xml_path)
-                        if 'plugin_path' in export.attributes:
-                            xml_path = export.attributes['plugin_path']
-                            xml_path = xml_path.replace('${prefix}', package_share_path)
-                            gazebo_plugin_path.append(xml_path)
-                        if 'gazebo_media_path' in export.attributes:
-                            xml_path = export.attributes['gazebo_media_path']
-                            xml_path = xml_path.replace('${prefix}', package_share_path)
-                            gazebo_media_path.append(xml_path)
-        gazebo_model_path = os.pathsep.join(gazebo_model_path + gazebo_media_path)
-        gazebo_plugin_path = os.pathsep.join(gazebo_plugin_path)
-        return gazebo_model_path, gazebo_plugin_path
-
 def launch_gz_sim(context, *args, **kwargs):
     gz_args = LaunchConfiguration('gz_args').perform(context)
     gz_version = LaunchConfiguration('gz_version').perform(context)
     headless = LaunchConfiguration('headless').perform(context).lower() in ('true', '1', 'yes')
-    model_paths, plugin_paths = GazeboRosPaths.get_paths()
     env = {
-        "GZ_SIM_SYSTEM_PLUGIN_PATH": os.pathsep.join([
-            os.environ.get("GZ_SIM_SYSTEM_PLUGIN_PATH", default=""),
-            os.environ.get("LD_LIBRARY_PATH", default=""),
-            plugin_paths,
-        ]),
-        "IGN_GAZEBO_SYSTEM_PLUGIN_PATH": os.pathsep.join([
-            os.environ.get("IGN_GAZEBO_SYSTEM_PLUGIN_PATH", default=""),
-            os.environ.get("LD_LIBRARY_PATH", default=""),
-            plugin_paths,
-        ]),
+        # プラグインパスは明示的に必要な場合のみ環境変数で指定すること
+        # "GZ_SIM_SYSTEM_PLUGIN_PATH": "",
+        # "IGN_GAZEBO_SYSTEM_PLUGIN_PATH": "",
         "GZ_SIM_RESOURCE_PATH": os.pathsep.join([
             os.environ.get("GZ_SIM_RESOURCE_PATH", default=""),
-            model_paths,
+            # model_paths,  # ← 削除
         ]),
         "IGN_GAZEBO_RESOURCE_PATH": os.pathsep.join([
             os.environ.get("IGN_GAZEBO_RESOURCE_PATH", default=""),
-            model_paths,
+            # model_paths,  # ← 削除
         ]),
     }
     exec_args = gz_args

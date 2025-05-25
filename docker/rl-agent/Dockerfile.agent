@@ -1,5 +1,7 @@
 # docker/rl-agent/Dockerfile.agent   2025-04-30 R3
-FROM ros:humble AS builder
+ARG ROS_DISTRO=humble
+ARG IGNITION_VERSION=garden
+FROM ros:${ROS_DISTRO} AS builder
 SHELL ["/bin/bash", "-c"]
 USER root
 
@@ -7,20 +9,20 @@ USER root
 RUN apt-get update && apt-get install -y python3-pip
 COPY docker/rl-agent/requirements.lock /tmp/requirements.lock
 RUN pip install --no-cache-dir --retries 10 --timeout 120 -r /tmp/requirements.lock
-RUN apt-get update && apt-get install -y ros-humble-rclpy
+RUN apt-get update && apt-get install -y ros-${ROS_DISTRO}-rclpy
 
 # ---------- build workspace ----------
 WORKDIR /drone_ws
 RUN mkdir -p src
 COPY src/                 src/
 COPY src/drone_msgs/      src/drone_msgs/
-RUN . /opt/ros/humble/setup.sh && \
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
     colcon build --packages-select drone_msgs && \
     echo 'from ._drone_control_command import DroneControlCommand' >> /drone_ws/install/drone_msgs/lib/python3.10/site-packages/drone_msgs/msg/__init__.py && \
     . install/setup.sh
 
 # ---------- runtime ----------
-FROM ros:humble as runtime
+FROM ros:${ROS_DISTRO} as runtime
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates python3 python3-pip ignition-tools netcat-openbsd && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -29,4 +31,9 @@ WORKDIR /drone_ws
 COPY docker/rl-agent/requirements.lock /tmp/requirements.lock
 RUN pip install --no-cache-dir --retries 10 --timeout 120 -r /tmp/requirements.lock
 COPY --from=builder /drone_ws/install /drone_ws/install
-ENTRYPOINT ["/bin/bash", "-c", "export PYTHONPATH=/drone_ws/install/drone_msgs/lib/python3.10/site-packages; cp /drone_ws/src/gym_env.py /drone_ws/install/gym_env.py; ls /drone_ws/install/drone_msgs/lib/python3.10/site-packages/drone_msgs/msg/; python3 -c 'import sys; print(sys.path)'; source /opt/ros/humble/setup.bash && source /drone_ws/install/setup.bash && python3 /drone_ws/install/gym_env.py"]
+ENTRYPOINT ["/bin/bash", "-c", "export PYTHONPATH=/drone_ws/install/drone_msgs/lib/python3.10/site-packages; cp /drone_ws/src/gym_env.py /drone_ws/install/gym_env.py; ls /drone_ws/install/drone_msgs/lib/python3.10/site-packages/drone_msgs/msg/; python3 -c 'import sys; print(sys.path)'; source /opt/ros/${ROS_DISTRO}/setup.bash && source /drone_ws/install/setup.bash && python3 /drone_ws/install/gym_env.py"]
+
+RUN if [ "$(dpkg --print-architecture)" != "amd64" ]; then \
+  echo "[ERROR] This image is officially supported only on amd64. For arm64 or other architectures, additional validation and support are required. Exiting."; \
+  exit 1; \
+fi

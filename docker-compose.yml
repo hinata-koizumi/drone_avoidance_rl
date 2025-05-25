@@ -3,23 +3,32 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.unified
+      args:
+        ROS_DISTRO: ${ROS_DISTRO}
+        IGNITION_VERSION: ${IGNITION_VERSION}
     image: drone_rl:unified
     environment:
       - ROS_DOMAIN_ID=0
       - HEADLESS=1
+      - PX4_SIM_SPEED_FACTOR=2
     volumes:
       - "./custom_model:/models:ro"
-    command: bash -c "source /opt/ros/humble/setup.sh && /entrypoint.sh"
+    command: bash -c "source /opt/ros/${ROS_DISTRO}/setup.sh && /entrypoint.sh"
     networks:
       - default
     depends_on:
       - msgs
       - bridge
+    mem_limit: 4g
+    cpus: 2
 
   bridge:
     build:
       context: .
       dockerfile: docker/Dockerfile.bridge
+      args:
+        ROS_DISTRO: ${ROS_DISTRO}
+        IGNITION_VERSION: ${IGNITION_VERSION}
     image: drone_rl:bridge
     environment:
       - ROS_DOMAIN_ID=0
@@ -28,11 +37,16 @@ services:
       - default
     depends_on:
       - msgs
+    mem_limit: 4g
+    cpus: 2
 
   rl-agent:
     build:
       context: .
       dockerfile: docker/rl-agent/Dockerfile.agent
+      args:
+        ROS_DISTRO: ${ROS_DISTRO}
+        IGNITION_VERSION: ${IGNITION_VERSION}
     image: drone_rl:rl-agent
     environment:
       - ROS_DOMAIN_ID=0
@@ -43,14 +57,20 @@ services:
       - sim
       - bridge
       - msgs
+    mem_limit: 4g
+    cpus: 2
 
   msgs:
     build:
       context: .
       dockerfile: docker/Dockerfile.msgs
+      args:
+        ROS_DISTRO: ${ROS_DISTRO}
     image: drone_rl:msgs
     networks:
       - default
+    mem_limit: 4g
+    cpus: 2
 
 networks:
   default:

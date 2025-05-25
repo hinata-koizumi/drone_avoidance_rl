@@ -1,6 +1,6 @@
-FROM ros:humble AS msgs_ws
-
-ENV ROS_DISTRO=humble
+ARG ROS_DISTRO=humble
+FROM ros:${ROS_DISTRO} AS msgs_ws
+ENV ROS_DISTRO=${ROS_DISTRO}
 WORKDIR /msgs_ws
 
 # ROS 基本ツールをインストール
@@ -30,3 +30,8 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
 
 # 出力パス定義
 ENV OVERLAY_WS=/msgs_ws/install
+
+RUN if [ "$(dpkg --print-architecture)" != "amd64" ]; then \
+  echo "[ERROR] This image is officially supported only on amd64. For arm64 or other architectures, additional validation and support are required. Exiting."; \
+  exit 1; \
+fi

@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-# Source ROS 2 Humble
-source /opt/ros/humble/setup.bash
+# Source ROS 2
+source /opt/ros/${ROS_DISTRO}/setup.bash
 
 # PX4環境変数
 export PX4_HOME_LAT=35.6586

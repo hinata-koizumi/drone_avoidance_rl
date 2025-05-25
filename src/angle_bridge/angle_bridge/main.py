@@ -8,6 +8,8 @@ import math
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
+from rclpy.executors import MultiThreadedExecutor
 
 from drone_msgs.msg import DroneControlCommand as _DroneControlCommand  # type: ignore
 
@@ -22,14 +24,38 @@ def _clamp(v: float, lo: float, hi: float) -> float:
 class AngleBridge(Node):
     def __init__(self) -> None:
         super().__init__("angle_bridge")
+        self.declare_parameter("cmd_topic", "/drone/inner_propeller_cmd")
+        self.declare_parameter("fan1_topic", "/servo/fan1_tilt")
+        self.declare_parameter("fan2_topic", "/servo/fan2_tilt")
+        self.declare_parameter("qos_depth", 10)
+        self.declare_parameter("qos_reliability", "reliable")
+        self.declare_parameter("qos_history", "keep_last")
+        self.declare_parameter("log_level", "debug")
+        cmd_topic = self.get_parameter("cmd_topic").get_parameter_value().string_value
+        fan1_topic = self.get_parameter("fan1_topic").get_parameter_value().string_value
+        fan2_topic = self.get_parameter("fan2_topic").get_parameter_value().string_value
+        qos_depth = self.get_parameter("qos_depth").get_parameter_value().integer_value
+        qos_reliability = self.get_parameter("qos_reliability").get_parameter_value().string_value
+        qos_history = self.get_parameter("qos_history").get_parameter_value().string_value
+        log_level = self.get_parameter("log_level").get_parameter_value().string_value
+        reliability = ReliabilityPolicy.RELIABLE if qos_reliability == "reliable" else ReliabilityPolicy.BEST_EFFORT
+        history = HistoryPolicy.KEEP_LAST if qos_history == "keep_last" else HistoryPolicy.KEEP_ALL
+        qos_profile = QoSProfile(
+            depth=qos_depth,
+            reliability=reliability,
+            history=history
+        )
         self.sub = self.create_subscription(
             _DroneControlCommand,
-            "/drone/inner_propeller_cmd",
+            cmd_topic,
             self._cb,
-            10,
+            qos_profile,
         )
-        self.pub1 = self.create_publisher(Float64, "/servo/fan1_tilt", 10)
-        self.pub2 = self.create_publisher(Float64, "/servo/fan2_tilt", 10)
+        self.pub1 = self.create_publisher(Float64, fan1_topic, qos_profile)
+        self.pub2 = self.create_publisher(Float64, fan2_topic, qos_profile)
+        self.log_level = log_level
+        if log_level == "debug":
+            self.get_logger().debug(f"Subscribed to: {cmd_topic}, Publishing to: {fan1_topic}, {fan2_topic}, QoS: depth={qos_depth}, reliability={qos_reliability}, history={qos_history}")
 
     # ---------- callback ----------
     def _cb(self, cmd: _DroneControlCommand) -> None:
@@ -46,8 +72,14 @@ class AngleBridge(Node):
 
 def main() -> None:
     rclpy.init()
-    rclpy.spin(AngleBridge())
-    rclpy.shutdown()
+    node = AngleBridge()
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
+    try:
+        executor.spin()
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == "__main__":

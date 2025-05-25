@@ -1,3 +1,0 @@
-px4_msgs:
-  humble:
-    dummy: [true] 

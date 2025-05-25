@@ -15,8 +15,9 @@ def test_outer_pwm_topic() -> None:
     def cb(msg: Float32MultiArray) -> None:
         msgs.append(msg)
 
+    pwm_topic = node.declare_parameter("pwm_topic", "/drone/outer_motor_pwm").value
     node.create_subscription(
-        Float32MultiArray, "/drone/outer_motor_pwm", cb, 10
+        Float32MultiArray, pwm_topic, cb, 10
     )
 
     start = time.time()

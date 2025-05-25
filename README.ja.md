@@ -63,6 +63,17 @@ docker compose --profile gpu up -d --build
 docker compose down
 ```
 
+## バージョン管理
+
+- ROS 2やGazebo/Ignitionのバージョンは`.env`ファイルで一元管理します。
+- 例:
+  ```
+  ROS_DISTRO=humble
+  IGNITION_VERSION=garden
+  ```
+- Dockerfileやdocker-compose.ymlはこの値を参照してビルドされます。
+- バージョンアップ時は`.env`の値を変更するだけで全体に反映されます。
+
 ---
 
 ## カスタマイズ

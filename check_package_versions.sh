@@ -11,4 +11,10 @@ if [ "$(echo "$versions" | wc -l)" -ne 1 ]; then
   exit 1
 fi
 
-echo "All package.xml versions are consistent: $versions"
+# セマンティックバージョン形式かチェック
+if ! [[ "$versions" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "Version $versions is not in semantic versioning format (MAJOR.MINOR.PATCH)"
+  exit 1
+fi
+
+echo "All package.xml versions are consistent and in semantic versioning format: $versions"

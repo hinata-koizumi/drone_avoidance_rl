@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  gazebo_0:
+    image: px4-gazebo:latest
+    environment:
+      - INSTANCE_ID=0
+      - IGN_GAZEBO_RESOURCE_PATH=/sim_ws/worlds
+      - PX4_SIM_PORT=11345
+    ports:
+      - "11345:11345/udp"
+    command: ["ign", "gazebo", "-r", "/sim_ws/worlds/empty_custom_0.sdf"]
+    networks:
+      - sim_net
+
+  gazebo_1:
+    image: px4-gazebo:latest
+    environment:
+      - INSTANCE_ID=1
+      - IGN_GAZEBO_RESOURCE_PATH=/sim_ws/worlds
+      - PX4_SIM_PORT=11346
+    ports:
+      - "11346:11346/udp"
+    command: ["ign", "gazebo", "-r", "/sim_ws/worlds/empty_custom_1.sdf"]
+    networks:
+      - sim_net
+
+  # 必要に応じてgazebo_2, gazebo_3...を追加
+
+networks:
+  sim_net:
+    driver: bridge 

@@ -94,4 +94,9 @@ ENV ROS_DOMAIN_ID=0
 ENTRYPOINT ["/entrypoint.sh"] 
 
 RUN python3 -m pip install --upgrade pip \
- && python3 -m pip install 'setuptools==59.6.0' 
+ && python3 -m pip install 'setuptools==59.6.0'
+
+RUN if [ "$(dpkg --print-architecture)" != "amd64" ]; then \
+  echo "[ERROR] This image is officially supported only on amd64. For arm64 or other architectures, additional validation and support are required. Exiting."; \
+  exit 1; \
+fi 

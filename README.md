@@ -72,6 +72,17 @@ docker compose down
 - **PX4 parameters**: edit JSON in `custom_airframes/`
 - **Telemetry**: forward UDP 14550 to QGroundControl
 
+## Version Management
+
+- ROS 2やGazebo/Ignitionのバージョンは`.env`ファイルで一元管理します。
+- 例:
+  ```
+  ROS_DISTRO=humble
+  IGNITION_VERSION=garden
+  ```
+- Dockerfileやdocker-compose.ymlはこの値を参照してビルドされます。
+- バージョンアップ時は`.env`の値を変更するだけで全体に反映されます。
+
 ---
 
 ## Testing & CI

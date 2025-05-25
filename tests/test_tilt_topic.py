@@ -10,8 +10,10 @@ def test_tilt_topic() -> None:
     node = Node("tilt_check")
     msgs = []
     def cb(msg: Float64) -> None: msgs.append(msg)
-    node.create_subscription(Float64, "/servo/fan1_tilt", cb, 10)
-    node.create_subscription(Float64, "/servo/fan2_tilt", cb, 10)
+    fan1_topic = node.declare_parameter("fan1_topic", "/servo/fan1_tilt").value
+    fan2_topic = node.declare_parameter("fan2_topic", "/servo/fan2_tilt").value
+    node.create_subscription(Float64, fan1_topic, cb, 10)
+    node.create_subscription(Float64, fan2_topic, cb, 10)
 
     start = time.time()
     while time.time() - start < 10.0 and len(msgs) < 4:
