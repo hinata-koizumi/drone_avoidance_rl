@@ -34,9 +34,16 @@ install(
   DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_py/drone_msgs
   DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages
 )
+install(
+  DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_py/drone_msgs
+  DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/dist-packages
+)
 # 型ヒント(py.typed)のみインストール
 install(FILES msg/py.typed
   DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/drone_msgs/msg
+)
+install(FILES msg/py.typed
+  DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/dist-packages/drone_msgs/msg
 )
 
 # 生成されたメッセージ用のランタイム依存関係をエクスポート
