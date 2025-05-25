@@ -11,7 +11,7 @@ export PX4_HOME_ALT=10.0
 export PX4_SIM_MODEL=4001_drone_model
 
 # Gazebo Gardenモデルパスを追加
-export GZ_SIM_RESOURCE_PATH=/usr/share/gz/garden/models:$GZ_SIM_RESOURCE_PATH
+export GZ_SIM_RESOURCE_PATH=/root/.gz/models:/usr/share/gz/garden/models:$GZ_SIM_RESOURCE_PATH
 
 # PX4 SITL起動（バックグラウンド）
 if [ -x /usr/local/bin/px4 ]; then

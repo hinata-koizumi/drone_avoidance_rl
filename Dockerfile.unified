@@ -52,6 +52,9 @@ RUN if [ -f /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/px4-alias.sh ]; then
 
 # --- PX4カスタムairframe再コピー（ビルド後にも確実に配置） ---
 COPY custom_airframes/4001_drone_model /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_drone_model
+COPY custom_airframes/4001_drone_model /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_drone_model
+RUN ls -l /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_drone_model || (echo 'ERROR: 4001_drone_model not found in build/px4_sitl_default/etc/init.d-posix/airframes/' && exit 1)
+RUN ls -l /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_drone_model || (echo 'ERROR: 4001_drone_model not found in ROMFS/px4fmu_common/init.d-posix/airframes/' && exit 1)
 
 # --- ROS 2 workspace setup ---
 WORKDIR /sim_ws
@@ -94,6 +97,8 @@ RUN mkdir -p /usr/share/gz/fortress/models && \
 RUN gz model --download ground_plane && gz model --download sun || true
 RUN ls -l /usr/share/gz/garden/models/ground_plane || echo 'ground_plane model not found!'
 RUN ls -l /usr/share/gz/garden/models/sun || echo 'sun model not found!'
+RUN ls -l /root/.gz/models/ground_plane || echo 'ground_plane model not found in /root/.gz/models!'
+RUN ls -l /root/.gz/models/sun || echo 'sun model not found in /root/.gz/models!'
 
 # --- Entrypoint ---
 COPY docker/entrypoint-unified.sh /entrypoint.sh
