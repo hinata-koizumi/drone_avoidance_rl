@@ -8,7 +8,7 @@ source /opt/ros/${ROS_DISTRO}/setup.bash
 export PX4_HOME_LAT=35.6586
 export PX4_HOME_LON=139.7454
 export PX4_HOME_ALT=10.0
-export PX4_SIM_MODEL=4001_drone_model
+export PX4_SIM_MODEL=4001_custom_drone
 
 # Gazebo Gardenモデルパスを追加
 export GZ_SIM_RESOURCE_PATH=/root/.gz/models:/usr/share/gz/garden/models:$GZ_SIM_RESOURCE_PATH
