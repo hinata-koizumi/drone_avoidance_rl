@@ -1,6 +1,19 @@
+version: '3.8'
 services:
+  msgs:
+    image: drone_rl:msgs
+    command: bash -c "ls /msgs_ws/install/lib/python3.10/site-packages/drone_msgs/msg/_drone_control_command.py"
+    healthcheck:
+      test: ["CMD", "ls", "/msgs_ws/install/lib/python3.10/site-packages/drone_msgs/msg/_drone_control_command.py"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   sim:
     image: drone_rl:unified
+    depends_on:
+      msgs:
+        condition: service_healthy
     environment:
       - HEADLESS=1
       - ROS_DOMAIN_ID=0
@@ -8,6 +21,45 @@ services:
       bash -c "
         source /opt/ros/humble/setup.sh &&
         source /sim_ws/install/setup.sh &&
-        ros2 launch sim_launch sim_all.launch.py headless:=true &
-        sleep 10 &&
-        ros2 run sim_launch e2e_test"
+        ros2 launch sim_launch sim_all.launch.py headless:=true"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "ros2 topic list | grep /drone0/state"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rl-agent:
+    image: drone_rl:rl-agent
+    depends_on:
+      sim:
+        condition: service_healthy
+    environment:
+      - ROS_DOMAIN_ID=0
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.sh &&
+        source /drone_ws/install/setup.sh &&
+        python3 /drone_ws/install/gym_env.py"
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "python3 /drone_ws/install/gym_env.py"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bridge:
+    image: drone_rl:bridge
+    depends_on:
+      sim:
+        condition: service_healthy
+    environment:
+      - ROS_DOMAIN_ID=0
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.sh &&
+        source /bridge_ws/install/setup.sh &&
+        ros2 run state_bridge state_bridge_node"
+    healthcheck:
+      test: ["CMD", "ros2 node list | grep state_bridge_node"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

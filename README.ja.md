@@ -181,3 +181,9 @@ Apache License 2.0 — `LICENSE`参照。
 mkdocs serve
 # または
 sphinx-build -b html docs/ docs/_build/html
+
+## 共通基盤・ユーティリティ
+
+- **BridgeBase基底クラス**: `src/common/bridge_base.py` にて、各種Bridgeノード（angle_bridge, outer_motor_bridge, command_bridge, state_bridge等）のQoS設定・パラメータ取得・ログ出力を共通化。新規BridgeノードはBridgeBaseを継承し、パラメータdictを渡すだけで実装可能。
+- **共通ユーティリティ**: `src/common/utils.py` にclamp等の汎用関数を集約。各ノード・環境でimportして利用。
+- **メリット**: コード重複削減・保守性向上・新規ノード追加が容易。

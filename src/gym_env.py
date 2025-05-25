@@ -19,6 +19,7 @@ from gymnasium import spaces
 
 from drone_msgs.msg import DroneControlCommand as _DroneControlCommand  # type: ignore
 from drone_msgs.msg import DroneState as _DroneState  # type: ignore
+from src.common.utils import clamp
 
 
 # ---------------- util ----------------
@@ -211,7 +212,7 @@ class DroneSimEnv(gym.Env):
         pass
 
     def _clamp(self, x: float, lo: float, hi: float) -> float:
-        return x
+        return clamp(x, lo, hi)
 
     def _normalize_angle(self, angle: float) -> float:
         return angle

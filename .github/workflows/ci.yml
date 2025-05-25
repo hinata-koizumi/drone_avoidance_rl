@@ -80,18 +80,22 @@ jobs:
           set -a
           [ -f .env ] && . .env
           set +a
-      - name: Build sim docker image
-        run: docker build -t drone_rl:unified -f docker/Dockerfile.unified .
-      - name: Launch simulation and test
+      - name: Build all docker images
         run: |
-          docker compose -f tests/ci-compose.yml up --abort-on-container-exit
-          docker cp $(docker ps -aqf "name=sim"):/root/.ros/rosbag2_latest ./rosbag2_latest || true
-      - name: Upload rosbag2 artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: rosbag2-latest
-          path: ./rosbag2_latest
+          docker build -t drone_rl:msgs -f docker/Dockerfile.msgs .
+          docker build -t drone_rl:unified -f docker/Dockerfile.unified .
+          docker build -t drone_rl:rl-agent -f docker/rl-agent/Dockerfile.agent .
+          docker build -t drone_rl:bridge -f docker/Dockerfile.bridge .
+      - name: Launch all services and run E2E tests
+        run: |
+          docker compose -f tests/ci-compose.yml up --build --abort-on-container-exit
+      - name: Run E2E pytest (integration)
+        run: |
+          python3 -m pip install pytest gymnasium numpy pyyaml lark
+          pytest tests/
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose -f tests/ci-compose.yml logs
       - name: Print rerun command on failure
         if: failure()
         run: |

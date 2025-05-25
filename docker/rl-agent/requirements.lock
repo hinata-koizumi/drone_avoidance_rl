@@ -2,6 +2,3 @@
 # ---------- P5-fix ----------
 gymnasium==0.28.1
 numpy==1.26.4
-stable-baselines3==2.3.0
-torch==2.2.2           # arm64 / MPS official wheel
-scipy==1.13.0

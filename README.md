@@ -31,6 +31,14 @@ drone_avoidance_rl/
 
 ---
 
+## Common Infrastructure & Utilities
+
+- **BridgeBase base class**: Located in `src/common/bridge_base.py`, this class unifies QoS settings, parameter handling, and logging for all bridge nodes (e.g., angle_bridge, outer_motor_bridge, command_bridge, state_bridge). To implement a new bridge node, simply inherit from BridgeBase and provide a parameter dict.
+- **Common utilities**: Generic helpers like `clamp` are collected in `src/common/utils.py` and can be imported anywhere.
+- **Benefits**: Reduces code duplication, improves maintainability, and makes it easy to add new bridge nodes.
+
+---
+
 ## Prerequisites
 
 - Docker Desktop 4.30+ (BuildKit enabled)
