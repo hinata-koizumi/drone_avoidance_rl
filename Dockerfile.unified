@@ -50,6 +50,9 @@ RUN if [ -f /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/px4-alias.sh ]; then
       echo '[WARNING] px4-alias.sh not found, skipping.'; \
     fi
 
+# --- PX4カスタムairframe再コピー（ビルド後にも確実に配置） ---
+COPY custom_airframes/4001_drone_model /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_drone_model
+
 # --- ROS 2 workspace setup ---
 WORKDIR /sim_ws
 COPY src/ src/

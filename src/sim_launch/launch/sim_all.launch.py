@@ -11,7 +11,10 @@ from launch_ros.actions import Node
 def generate_launch_description() -> LaunchDescription:
     # パラメータ取得
     use_sim_time = os.environ.get('USE_SIM_TIME', 'true').lower() == 'true'
-    gz_world = os.environ.get('IGN_GAZEBO_WORLD', os.path.join(os.path.dirname(__file__), '../resource/empty_custom.sdf'))
+    gz_world = os.environ.get(
+        'IGN_GAZEBO_WORLD',
+        os.path.join(os.path.dirname(__file__), '../resource/empty_custom.sdf')
+    )
     headless = os.environ.get('GAZEBO_HEADLESS', 'true').lower() == 'true'
 
     # Gazebo起動引数
