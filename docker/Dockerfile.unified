@@ -43,6 +43,7 @@ RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     mkdir -p /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/build/px4_sitl_rtps
 COPY custom_airframes/4001_drone_model /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_drone_model
 COPY custom_airframes/4001_drone_model /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_drone_model
+RUN ls -l /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_drone_model || (echo 'ERROR: 4001_drone_model not found in build/px4_sitl_default/etc/init.d-posix/airframes/' && exit 1)
 RUN if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS ]; then \
       cp /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS; \
     fi
@@ -70,6 +71,7 @@ USER root
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
     rosdep install --from-paths /sim_ws/src --rosdistro ${ROS_DISTRO} -y --ignore-src && \
     colcon build --symlink-install --event-handlers console_direct+
+RUN ls /sim_ws/install/lib/python3.10/site-packages/drone_msgs/msg/_drone_control_command.py || (echo 'ERROR: drone_msgs Python bindings not found!' && exit 1)
 
 # --- px4_msgsのPythonバインディングが存在するかチェック ---
 RUN ls /sim_ws/install/lib/python3.10/site-packages/px4_msgs || echo 'px4_msgs not found'
@@ -111,4 +113,6 @@ RUN python3 -m pip install --upgrade pip \
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ros-humble-ros-gz-sim && \
-    rm -rf /var/lib/apt/lists/* 
+    rm -rf /var/lib/apt/lists/*
+
+ENV QT_QPA_PLATFORM=offscreen 
