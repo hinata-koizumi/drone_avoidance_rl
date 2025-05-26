@@ -369,3 +369,14 @@ jobs:
         with:
           generate_release_notes: true
 
+  rosdep-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Check rosdep YAML consistency
+        run: python3 tools/check_rosdep_consistency.py
+
