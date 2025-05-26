@@ -4,19 +4,34 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    labels:
+      - "github-actions"
+      - "dependencies"
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "root-deps"
+      - "dependencies"
   - package-ecosystem: "pip"
     directory: "/docker/rl-agent/"
     schedule:
       interval: "weekly"
+    labels:
+      - "rl-agent"
+      - "dependencies"
   - package-ecosystem: "pip"
     directory: "/docker/px4-bridge/"
     schedule:
       interval: "weekly"
+    labels:
+      - "px4-bridge"
+      - "dependencies"
   - package-ecosystem: "pip"
     directory: "/docker/px4-simulator/"
     schedule:
-      interval: "weekly" 
+      interval: "weekly"
+    labels:
+      - "px4-simulator"
+      - "dependencies" 
