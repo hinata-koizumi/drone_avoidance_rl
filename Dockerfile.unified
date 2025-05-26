@@ -115,3 +115,6 @@ RUN if [ "$(dpkg --print-architecture)" != "amd64" ]; then \
   echo "[ERROR] This image is officially supported only on amd64. For arm64 or other architectures, additional validation and support are required. Exiting."; \
   exit 1; \
 fi 
+
+RUN [ -d /root/.gz/models/ground_plane ] && ln -sf /root/.gz/models/ground_plane /usr/share/gz/garden/models/ground_plane || true && \
+    [ -d /root/.gz/models/sun ] && ln -sf /root/.gz/models/sun /usr/share/gz/garden/models/sun || true 
