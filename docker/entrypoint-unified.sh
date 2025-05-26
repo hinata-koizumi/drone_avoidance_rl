@@ -22,7 +22,7 @@ if [ -x /usr/local/bin/px4 ]; then
     chmod +x /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/px4-alias.sh
   fi
   cd /PX4-Autopilot/build/px4_sitl_default
-  /usr/local/bin/px4 etc -s etc/init.d-posix/rcS &
+  /usr/local/bin/px4 etc -s etc/init.d-posix/rcS -a 4001 &
   PX4_PID=$!
 fi
 

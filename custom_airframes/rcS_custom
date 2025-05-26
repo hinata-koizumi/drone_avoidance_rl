@@ -1,9 +1,6 @@
 #!/bin/sh
 set -e
 
-# PX4カスタムairframeを明示的に指定
-param set SYS_AUTOSTART 4001
-
 # PX4公式rcSの主要な初期化処理（最小限）
 
 # PX4 modules path
