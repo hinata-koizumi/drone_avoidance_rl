@@ -240,25 +240,25 @@ class DroneSimEnv(gym.Env):
         batt_v     = random.uniform(10.8, 13.2)  # Li-ion 4S eq.
         procs = []
         procs.append(subprocess.Popen([
-            "ign", "service", "-s", "/world/empty/set_physics",
-            "--reqtype", "ignition.msgs.Physics", "--reptype", "ignition.msgs.Boolean",
+            "ign", "service", "-s", "/world/empty/physics/set_parameters",
+            "--reqtype", "ignition.msgs.PhysicsParameters", "--reptype", "ignition.msgs.Boolean",
             "--timeout", "300",
             "--req",
-            f"mass_scale:{mass_scale} center_of_mass:{{x:{com_shift[0]}, y:{com_shift[1]}, z:{com_shift[2]}}}"
+            f"gravity_vector:{{x:0, y:0, z:-9.81}} mass_scale:{mass_scale} center_of_mass:{{x:{com_shift[0]}, y:{com_shift[1]}, z:{com_shift[2]}}}"
         ]))
         procs.append(subprocess.Popen([
-            "ign", "service", "-s", "/world/empty/set_wind",
-            "--reqtype", "ignition.msgs.Wind", "--reptype", "ignition.msgs.Boolean",
+            "ign", "service", "-s", "/world/empty/atmosphere/set_parameters",
+            "--reqtype", "ignition.msgs.AtmosphereParameters", "--reptype", "ignition.msgs.Boolean",
             "--timeout", "300",
             "--req",
-            f"linear_velocity:{{x:{wind_vec[0]}, y:{wind_vec[1]}, z:{wind_vec[2]}}}"
+            f"wind_velocity:{{x:{wind_vec[0]}, y:{wind_vec[1]}, z:{wind_vec[2]}}}"
         ]))
         procs.append(subprocess.Popen([
-            "ign", "service", "-s", "/world/empty/set_wind_gust",
-            "--reqtype", "ignition.msgs.Wind", "--reptype", "ignition.msgs.Boolean",
+            "ign", "service", "-s", "/world/empty/atmosphere/set_gust",
+            "--reqtype", "ignition.msgs.AtmosphereGust", "--reptype", "ignition.msgs.Boolean",
             "--timeout", "300",
             "--req",
-            f"speed:{gust_speed} direction:{{x:{gust_dir[0]}, y:{gust_dir[1]}, z:{gust_dir[2]}}}"
+            f"velocity:{gust_speed} direction:{{x:{gust_dir[0]}, y:{gust_dir[1]}, z:{gust_dir[2]}}}"
         ]))
         procs.append(subprocess.Popen([
             "bash", "-c",

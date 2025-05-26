@@ -6,7 +6,11 @@ import numpy as np
 from gymnasium.vector import AsyncVectorEnv
 from gym_env import DroneSimEnv
 
-def make_env(instance_id: int, reward_mode: str = "default", episode_max_steps: int = 2000) -> callable[[], DroneSimEnv]:
+def make_env(
+    instance_id: int,
+    reward_mode: str = "default",
+    episode_max_steps: int = 2000
+) -> callable[[], DroneSimEnv]:
     """
     Factory function to create DroneSimEnv initializer for vectorized environments.
     Args:

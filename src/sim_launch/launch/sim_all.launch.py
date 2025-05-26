@@ -28,7 +28,6 @@ def generate_launch_description() -> LaunchDescription:
     gz_world = LaunchConfiguration('gz_world')
     physics_engine = LaunchConfiguration('physics_engine')
     headless = LaunchConfiguration('headless', default='true')
-    cmd_topic = LaunchConfiguration('cmd_topic')
 
     # Gazebo起動引数
     gz_args = [

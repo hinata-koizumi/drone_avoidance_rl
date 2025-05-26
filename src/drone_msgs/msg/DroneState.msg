@@ -1,5 +1,8 @@
-float32[] attitude  # roll, pitch, yaw など
-geometry_msgs/Vector3[] position  # 拡張性のため配列化
-geometry_msgs/Vector3[] velocity
-geometry_msgs/Vector3[] angular_velocity
-geometry_msgs/Vector3[] wind
+# Drone state message
+float32 roll    # Roll angle [rad]
+float32 pitch   # Pitch angle [rad]
+float32 yaw     # Yaw angle [rad]
+geometry_msgs/Vector3 position         # Position in world frame [m]
+geometry_msgs/Vector3 velocity         # Velocity in world frame [m/s]
+geometry_msgs/Vector3 angular_velocity # Angular velocity [rad/s]
+geometry_msgs/Vector3 wind            # Wind vector [m/s]

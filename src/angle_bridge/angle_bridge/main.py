@@ -58,7 +58,8 @@ class AngleBridgeNode(BridgeBase):
 
     def _cb(self, cmd: _DroneControlCommand) -> None:
         """
-        Callback for DroneControlCommand subscription. Clamps and converts angles to radians, then publishes to fan topics.
+        Callback for DroneControlCommand subscription. Clamps and converts angles to radians,
+        then publishes to fan topics.
         Args:
             cmd (_DroneControlCommand): Incoming drone control command message.
         """
