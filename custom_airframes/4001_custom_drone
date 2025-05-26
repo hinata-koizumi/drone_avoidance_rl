@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# @name Drone Model
+# @name Custom RL Drone
 # @type Quadrotor
 # @class 4001
 # @info Custom drone model for RL
@@ -8,7 +8,7 @@
 
 set -e
 
-# Example: set parameters
+# Parameters
 param set MC_ROLL_P 6.0
 param set MC_PITCH_P 6.0
 param set MC_YAW_P 3.5

@@ -110,6 +110,15 @@ RUN for i in {1..5}; do apt-get update && robust_apt_install --no-install-recomm
 RUN for i in {1..5}; do apt-get update && robust_apt_install --no-install-recommends ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-ros-gz-sim && break || sleep 10; done && \
     rm -rf /var/lib/apt/lists/*
 
+# --- Gazebo Garden 標準モデルのダウンロードとリンク強化 ---
+RUN gz model --download ground_plane || true
+RUN gz model --download sun || true
+RUN mkdir -p /usr/share/gz/garden/models && \
+    [ -d /root/.gz/models/ground_plane ] && ln -sf /root/.gz/models/ground_plane /usr/share/gz/garden/models/ground_plane || true && \
+    [ -d /root/.gz/models/sun ] && ln -sf /root/.gz/models/sun /usr/share/gz/garden/models/sun || true
+RUN ls -l /usr/share/gz/garden/models/ground_plane || echo 'ground_plane model not found!'
+RUN ls -l /usr/share/gz/garden/models/sun || echo 'sun model not found!'
+
 # --- Entrypoint ---
 COPY docker/entrypoint-unified.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
