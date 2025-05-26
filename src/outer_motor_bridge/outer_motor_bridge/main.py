@@ -9,13 +9,26 @@ from std_msgs.msg import Float32MultiArray
 from px4_msgs.msg import ActuatorMotors
 from rclpy.executors import MultiThreadedExecutor
 from src.common.bridge_base import BridgeBase
+import yaml
+import os
 
 
 class OuterMotorBridge(BridgeBase):
+    """
+    Bridge node to convert PX4 ActuatorMotors (channels 0-3) to Float32MultiArray for outer motor PWM output.
+    Subscribes to ActuatorMotors and publishes Float32MultiArray for PWM control.
+    """
     def __init__(self) -> None:
+        """
+        Initialize OuterMotorBridge with parameters loaded from YAML config.
+        Sets up ROS 2 subscriptions and publishers for input and output topics.
+        """
+        config_path = os.path.join(os.path.dirname(__file__), '../../../config/sim_params.yaml')
+        with open(config_path, 'r') as f:
+            params = yaml.safe_load(f)
         super().__init__("outer_motor_bridge", {
-            "input_topic": "/fmu/out/actuator_motors",
-            "output_topic": "/drone/outer_motor_pwm",
+            "input_topic": params['outer_motor_input_topic'],
+            "output_topic": params['outer_motor_output_topic'],
             "qos_depth": 10,
             "qos_reliability": "reliable",
             "qos_history": "keep_last",
@@ -44,6 +57,11 @@ class OuterMotorBridge(BridgeBase):
 
     # ---------- callback ----------
     def _cb(self, msg: ActuatorMotors) -> None:
+        """
+        Callback for ActuatorMotors subscription. Converts to Float32MultiArray and publishes.
+        Args:
+            msg (ActuatorMotors): Incoming actuator motors message.
+        """
         pwm_min = self.get_parameter("pwm_min").value
         pwm_max = self.get_parameter("pwm_max").value
         out = Float32MultiArray()
@@ -54,6 +72,9 @@ class OuterMotorBridge(BridgeBase):
         self.pub.publish(out)
 
 def main() -> None:
+    """
+    Entry point for OuterMotorBridge. Initializes ROS 2, spins the node, and handles shutdown.
+    """
     rclpy.init()
     node = OuterMotorBridge()
     executor = MultiThreadedExecutor()

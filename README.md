@@ -91,6 +91,8 @@ docker compose down
 - `.env.example` を `.env` にコピーして編集してください。
 - Dockerfileやdocker-compose.ymlはこの値を参照してビルドされます。
 - バージョンアップ時は`.env`の値を変更するだけで全体に反映されます。
+- **package.xmlのバージョン一貫性は`check_package_versions.sh`で自動チェックされ、タグリリース時はCIでタグとpackage.xmlのバージョン一致も自動検証されます。**
+- **依存性（requirements.txt, rosdep YAML, GitHub Actions workflow）はDependabot（`.github/dependabot.yml`）で自動監視・PR作成されます。**
 
 ---
 
@@ -189,3 +191,61 @@ Apache License 2.0 — see `LICENSE`.
 mkdocs serve
 # または
 sphinx-build -b html docs/ docs/_build/html
+
+---
+
+## 強化学習アルゴリズムの利用例
+
+本リポジトリは「環境（Env）」のみを提供しています。学習アルゴリズム本体はStable Baselines3やCleanRL等の外部ライブラリを利用してください。
+
+### 例: Stable Baselines3でSACを使う
+```python
+from stable_baselines3 import SAC
+from gym_env import DroneSimEnv
+
+env = DroneSimEnv(reward_mode="hover", episode_max_steps=1000)
+model = SAC("MlpPolicy", env, verbose=1)
+model.learn(total_timesteps=100_000)
+```
+
+### 例: ベクトル化環境で複数同時学習
+```python
+from stable_baselines3 import PPO
+from gymnasium.vector import AsyncVectorEnv
+from gym_env import DroneSimEnv
+
+def make_env(i):
+    def _init():
+        return DroneSimEnv(instance_id=i, reward_mode="hover")
+    return _init
+
+env = AsyncVectorEnv([make_env(i) for i in range(4)])
+model = PPO("MlpPolicy", env, verbose=1)
+model.learn(total_timesteps=200_000)
+```
+
+---
+
+## パラメータの柔軟な指定方法
+
+`DroneSimEnv`の主要パラメータ（報酬モード、エピソード長、目標高度など）は、
+- Python引数
+- ROS 2パラメータサーバ
+- launchファイル
+から柔軟に指定できます。
+
+### 例: launchファイルやros2 paramで指定
+```bash
+ros2 run your_package your_node --ros-args \
+  -p reward_mode:=hover \
+  -p episode_max_steps:=1500 \
+  -p target_alt:=2.5
+```
+
+---
+
+## タスクごとの報酬モード
+- `reward_mode="hover"` : ホバリング特化
+- `reward_mode="path_follow"` : 経路追従
+- `reward_mode="obstacle_avoid"` : 障害物回避
+- `reward_mode="default"` : 従来型（環境変数で重み調整）

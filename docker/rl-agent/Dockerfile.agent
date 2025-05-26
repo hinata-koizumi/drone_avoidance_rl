@@ -1,12 +1,10 @@
 # docker/rl-agent/Dockerfile.agent   2025-04-30 R3
 ARG ROS_DISTRO=humble
 ARG IGNITION_VERSION=garden
-FROM ros:${ROS_DISTRO} AS builder
-SHELL ["/bin/bash", "-c"]
+FROM drone-avoidance-base:latest as builder
 USER root
 
 # ---------- Python env ----------
-RUN apt-get update && apt-get install -y python3-pip
 COPY docker/rl-agent/requirements.lock /tmp/requirements.lock
 RUN pip install --no-cache-dir --retries 10 --timeout 120 -r /tmp/requirements.lock
 RUN apt-get update && apt-get install -y ros-${ROS_DISTRO}-rclpy
@@ -21,8 +19,7 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
     echo 'from ._drone_control_command import DroneControlCommand' >> /drone_ws/install/drone_msgs/lib/python3.10/site-packages/drone_msgs/msg/__init__.py && \
     . install/setup.sh
 
-# ---------- runtime ----------
-FROM ros:${ROS_DISTRO} as runtime
+FROM drone-avoidance-base:latest as runtime
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates python3 python3-pip ignition-tools netcat-openbsd && \
     apt-get clean && rm -rf /var/lib/apt/lists/*

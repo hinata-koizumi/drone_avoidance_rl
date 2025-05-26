@@ -74,6 +74,8 @@ docker compose down
 - `.env.example` を `.env` にコピーして編集してください。
 - Dockerfileやdocker-compose.ymlはこの値を参照してビルドされます。
 - バージョンアップ時は`.env`の値を変更するだけで全体に反映されます。
+- **package.xmlのバージョン一貫性は`check_package_versions.sh`で自動チェックされ、タグリリース時はCIでタグとpackage.xmlのバージョン一致も自動検証されます。**
+- **依存性（requirements.txt, rosdep YAML, GitHub Actions workflow）はDependabot（`.github/dependabot.yml`）で自動監視・PR作成されます。**
 
 ---
 

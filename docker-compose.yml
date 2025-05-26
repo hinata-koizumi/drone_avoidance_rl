@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   sim:
     build:
@@ -26,10 +27,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.bridge
-      args:
-        ROS_DISTRO: ${ROS_DISTRO}
-        IGNITION_VERSION: ${IGNITION_VERSION}
-    image: drone_rl:bridge
+    image: drone-avoidance-bridge:latest
     environment:
       - ROS_DOMAIN_ID=0
     command: bash -c "/entrypoint.sh"
@@ -44,10 +42,7 @@ services:
     build:
       context: .
       dockerfile: docker/rl-agent/Dockerfile.agent
-      args:
-        ROS_DISTRO: ${ROS_DISTRO}
-        IGNITION_VERSION: ${IGNITION_VERSION}
-    image: drone_rl:rl-agent
+    image: drone-avoidance-rl-agent:latest
     environment:
       - ROS_DOMAIN_ID=0
     working_dir: /drone_ws
@@ -64,9 +59,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.msgs
-      args:
-        ROS_DISTRO: ${ROS_DISTRO}
-    image: drone_rl:msgs
+    image: drone-avoidance-msgs:latest
     networks:
       - default
     mem_limit: 4g

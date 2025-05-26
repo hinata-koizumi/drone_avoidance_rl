@@ -32,5 +32,71 @@
       </collision>
     </link>
 
+    <!-- 4 rotors -->
+    <link name="rotor_1">
+      <pose>0.15 0.15 0.15 0 0 0</pose>
+      <inertial><mass>0.05</mass><inertia><ixx>0.001</ixx><iyy>0.001</iyy><izz>0.001</izz></inertia></inertial>
+      <visual name="rotor_1_visual"><geometry><cylinder><radius>0.03</radius><length>0.01</length></cylinder></geometry></visual>
+      <collision name="rotor_1_collision"><geometry><cylinder><radius>0.03</radius><length>0.01</length></cylinder></geometry></collision>
+    </link>
+    <joint name="rotor_1_joint" type="fixed">
+      <parent>base_link</parent><child>rotor_1</child>
+    </joint>
+    <link name="rotor_2">
+      <pose>-0.15 0.15 0.15 0 0 0</pose>
+      <inertial><mass>0.05</mass><inertia><ixx>0.001</ixx><iyy>0.001</iyy><izz>0.001</izz></inertia></inertial>
+      <visual name="rotor_2_visual"><geometry><cylinder><radius>0.03</radius><length>0.01</length></cylinder></geometry></visual>
+      <collision name="rotor_2_collision"><geometry><cylinder><radius>0.03</radius><length>0.01</length></cylinder></geometry></collision>
+    </link>
+    <joint name="rotor_2_joint" type="fixed">
+      <parent>base_link</parent><child>rotor_2</child>
+    </joint>
+    <link name="rotor_3">
+      <pose>-0.15 -0.15 0.15 0 0 0</pose>
+      <inertial><mass>0.05</mass><inertia><ixx>0.001</ixx><iyy>0.001</iyy><izz>0.001</izz></inertia></inertial>
+      <visual name="rotor_3_visual"><geometry><cylinder><radius>0.03</radius><length>0.01</length></cylinder></geometry></visual>
+      <collision name="rotor_3_collision"><geometry><cylinder><radius>0.03</radius><length>0.01</length></cylinder></geometry></collision>
+    </link>
+    <joint name="rotor_3_joint" type="fixed">
+      <parent>base_link</parent><child>rotor_3</child>
+    </joint>
+    <link name="rotor_4">
+      <pose>0.15 -0.15 0.15 0 0 0</pose>
+      <inertial><mass>0.05</mass><inertia><ixx>0.001</ixx><iyy>0.001</iyy><izz>0.001</izz></inertia></inertial>
+      <visual name="rotor_4_visual"><geometry><cylinder><radius>0.03</radius><length>0.01</length></cylinder></geometry></visual>
+      <collision name="rotor_4_collision"><geometry><cylinder><radius>0.03</radius><length>0.01</length></cylinder></geometry></collision>
+    </link>
+    <joint name="rotor_4_joint" type="fixed">
+      <parent>base_link</parent><child>rotor_4</child>
+    </joint>
+
+    <!-- 2 ducted fans -->
+    <link name="ducted_fan_1">
+      <pose>0.0 0.10 0.05 0 0 0</pose>
+      <inertial><mass>0.08</mass><inertia><ixx>0.002</ixx><iyy>0.002</iyy><izz>0.002</izz></inertia></inertial>
+      <visual name="ducted_fan_1_visual"><geometry><cylinder><radius>0.04</radius><length>0.03</length></cylinder></geometry></visual>
+      <collision name="ducted_fan_1_collision"><geometry><cylinder><radius>0.04</radius><length>0.03</length></cylinder></geometry></collision>
+    </link>
+    <joint name="ducted_fan_1_joint" type="fixed">
+      <parent>base_link</parent><child>ducted_fan_1</child>
+    </joint>
+    <link name="ducted_fan_2">
+      <pose>0.0 -0.10 0.05 0 0 0</pose>
+      <inertial><mass>0.08</mass><inertia><ixx>0.002</ixx><iyy>0.002</iyy><izz>0.002</izz></inertia></inertial>
+      <visual name="ducted_fan_2_visual"><geometry><cylinder><radius>0.04</radius><length>0.03</length></cylinder></geometry></visual>
+      <collision name="ducted_fan_2_collision"><geometry><cylinder><radius>0.04</radius><length>0.03</length></cylinder></geometry></collision>
+    </link>
+    <joint name="ducted_fan_2_joint" type="fixed">
+      <parent>base_link</parent><child>ducted_fan_2</child>
+    </joint>
+
   </model>
 </sdf>
+<!--
+  disaster_relief_drone.sdf
+  - base_link: 本体
+  - rotor_1〜4: 4つのローター
+  - ducted_fan_1,2: 2つのダクトファン
+  各リンクは簡易な慣性・ビジュアル・コリジョンを持つ
+  今後: センサ追加や可動ジョイント化、プラグイン追加など拡張可能
+-->

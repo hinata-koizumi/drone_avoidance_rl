@@ -1,14 +1,38 @@
 # type: ignore
+import yaml
+import os
 from launch import LaunchDescription
 from launch_ros.actions import Node
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description() -> LaunchDescription:
-    return LaunchDescription([
-        Node(
+    config_path = os.path.join(os.path.dirname(__file__), '../../config/sim_params.yaml')
+    with open(config_path, 'r') as f:
+        params = yaml.safe_load(f)
+    launch_args = []
+    bridge_nodes = []
+    for bridge in params.get('bridge_topics', []):
+        topic = bridge['topic']
+        ros_type = bridge['ros_type']
+        ign_type = bridge['ign_type']
+        direction = bridge.get('direction', 'bidirectional')
+        if direction == 'bidirectional':
+            arg = f"{topic}@{ros_type}[{ign_type}"
+        elif direction == 'ros_to_ign':
+            arg = f"{topic}@{ros_type}]<{ign_type}"
+        elif direction == 'ign_to_ros':
+            arg = f"{topic}@{ros_type}[>{ign_type}"
+        else:
+            continue  # skip unknown direction
+        bridge_nodes.append(Node(
             package='ros_gz_bridge',
             executable='parameter_bridge',
-            arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'],
-            output='screen'
-        )
+            arguments=[arg],
+            output='screen',
+        ))
+    return LaunchDescription([
+        *launch_args,
+        *bridge_nodes,
     ])

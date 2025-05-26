@@ -13,9 +13,16 @@ param set MC_ROLL_P 6.0
 param set MC_PITCH_P 6.0
 param set MC_YAW_P 3.5
 
+# Servo functions for quadrotor (1-4)
 param set SERVO1_FUNCTION 94
 param set SERVO2_FUNCTION 95
+param set SERVO3_FUNCTION 96
+param set SERVO4_FUNCTION 97
 param set SERVO1_MIN 900
 param set SERVO1_MAX 2100
 param set SERVO2_MIN 900
-param set SERVO2_MAX 2100 
+param set SERVO2_MAX 2100
+param set SERVO3_MIN 900
+param set SERVO3_MAX 2100
+param set SERVO4_MIN 900
+param set SERVO4_MAX 2100 

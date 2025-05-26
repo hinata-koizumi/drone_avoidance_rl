@@ -10,16 +10,30 @@ from std_msgs.msg import Float64
 from drone_msgs.msg import DroneControlCommand as _DroneControlCommand
 from src.common.bridge_base import BridgeBase
 from src.common.utils import clamp
+import yaml
+import os
 
 _MIN_DEG, _MAX_DEG = -30.0, 30.0              # 制御範囲 [deg]
 _DEG2RAD = math.pi / 180.0
 
-class AngleBridge(BridgeBase):
+class AngleBridgeNode(BridgeBase):
+    """
+    Bridge node to convert DroneControlCommand angles to Gazebo JointController commands for inner propeller tilt.
+    Subscribes to DroneControlCommand and publishes Float64 angles (in radians) to fan1 and fan2 topics.
+    """
     def __init__(self) -> None:
+        """
+        Initialize AngleBridgeNode with parameters loaded from YAML config.
+        Sets up ROS 2 subscriptions and publishers for command and fan topics.
+        """
+        # YAMLからデフォルト値取得
+        config_path = os.path.join(os.path.dirname(__file__), '../../../config/sim_params.yaml')
+        with open(config_path, 'r') as f:
+            params = yaml.safe_load(f)
         super().__init__("angle_bridge", {
-            "cmd_topic": "/drone/inner_propeller_cmd",
-            "fan1_topic": "/servo/fan1_tilt",
-            "fan2_topic": "/servo/fan2_tilt",
+            "cmd_topic": params["cmd_topic"],
+            "fan1_topic": params["fan1_topic"],
+            "fan2_topic": params["fan2_topic"],
             "qos_depth": 10,
             "qos_reliability": "reliable",
             "qos_history": "keep_last",
@@ -43,6 +57,11 @@ class AngleBridge(BridgeBase):
             )
 
     def _cb(self, cmd: _DroneControlCommand) -> None:
+        """
+        Callback for DroneControlCommand subscription. Clamps and converts angles to radians, then publishes to fan topics.
+        Args:
+            cmd (_DroneControlCommand): Incoming drone control command message.
+        """
         ang1_deg = clamp(cmd.angle1, _MIN_DEG, _MAX_DEG)
         ang2_deg = clamp(cmd.angle2, _MIN_DEG, _MAX_DEG)
         msg1 = Float64()
@@ -53,8 +72,11 @@ class AngleBridge(BridgeBase):
         self.pub2.publish(msg2)
 
 def main() -> None:
+    """
+    Entry point for AngleBridgeNode. Initializes ROS 2, spins the node, and handles shutdown.
+    """
     rclpy.init()
-    node = AngleBridge()
+    node = AngleBridgeNode()
     executor = MultiThreadedExecutor()
     executor.add_node(node)
     try:

@@ -3,12 +3,27 @@
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
 from src.common.bridge_base import BridgeBase
+from drone_msgs.msg import DroneControlCommand
+from px4_msgs.msg import ActuatorMotors
+import yaml
+import os
 
 class CommandBridgeNode(BridgeBase):
-    def __init__(self):
+    """
+    Bridge node to convert DroneControlCommand to PX4 ActuatorMotors message.
+    Subscribes to DroneControlCommand and publishes ActuatorMotors for PX4 actuator control.
+    """
+    def __init__(self) -> None:
+        """
+        Initialize CommandBridgeNode with parameters loaded from YAML config.
+        Sets up ROS 2 subscriptions and publishers for input and output topics.
+        """
+        config_path = os.path.join(os.path.dirname(__file__), '../../../config/sim_params.yaml')
+        with open(config_path, 'r') as f:
+            params = yaml.safe_load(f)
         super().__init__('command_bridge_node', {
-            'input_topic': '/drone/command',
-            'output_topic': '/px4/actuator_motors',
+            'input_topic': params['input_topic'],
+            'output_topic': params['output_topic'],
             'qos_depth': 10,
             'qos_reliability': 'reliable',
             'qos_history': 'keep_last',
@@ -17,13 +32,13 @@ class CommandBridgeNode(BridgeBase):
         input_topic = self.get_parameter('input_topic').get_parameter_value().string_value
         output_topic = self.get_parameter('output_topic').get_parameter_value().string_value
         self.sub = self.create_subscription(
-            type(None),  # TODO: 適切なmsg型に置換
+            DroneControlCommand,
             input_topic,
             self._cb,
             self.qos_profile,
         )
         self.pub = self.create_publisher(
-            type(None),  # TODO: 適切なmsg型に置換
+            ActuatorMotors,
             output_topic,
             self.qos_profile,
         )
@@ -32,10 +47,22 @@ class CommandBridgeNode(BridgeBase):
                 f"Subscribed to: {input_topic}, Publishing to: {output_topic}, "
                 f"QoS: {self.qos_profile}"
             )
-    def _cb(self, msg):
-        pass  # TODO: 実装
+    def _cb(self, msg: DroneControlCommand) -> None:
+        """
+        Callback for DroneControlCommand subscription. Converts to ActuatorMotors and publishes.
+        Args:
+            msg (DroneControlCommand): Incoming drone control command message.
+        """
+        # DroneControlCommand → ActuatorMotors 変換
+        out = ActuatorMotors()
+        # PX4 ActuatorMotorsは4ch想定（throttle1, throttle2, angle1, angle2を適切にマッピング）
+        out.control = [msg.throttle1, msg.throttle2, msg.angle1, msg.angle2] + [0.0]*4  # 8ch分
+        self.pub.publish(out)
 
-def main():
+def main() -> None:
+    """
+    Entry point for CommandBridgeNode. Initializes ROS 2, spins the node, and handles shutdown.
+    """
     rclpy.init()
     node = CommandBridgeNode()
     executor = MultiThreadedExecutor()

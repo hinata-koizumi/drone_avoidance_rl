@@ -1,24 +1,6 @@
-# Stage 0: Base with ROS tools and bridge deps
-ARG ROS_DISTRO=humble
-ARG IGNITION_VERSION=garden
-FROM ros:${ROS_DISTRO} AS bridge_ws
-ENV DEBIAN_FRONTEND=noninteractive
-ENV ROS_DISTRO=${ROS_DISTRO}
+FROM drone-avoidance-base:latest
 
-RUN for i in 1 2 3 4 5; do \
-        apt-get update --fix-missing && \
-      apt-get install -y --no-install-recommends python3-pip python3-rosdep python3-colcon-common-extensions ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-geometry-msgs ros-${ROS_DISTRO}-rosidl-default-generators ros-${ROS_DISTRO}-rosidl-default-runtime python3-ament-package && break || sleep 10; \
-    done
-RUN if [ "$(dpkg --print-architecture)" != "amd64" ]; then \
-  echo "[ERROR] This image is officially supported only on amd64. For arm64 or other architectures, additional validation and support are required. Exiting."; \
-  exit 1; \
-fi
-
-RUN rosdep update || true
-
-# Stage 1: Build bridge_ws
-FROM ros:${ROS_DISTRO} AS builder
-ENV ROS_DISTRO=${ROS_DISTRO}
+USER root
 WORKDIR /bridge_ws
 COPY src/ src/
 COPY rosdep/rosdep-bridge.yaml /rosdep/rosdep-bridge.yaml
@@ -26,17 +8,8 @@ COPY rosdep/rosdep-bridge.yaml /rosdep/rosdep-bridge.yaml
 RUN rm -rf /etc/ros/rosdep/sources.list.d/* && \
     rosdep init || true && \
     echo "yaml file:///bridge_ws/rosdep/rosdep-bridge.yaml" > /etc/ros/rosdep/sources.list.d/10-local.yaml && \
-    cat /etc/ros/rosdep/sources.list.d/10-local.yaml && cat /bridge_ws/rosdep/rosdep-bridge.yaml && \
     rosdep update && \
     rosdep db | grep ament_python || echo '[DEBUG] ament_python not found in rosdep db'
-
-RUN apt-get update && apt-get install -y lsb-release wget gnupg2
-RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
-RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      gz-${IGNITION_VERSION} libgz-sim8 libgz-sim8-plugins libogre-next-2.3.0
-RUN apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-ros-gz-sim
 
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
     rosdep install --from-paths src \
@@ -44,21 +17,7 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
     colcon build --symlink-install \
         --packages-select state_bridge command_bridge angle_bridge outer_motor_bridge drone_msgs
 
-# Stage 2: Runtime
-FROM ros:${ROS_DISTRO} AS runtime
-ENV ROS_DISTRO=${ROS_DISTRO}
-ENV ROS_DOMAIN_ID=0
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        ros-${ROS_DISTRO}-ros-gz-bridge \
-        python3-pip && \
-    rm -rf /var/lib/apt/lists/*
-
-COPY --from=builder /bridge_ws /bridge_ws
 COPY docker/entrypoint-bridge.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
-RUN . /opt/ros/humble/setup.sh && cd /bridge_ws && colcon build --symlink-install
 
 ENTRYPOINT ["/entrypoint.sh"]

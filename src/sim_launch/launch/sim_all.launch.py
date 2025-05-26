@@ -1,29 +1,44 @@
 # type: ignore
 import os
+import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable
+from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description() -> LaunchDescription:
-    # パラメータ取得
-    use_sim_time = os.environ.get('USE_SIM_TIME', 'true').lower() == 'true'
-    gz_world = os.environ.get(
-        'IGN_GAZEBO_WORLD',
-        os.path.join(os.path.dirname(__file__), '../resource/empty_custom.sdf')
-    )
-    headless = os.environ.get('GAZEBO_HEADLESS', 'true').lower() == 'true'
+    # YAMLからパラメータ読み込み
+    config_path = os.path.join(os.path.dirname(__file__), '../../config/sim_params.yaml')
+    with open(config_path, 'r') as f:
+        params = yaml.safe_load(f)
+
+    # Declare launch arguments for key params
+    launch_args = [
+        DeclareLaunchArgument('cmd_topic', default_value=params['cmd_topic']),
+        DeclareLaunchArgument('gz_world', default_value=params['gz_world']),
+        DeclareLaunchArgument('physics_engine', default_value=params['physics_engine']),
+    ]
+
+    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
+    gz_world = LaunchConfiguration('gz_world')
+    physics_engine = LaunchConfiguration('physics_engine')
+    headless = LaunchConfiguration('headless', default='true')
+    cmd_topic = LaunchConfiguration('cmd_topic')
 
     # Gazebo起動引数
-    if headless:
-        gz_args = f'-r {gz_world} --physics-engine bullet --headless-rendering'
-    else:
-        gz_args = f'-r {gz_world} --physics-engine bullet'
+    gz_args = [
+        '-r', gz_world,
+        '--physics-engine', physics_engine,
+    ]
+    if headless.perform({}).lower() == 'true':
+        gz_args.append('--headless-rendering')
+    gz_args_str = ' '.join(gz_args)
 
-    # Ignition Gazebo起動
     ign_gazebo_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
@@ -33,8 +48,8 @@ def generate_launch_description() -> LaunchDescription:
             )
         ),
         launch_arguments=[
-            ('gz_args', gz_args),
-            ('use_sim_time', str(use_sim_time).lower()),
+            ('gz_args', gz_args_str),
+            ('use_sim_time', use_sim_time),
         ],
     )
 
@@ -43,7 +58,6 @@ def generate_launch_description() -> LaunchDescription:
         SetEnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH', '/usr/share/gz/garden/models:/root/.gz/models'),
     ]
 
-    # ブリッジノード群
     bridge_nodes = [
         Node(
             package='ros_gz_bridge',
@@ -52,10 +66,11 @@ def generate_launch_description() -> LaunchDescription:
             arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'],
             output='screen',
         ),
-        # 必要に応じて他のブリッジも追加
+        # 他のブリッジもYAMLからパラメータ化して追加可能
     ]
 
     return LaunchDescription([
+        *launch_args,
         *set_gz_env,
         ign_gazebo_launch,
         *bridge_nodes,

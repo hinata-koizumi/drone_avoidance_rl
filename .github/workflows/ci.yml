@@ -6,51 +6,82 @@ on:
   pull_request:
 
 jobs:
-  build-msgs:
+  setup-buildx:
     runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Set up QEMU (for cross-arch)
+        uses: docker/setup-qemu-action@v3
+
+  build-msgs:
+    needs: setup-buildx
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Load .env
-        run: |
-          set -a
-          [ -f .env ] && . .env
-          set +a
-      - name: Build msgs_ws
-        run: docker build --target msgs_ws -f docker/Dockerfile.msgs .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-msgs-${{ matrix.arch }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-msgs-${{ matrix.arch }}-
+      - name: Build msgs_ws (multi-arch)
+        run: docker buildx build --platform linux/${{ matrix.arch }} --target msgs_ws -f docker/Dockerfile.msgs --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load .
 
   build-bridge:
-    runs-on: ubuntu-22.04
     needs: build-msgs
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Load .env
-        run: |
-          set -a
-          [ -f .env ] && . .env
-          set +a
-      - name: Build bridge_ws
-        run: docker build --target bridge_ws -f docker/Dockerfile.bridge .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-bridge-${{ matrix.arch }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-bridge-${{ matrix.arch }}-
+      - name: Build bridge_ws (multi-arch)
+        run: docker buildx build --platform linux/${{ matrix.arch }} --target bridge_ws -f docker/Dockerfile.bridge --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load .
       - name: Test bridge_ws
-        run: docker run --rm $(docker build -q --target bridge_ws -f docker/Dockerfile.bridge .) colcon test --base-paths src --packages-ignore gmock gtest
+        run: docker run --rm $(docker buildx build --platform linux/${{ matrix.arch }} --target bridge_ws -f docker/Dockerfile.bridge --load -q .) colcon test --base-paths src --packages-ignore gmock gtest
 
   build-sim:
-    runs-on: ubuntu-22.04
     needs: build-bridge
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Load .env
-        run: |
-          set -a
-          [ -f .env ] && . .env
-          set +a
-      - name: Build sim_ws
-        run: docker build -t drone_rl:unified -f docker/Dockerfile.unified .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-sim-${{ matrix.arch }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-sim-${{ matrix.arch }}-
+      - name: Build sim_ws (multi-arch)
+        run: docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:unified --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load -f docker/Dockerfile.unified .
       - name: Test sim_ws
         run: docker run --rm drone_rl:unified ros2 launch sim_launch sim_all.launch.py
 
@@ -69,30 +100,31 @@ jobs:
         run: pre-commit run --all-files || true
 
   e2e:
-    runs-on: ubuntu-22.04
     needs: build-sim
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Load .env
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build all docker images (multi-arch)
         run: |
-          set -a
-          [ -f .env ] && . .env
-          set +a
-      - name: Build all docker images
-        run: |
-          docker build -t drone_rl:msgs -f docker/Dockerfile.msgs .
-          docker build -t drone_rl:unified -f docker/Dockerfile.unified .
-          docker build -t drone_rl:rl-agent -f docker/rl-agent/Dockerfile.agent .
-          docker build -t drone_rl:bridge -f docker/Dockerfile.bridge .
+          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:msgs -f docker/Dockerfile.msgs --load .
+          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:unified -f docker/Dockerfile.unified --load .
+          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:rl-agent -f docker/rl-agent/Dockerfile.agent --load .
+          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:bridge -f docker/Dockerfile.bridge --load .
       - name: Launch all services and run E2E tests
         run: |
           docker compose -f tests/ci-compose.yml up --build --abort-on-container-exit
-      - name: Run E2E pytest (integration)
+      - name: Run E2E pytest (integration, RL longrun)
         run: |
           python3 -m pip install pytest gymnasium numpy pyyaml lark
           pytest tests/
+          pytest tests/test_rl_longrun.py
       - name: Show logs on failure
         if: failure()
         run: docker compose -f tests/ci-compose.yml logs
@@ -216,6 +248,19 @@ jobs:
           export PYTHONPATH=/usr/lib/python3/dist-packages:$PYTHONPATH:$(pwd):$(pwd)/src
           pytest tests/test_gym_api.py
         shell: bash
+
+  validate-model:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install Ignition Tools
+        run: sudo apt-get update && sudo apt-get install -y ignition-tools
+      - name: Validate SDF
+        run: ign sdf -k custom_model/drone_model/model.sdf
+      - name: Validate XML
+        run: sudo apt-get install -y libxml2-utils && xmllint --noout custom_model/drone_model/model.config
 
   static-analysis:
     runs-on: ubuntu-22.04
