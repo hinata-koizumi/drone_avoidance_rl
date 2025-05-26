@@ -377,6 +377,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
+      - name: Install pyyaml
+        run: python3 -m pip install pyyaml
       - name: Check rosdep YAML consistency
         run: python3 tools/check_rosdep_consistency.py
 
