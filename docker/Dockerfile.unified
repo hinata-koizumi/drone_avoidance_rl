@@ -55,6 +55,10 @@ RUN if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS ]; then
     fi
 RUN sed -i '/px4-alias.sh/d' /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
 
+# --- PX4カスタムrcSをビルド後に上書きコピー ---
+COPY custom_airframes/rcS_custom /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
+RUN chmod +x /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
+
 # --- ROS 2 workspace setup ---
 WORKDIR /sim_ws
 COPY src/ src/
