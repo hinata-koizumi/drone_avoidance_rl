@@ -34,6 +34,14 @@ fi
 # Gazebo Garden起動（必要なら）
 # gz sim ... &
 
+# Gazeboモデルパスとモデル存在確認のデバッグ出力
+
+echo "[entrypoint] GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH"
+ls -l /root/.gz/models/ground_plane || echo "ground_plane not found in /root/.gz/models"
+ls -l /usr/share/gz/garden/models/ground_plane || echo "ground_plane not found in /usr/share/gz/garden/models"
+ls -l /root/.gz/models/sun || echo "sun not found in /root/.gz/models"
+ls -l /usr/share/gz/garden/models/sun || echo "sun not found in /usr/share/gz/garden/models"
+
 # シミュレーションlaunch
 ros2 launch sim_launch sim_all.launch.py headless:=true
 
