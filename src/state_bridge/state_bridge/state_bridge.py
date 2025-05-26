@@ -49,6 +49,8 @@ class StateBridgeNode(Node):
             output_topic,
             self.qos_profile,
         )
+        # wind_maxをYAMLから取得
+        self.wind_max = params.get('wind_max', 3.0)  # デフォルト3.0 m/s
         if self.log_level == 'debug':
             self.get_logger().debug(
                 f"Subscribed to: {input_topic}, Publishing to: {output_topic}, "
@@ -77,7 +79,9 @@ class StateBridgeNode(Node):
         out.position = Vector3(x=msg.position[0], y=msg.position[1], z=msg.position[2])
         out.velocity = Vector3(x=msg.velocity[0], y=msg.velocity[1], z=msg.velocity[2])
         out.angular_velocity = Vector3(x=msg.angular_velocity[0], y=msg.angular_velocity[1], z=msg.angular_velocity[2])
-        out.wind = Vector3(x=0.0, y=0.0, z=0.0)  # PX4 Odometryには風情報なし
+        # wind: 毎回ランダムな風ベクトルを生成
+        wind = np.random.uniform(-self.wind_max, self.wind_max, size=3)
+        out.wind = Vector3(x=float(wind[0]), y=float(wind[1]), z=float(wind[2]))
         self.pub.publish(out)
 
 if __name__ == "__main__":
