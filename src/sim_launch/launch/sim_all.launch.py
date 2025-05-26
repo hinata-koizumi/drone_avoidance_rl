@@ -3,7 +3,7 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
@@ -38,6 +38,11 @@ def generate_launch_description() -> LaunchDescription:
         ],
     )
 
+    set_gz_env = [
+        SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', '/usr/share/gz/garden/models:/root/.gz/models'),
+        SetEnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH', '/usr/share/gz/garden/models:/root/.gz/models'),
+    ]
+
     # ブリッジノード群
     bridge_nodes = [
         Node(
@@ -51,6 +56,7 @@ def generate_launch_description() -> LaunchDescription:
     ]
 
     return LaunchDescription([
+        *set_gz_env,
         ign_gazebo_launch,
         *bridge_nodes,
     ]) 

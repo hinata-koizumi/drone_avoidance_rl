@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# @name Custom RL Drone
+# @name 4001_custom_drone
 # @type Quadrotor
 # @class 4001
 # @info Custom drone model for RL
