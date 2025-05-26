@@ -96,11 +96,10 @@ RUN mkdir -p /usr/share/gz/fortress/models && \
     ln -s /models/drone_model /usr/share/gz/fortress/models/drone_model
 
 # --- Gazebo Garden 標準モデルのダウンロード ---
-RUN gz model --download ground_plane && gz model --download sun || true
-RUN ls -l /usr/share/gz/garden/models/ground_plane || echo 'ground_plane model not found!'
-RUN ls -l /usr/share/gz/garden/models/sun || echo 'sun model not found!'
-RUN ls -l /root/.gz/models/ground_plane || echo 'ground_plane model not found in /root/.gz/models!'
-RUN ls -l /root/.gz/models/sun || echo 'sun model not found in /root/.gz/models!'
+RUN gz model --download ground_plane
+RUN ls -l /root/.gz/models/ground_plane || (echo 'ground_plane model not found after download!' && exit 1)
+RUN gz model --download sun
+RUN ls -l /root/.gz/models/sun || (echo 'sun model not found after download!' && exit 1)
 
 # --- Entrypoint ---
 COPY docker/entrypoint-unified.sh /entrypoint.sh
