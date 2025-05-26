@@ -44,9 +44,12 @@ RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     chmod +x /usr/local/bin/px4 && \
     ls -l /usr/local/bin/px4 && \
     mkdir -p /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/build/px4_sitl_rtps
-COPY custom_airframes/4001_drone_model /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_drone_model
-COPY custom_airframes/4001_drone_model /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_drone_model
-RUN ls -l /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_drone_model || (echo 'ERROR: 4001_drone_model not found in build/px4_sitl_default/etc/init.d-posix/airframes/' && exit 1)
+COPY custom_airframes/4001_custom_drone /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone
+COPY custom_airframes/4001_custom_drone /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_custom_drone
+RUN mkdir -p /etc/init.d-posix/airframes && cp /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone /etc/init.d-posix/airframes/4001_custom_drone
+RUN ls -l /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone || (echo 'ERROR: 4001_custom_drone not found in build/px4_sitl_default/etc/init.d-posix/airframes/' && exit 1)
+RUN ls -l /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_custom_drone || (echo 'ERROR: 4001_custom_drone not found in ROMFS/px4fmu_common/init.d-posix/airframes/' && exit 1)
+RUN ls -l /etc/init.d-posix/airframes/4001_custom_drone || (echo 'ERROR: 4001_custom_drone not found in /etc/init.d-posix/airframes/' && exit 1)
 RUN if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS ]; then \
       cp /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS; \
     fi
