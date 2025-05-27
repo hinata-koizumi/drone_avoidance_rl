@@ -249,3 +249,38 @@ ros2 run your_package your_node --ros-args \
 - `reward_mode="path_follow"` : 経路追従
 - `reward_mode="obstacle_avoid"` : 障害物回避
 - `reward_mode="default"` : 従来型（環境変数で重み調整）
+
+## Ignition Gazebo (Garden) のインストール
+
+本プロジェクトはIgnition Gazebo Gardenを使用します。以下の手順でインストールしてください。
+
+### Ubuntu 22.04 でのインストール例
+```bash
+sudo apt update
+sudo apt install -y wget lsb-release gnupg2
+wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list
+sudo apt update
+sudo apt install -y gz-garden
+```
+
+### PATH/IGN_CONFIG_PATHの設定例
+```bash
+export PATH="/usr/bin:$PATH"
+export IGN_CONFIG_PATH="/usr/share/gz/garden"
+```
+
+`ign`コマンドが使えることを確認してください:
+```bash
+ign --version
+```
+
+## Docker ベースイメージのビルド
+
+本プロジェクトの各サービスは `drone-avoidance-base` イメージをベースにしています。CIやローカルでエラーが出る場合、以下のコマンドで事前にビルドしてください。
+
+```bash
+docker build -f docker/Dockerfile.base -t drone-avoidance-base:latest .
+```
+
+その後、通常通り `docker-compose build` で他のサービスをビルドできます。

@@ -1,7 +1,9 @@
 [tool.ruff]
 line-length = 120
-select = ["E", "F", "I"]
 fix = true
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
 
 [tool.ruff.isort]
 combine-as-imports = true

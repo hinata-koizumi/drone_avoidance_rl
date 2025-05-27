@@ -239,12 +239,16 @@ class DroneSimEnv(gym.Env):
         gust_dir   = [random.uniform(-1.0, 1.0) for _ in range(3)]
         batt_v     = random.uniform(10.8, 13.2)  # Li-ion 4S eq.
         procs = []
+        req_str = (
+            f"gravity_vector:{{x:0, y:0, z:-9.81}} mass_scale:{mass_scale} "
+            f"center_of_mass:{{x:{com_shift[0]}, y:{com_shift[1]}, z:{com_shift[2]}}}"
+        )
         procs.append(subprocess.Popen([
             "ign", "service", "-s", "/world/empty/physics/set_parameters",
             "--reqtype", "ignition.msgs.PhysicsParameters", "--reptype", "ignition.msgs.Boolean",
             "--timeout", "300",
             "--req",
-            f"gravity_vector:{{x:0, y:0, z:-9.81}} mass_scale:{mass_scale} center_of_mass:{{x:{com_shift[0]}, y:{com_shift[1]}, z:{com_shift[2]}}}"
+            req_str
         ]))
         procs.append(subprocess.Popen([
             "ign", "service", "-s", "/world/empty/atmosphere/set_parameters",
