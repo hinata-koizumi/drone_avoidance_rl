@@ -10,10 +10,14 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - name: Ensure tools scripts are executable
+        run: chmod +x tools/*.py tools/*.sh || true
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Set up QEMU (for cross-arch)
         uses: docker/setup-qemu-action@v3
+      - name: Print working directory
+        run: pwd
 
   build-base:
     needs: setup-buildx
@@ -26,6 +30,12 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Build drone-avoidance-base image
         run: docker buildx build --platform linux/amd64 -t drone-avoidance-base:latest -f docker/Dockerfile.base --load .
+      - name: Save drone-avoidance-base image
+        run: docker save drone-avoidance-base:latest -o drone-avoidance-base.tar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: drone-avoidance-base
+          path: drone-avoidance-base.tar
 
   build-msgs:
     needs: build-base
@@ -46,6 +56,12 @@ jobs:
           key: ${{ runner.os }}-buildx-msgs-${{ matrix.arch }}-${{ github.sha }}-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-buildx-msgs-${{ matrix.arch }}-
+      - name: Download drone-avoidance-base image
+        uses: actions/download-artifact@v4
+        with:
+          name: drone-avoidance-base
+      - name: Load drone-avoidance-base image
+        run: docker load -i drone-avoidance-base.tar
       - name: Build msgs_ws (multi-arch)
         run: docker buildx build --platform linux/${{ matrix.arch }} --target msgs_ws -f docker/Dockerfile.msgs --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load .
 
@@ -267,6 +283,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+      - name: Debug PATH and ign/gz
+        run: |
+          echo "PATH=$PATH"
+          which ign || echo 'ign not found'
+          which gz || echo 'gz not found'
+          ls -l /usr/local/bin/ign || echo '/usr/local/bin/ign not found'
+          ls -l /usr/bin/gz || echo '/usr/bin/gz not found'
       - name: Install Ignition Tools
         run: sudo apt-get update && sudo apt-get install -y ignition-tools
       - name: Symlink ign to gz if needed
@@ -298,11 +321,11 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff mypy types-PyYAML
+          python -m pip install ruff mypy types-PyYAML
       - name: Run ruff
         run: ruff check src tests
       - name: Run mypy
-        run: export PYTHONPATH=install/lib/python3.10/site-packages:$PYTHONPATH && mypy src tests --exclude 'setup.py'
+        run: export PYTHONPATH=install/lib/python3.10/site-packages:$PYTHONPATH && python -m mypy src tests --exclude 'setup.py'
       - name: Set up ROS 2 Humble
         uses: ros-tooling/setup-ros@v0.7
         with:
