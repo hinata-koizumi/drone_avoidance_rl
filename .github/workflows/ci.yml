@@ -392,13 +392,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
+        id: setup_python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
       - name: Install pyyaml
-        run: python3 -m pip install --force-reinstall pyyaml types-PyYAML
+        run: ${{ steps.setup_python.outputs.python-path }} -m pip install --force-reinstall pyyaml types-PyYAML
       - name: Check PyYAML import
-        run: python3 -c "import yaml; print(yaml.__file__)"
+        run: ${{ steps.setup_python.outputs.python-path }} -c "import yaml; print(yaml.__file__)"
       - name: Check rosdep YAML consistency
-        run: python3 tools/check_rosdep_consistency.py
+        run: ${{ steps.setup_python.outputs.python-path }} tools/check_rosdep_consistency.py
 
