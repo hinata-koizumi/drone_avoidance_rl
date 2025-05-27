@@ -396,7 +396,9 @@ jobs:
         with:
           python-version: '3.x'
       - name: Install pyyaml
-        run: python3 -m pip install pyyaml types-PyYAML
+        run: python3 -m pip install --force-reinstall pyyaml types-PyYAML
+      - name: Check PyYAML import
+        run: python3 -c "import yaml; print(yaml.__file__)"
       - name: Check rosdep YAML consistency
         run: python3 tools/check_rosdep_consistency.py
 
