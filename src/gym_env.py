@@ -354,7 +354,7 @@ class DroneSimEnv(gym.Env):
         Returns:
             float: Normalized angle.
         """
-        return angle
+        return float(angle)
 
     def _denormalize_angle(self, norm: float) -> float:
         """
@@ -364,4 +364,4 @@ class DroneSimEnv(gym.Env):
         Returns:
             float: Denormalized angle.
         """
-        return norm
+        return float(norm)

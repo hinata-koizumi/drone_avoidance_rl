@@ -25,7 +25,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build drone-avoidance-base image
-        run: docker buildx build --platform linux/amd64,linux/arm64 -t drone-avoidance-base:latest -f docker/Dockerfile.base --push .
+        run: docker buildx build --platform linux/amd64 -t drone-avoidance-base:latest -f docker/Dockerfile.base --load .
 
   build-msgs:
     needs: build-base
