@@ -5,12 +5,13 @@ SubprocVecEnvでDroneSimEnvをベクトル化して複数同時実行するサ�
 import numpy as np
 from gymnasium.vector import AsyncVectorEnv
 from gym_env import DroneSimEnv
+from typing import Callable
 
 def make_env(
     instance_id: int,
     reward_mode: str = "default",
     episode_max_steps: int = 2000
-) -> callable[[], DroneSimEnv]:
+) -> Callable[[], DroneSimEnv]:
     """
     Factory function to create DroneSimEnv initializer for vectorized environments.
     Args:

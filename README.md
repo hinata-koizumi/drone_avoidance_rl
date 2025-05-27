@@ -104,9 +104,9 @@ docker compose down
   tools/clean_workspace.sh
   docker build -t drone_rl:unified -f docker/Dockerfile.unified .
   docker run --rm drone_rl:unified ros2 launch sim_launch sim_all.launch.py
-  python3 -m pip install pytest gymnasium numpy pyyaml lark
+  python3 -m pip install pytest gymnasium numpy pyyaml lark types-PyYAML
   cd src && PYTHONPATH=$PYTHONPATH:$(pwd) pytest ../tests/test_gym_api.py
-  python3 -m pip install ruff mypy
+  python3 -m pip install ruff mypy types-PyYAML
   ruff src/ tests/
   mypy src/ tests/
   ```
@@ -126,7 +126,7 @@ docker compose down
    - 依存インストール:
      ```sh
      python3 -m pip install --upgrade pip
-     python3 -m pip install pytest gymnasium numpy pyyaml lark ruff mypy
+     python3 -m pip install pytest gymnasium numpy pyyaml lark ruff mypy types-PyYAML
      ```
    - テスト:
      ```sh
@@ -284,3 +284,8 @@ docker build -f docker/Dockerfile.base -t drone-avoidance-base:latest .
 ```
 
 その後、通常通り `docker-compose build` で他のサービスをビルドできます。
+
+> **Note:**
+> Gazebo Garden以降では`ign`コマンドの代わりに`gz`コマンドが標準です。多くの環境では`ign`が無い場合があります。その場合は`gz`コマンドを使ってください。
+> 例: `gz sdf -k ...`
+> Dockerイメージ内では`ign`→`gz`のシンボリックリンクも自動作成されます。

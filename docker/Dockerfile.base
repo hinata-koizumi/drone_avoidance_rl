@@ -62,4 +62,8 @@ USER root
 RUN if [ "$(dpkg --print-architecture)" != "amd64" ]; then \
   echo "[ERROR] This image is officially supported only on amd64. For arm64 or other architectures, additional validation and support are required. Exiting."; \
   exit 1; \
+fi \
+&& if ! command -v ign >/dev/null 2>&1 && command -v gz >/dev/null 2>&1; then \
+  ln -s $(command -v gz) /usr/local/bin/ign; \
+  echo '[INFO] Created symlink: ign -> gz'; \
 fi 
