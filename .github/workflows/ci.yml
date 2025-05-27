@@ -244,10 +244,10 @@ jobs:
           set -a
           [ -f .env ] && . .env
           set +a
-      - name: Set up Python 3.10
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.13'
       - name: Set up ROS 2 Humble
         uses: ros-tooling/setup-ros@v0.7
         with:
@@ -314,10 +314,10 @@ jobs:
           set -a
           [ -f .env ] && . .env
           set +a
-      - name: Set up Python 3.10
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.13'
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
@@ -325,7 +325,7 @@ jobs:
       - name: Run ruff
         run: ruff check src tests
       - name: Run mypy
-        run: export PYTHONPATH=install/lib/python3.10/site-packages:$PYTHONPATH && python -m mypy src tests --exclude 'setup.py'
+        run: export PYTHONPATH=install/lib/python3.13/site-packages:$PYTHONPATH && python -m mypy src tests --exclude 'setup.py'
       - name: Set up ROS 2 Humble
         uses: ros-tooling/setup-ros@v0.7
         with:
@@ -355,10 +355,10 @@ jobs:
           set -a
           [ -f .env ] && . .env
           set +a
-      - name: Set up Python 3.10
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.13'
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
@@ -418,7 +418,7 @@ jobs:
         id: setup_python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.13'
       - name: Install pyyaml
         run: ${{ steps.setup_python.outputs.python-path }} -m pip install --force-reinstall pyyaml types-PyYAML
       - name: Check PyYAML import
