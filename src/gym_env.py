@@ -340,10 +340,10 @@ class DroneSimEnv(gym.Env):
         pass
 
     def _clamp(self, x: float, lo: float, hi: float) -> float:
-        return _to_float(clamp(x, lo, hi))
+        return float(clamp(x, lo, hi))  # type: ignore[no-any-return]
 
     def _normalize_angle(self, angle: float) -> float:
-        return _to_float(angle)
+        return float(angle)  # type: ignore[no-any-return]
 
     def _denormalize_angle(self, norm: float) -> float:
-        return _to_float(norm)
+        return float(norm)  # type: ignore[no-any-return]
