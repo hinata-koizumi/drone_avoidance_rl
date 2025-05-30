@@ -335,34 +335,11 @@ class DroneSimEnv(gym.Env):
         """
         pass
 
-    def _clamp(self, x: float, lo: float, hi: float) -> float:
-        """
-        Clamp a value between lo and hi (wrapper for utils.clamp).
-        Args:
-            x (float): Value to clamp.
-            lo (float): Lower bound.
-            hi (float): Upper bound.
-        Returns:
-            float: Clamped value.
-        """
-        return float(clamp(x, lo, hi))  # type: ignore[no-any-return]
+    def _clamp(self, x: float, lo: float, hi: float) -> float:  # type: ignore[no-any-return]
+        return float(clamp(x, lo, hi))
 
-    def _normalize_angle(self, angle: float) -> float:
-        """
-        Normalize an angle (placeholder).
-        Args:
-            angle (float): Angle to normalize.
-        Returns:
-            float: Normalized angle.
-        """
-        return float(angle)  # type: ignore[no-any-return]
+    def _normalize_angle(self, angle: float) -> float:  # type: ignore[no-any-return]
+        return float(angle)
 
-    def _denormalize_angle(self, norm: float) -> float:
-        """
-        Denormalize an angle (placeholder).
-        Args:
-            norm (float): Normalized value.
-        Returns:
-            float: Denormalized angle.
-        """
-        return float(norm)  # type: ignore[no-any-return]
+    def _denormalize_angle(self, norm: float) -> float:  # type: ignore[no-any-return]
+        return float(norm)
