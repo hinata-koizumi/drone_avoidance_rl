@@ -1,4 +1,4 @@
-FROM drone-avoidance-base:latest AS msgs_ws
+FROM drone-avoidance-base:2.0.1 AS msgs_ws
 
 USER root
 WORKDIR /msgs_ws
