@@ -26,6 +26,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+      - name: Clean up disk space
+        run: |
+          docker system prune -af || true
+          docker volume prune -f || true
+          sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          sudo apt-get clean
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build drone-avoidance-base image
