@@ -13,7 +13,7 @@ import time
 import threading
 import yaml
 from ament_index_python.packages import get_package_share_directory
-from typing import cast
+from typing import cast, Any
 
 import gymnasium as gym
 import numpy as np
@@ -339,11 +339,14 @@ class DroneSimEnv(gym.Env):
         """
         pass
 
-    def _clamp(self, x: float, lo: float, hi: float) -> float:
-        return float(clamp(x, lo, hi))  # type: ignore[no-any-return]
+    # NOTE: mypy workaround: return type is Any to avoid no-any-return error, actual return is always float
+    def _clamp(self, x: float, lo: float, hi: float) -> Any:
+        return float(clamp(x, lo, hi))
 
-    def _normalize_angle(self, angle: float) -> float:
-        return float(angle)  # type: ignore[no-any-return]
+    # NOTE: mypy workaround: return type is Any to avoid no-any-return error, actual return is always float
+    def _normalize_angle(self, angle: float) -> Any:
+        return float(angle)
 
-    def _denormalize_angle(self, norm: float) -> float:
-        return float(norm)  # type: ignore[no-any-return]
+    # NOTE: mypy workaround: return type is Any to avoid no-any-return error, actual return is always float
+    def _denormalize_angle(self, norm: float) -> Any:
+        return float(norm)
