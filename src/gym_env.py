@@ -339,14 +339,14 @@ class DroneSimEnv(gym.Env):
         """
         pass
 
-    # NOTE: mypy workaround: return type is Any to avoid no-any-return error, actual return is always float
-    def _clamp(self, x: float, lo: float, hi: float) -> Any:
+    # NOTE: mypy workaround: return type is float | Any to avoid no-any-return error, actual return is always float
+    def _clamp(self, x: float, lo: float, hi: float) -> float | Any:
         return float(clamp(x, lo, hi))
 
-    # NOTE: mypy workaround: return type is Any to avoid no-any-return error, actual return is always float
-    def _normalize_angle(self, angle: float) -> Any:
+    # NOTE: mypy workaround: return type is float | Any to avoid no-any-return error, actual return is always float
+    def _normalize_angle(self, angle: float) -> float | Any:
         return float(angle)
 
-    # NOTE: mypy workaround: return type is Any to avoid no-any-return error, actual return is always float
-    def _denormalize_angle(self, norm: float) -> Any:
+    # NOTE: mypy workaround: return type is float | Any to avoid no-any-return error, actual return is always float
+    def _denormalize_angle(self, norm: float) -> float | Any:
         return float(norm)
