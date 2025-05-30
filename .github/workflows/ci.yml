@@ -264,8 +264,8 @@ jobs:
           sudo rosdep init || true
           for i in {1..5}; do rosdep update && break || sleep 5; done || true
           rosdep install --from-paths src --ignore-src -r -y --rosdistro=humble
-      - name: Remove install directory if exists
-        run: rm -rf install
+      - name: Remove build, install, and log directories if exist
+        run: rm -rf build install log
       - name: Build ROS 2 workspace
         run: |
           source /opt/ros/${{ env.ROS_DISTRO || 'humble' }}/setup.sh
@@ -469,8 +469,8 @@ jobs:
           sudo rosdep init || true
           for i in {1..5}; do rosdep update && break || sleep 5; done || true
           rosdep install --from-paths src --ignore-src -r -y --rosdistro=humble
-      - name: Remove install directory if exists
-        run: rm -rf install
+      - name: Remove build, install, and log directories if exist
+        run: rm -rf build install log
       - name: Build ROS 2 workspace
         run: |
           source /opt/ros/${{ env.ROS_DISTRO || 'humble' }}/setup.sh
