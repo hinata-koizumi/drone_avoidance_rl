@@ -343,10 +343,10 @@ class DroneSimEnv(gym.Env):
     def _clamp(self, x: float, lo: float, hi: float) -> float:
         return float(max(lo, min(hi, x)))
 
-    # NOTE: mypy workaround: return type is float | Any to avoid no-any-return error, actual return is always float
-    def _normalize_angle(self, angle: float) -> float | Any:
-        return float(angle)
+    def _normalize_angle(self, angle: float) -> float:
+        result: float = float(angle)
+        return result
 
-    # NOTE: mypy workaround: return type is float | Any to avoid no-any-return error, actual return is always float
-    def _denormalize_angle(self, norm: float) -> float | Any:
-        return float(norm)
+    def _denormalize_angle(self, norm: float) -> float:
+        result: float = float(norm)
+        return result
