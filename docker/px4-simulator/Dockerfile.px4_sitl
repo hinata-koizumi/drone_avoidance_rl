@@ -15,7 +15,6 @@ RUN apt-get update && apt-get install -y \
     python3-pexpect \
     python3-psutil \
     python3-serial \
-    python3-pyros-genmsg \
     build-essential \
     ccache \
     g++ \
@@ -26,6 +25,8 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --no-cache-dir pyros-genmsg
 
 # PX4ユーザー作成
 RUN useradd -ms /bin/bash px4user
