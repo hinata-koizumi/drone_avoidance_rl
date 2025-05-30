@@ -345,7 +345,7 @@ class DroneSimEnv(gym.Env):
         Returns:
             float: Clamped value.
         """
-        return clamp(x, lo, hi)
+        return float(clamp(x, lo, hi))
 
     def _normalize_angle(self, angle: float) -> float:
         """

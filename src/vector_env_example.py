@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     writer = SummaryWriter(log_dir="runs/drone_vector_env")
     num_episodes = 10
-    episode_rewards = [[] for _ in range(num_envs)]
+    episode_rewards: list[list[float]] = [[] for _ in range(num_envs)]
     obs = env.reset()
     for ep in range(num_episodes):
         terminated = [False] * num_envs
