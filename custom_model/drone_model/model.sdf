@@ -107,21 +107,6 @@
           </z>
         </magnetometer>
       </sensor>
-      <!-- バロメータ（高度） -->
-      <sensor name="barometer_sensor" type="barometer">
-        <always_on>true</always_on>
-        <update_rate>50</update_rate>
-        <pose>0 0 0.03 0 0 0</pose>
-        <topic>/baro</topic>
-        <barometer>
-          <pressure>
-            <noise type="gaussian">
-              <mean>0.0</mean>
-              <stddev>0.5</stddev>
-            </noise>
-          </pressure>
-        </barometer>
-      </sensor>
     </link>
 
     <!-- 4 rotors -->
