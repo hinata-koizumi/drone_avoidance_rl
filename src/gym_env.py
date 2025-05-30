@@ -13,6 +13,7 @@ import time
 import threading
 import yaml
 from ament_index_python.packages import get_package_share_directory
+from typing import cast
 
 import gymnasium as gym
 import numpy as np
@@ -335,11 +336,11 @@ class DroneSimEnv(gym.Env):
         """
         pass
 
-    def _clamp(self, x: float, lo: float, hi: float) -> float:  # type: ignore[no-any-return]
-        return float(clamp(x, lo, hi))
+    def _clamp(self, x: float, lo: float, hi: float) -> float:
+        return cast(float, clamp(x, lo, hi))
 
-    def _normalize_angle(self, angle: float) -> float:  # type: ignore[no-any-return]
-        return float(angle)
+    def _normalize_angle(self, angle: float) -> float:
+        return cast(float, angle)
 
-    def _denormalize_angle(self, norm: float) -> float:  # type: ignore[no-any-return]
-        return float(norm)
+    def _denormalize_angle(self, norm: float) -> float:
+        return cast(float, norm)
