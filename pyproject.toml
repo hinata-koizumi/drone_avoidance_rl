@@ -5,7 +5,7 @@ fix = true
 [tool.ruff.lint]
 select = ["E", "F", "I"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 combine-as-imports = true
 force-sort-within-sections = true
 

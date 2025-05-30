@@ -101,7 +101,13 @@ def generate_launch_description() -> LaunchDescription:
             name='rviz2',
             output='screen',
             arguments=['-d', os.path.join(get_package_share_directory('sim_launch'), 'resource', 'default.rviz')]
-            if os.path.exists(os.path.join(get_package_share_directory('sim_launch'), 'resource', 'default.rviz')) else [],
+            if os.path.exists(
+                os.path.join(
+                    get_package_share_directory('sim_launch'),
+                    'resource',
+                    'default.rviz'
+                )
+            ) else [],
         ),
     ]
 

@@ -111,7 +111,12 @@ def load_state(path="linear_policy_state.pkl"):
         state = pickle.load(f)
     return state
 
-def train_linear_policy_agent(episodes=100, save_path="linear_policy.pt", resume=False, state_path="linear_policy_state.pkl"):
+def train_linear_policy_agent(
+    episodes=100,
+    save_path="linear_policy.pt",
+    resume=False,
+    state_path="linear_policy_state.pkl"
+):
     env = gym.make('CartPole-v1')
     agent = LinearPolicyAgent(env.observation_space, env.action_space)
     start_ep = 0
