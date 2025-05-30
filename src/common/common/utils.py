@@ -1,4 +1,4 @@
-def clamp(v: float, lo: float, hi: float):  # type: (float, float, float) -> float
+def clamp(v: float, lo: float, hi: float) -> float:
     """
     Clamp a value v between lower (lo) and upper (hi) bounds.
     Args:
