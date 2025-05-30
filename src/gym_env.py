@@ -43,6 +43,9 @@ def _wait_udp(port: int, timeout: float = 5.0) -> None:
         time.sleep(0.1)
     raise RuntimeError(f"UDP {port} not open within {timeout}s")
 
+def _to_float(x: float) -> float:
+    return float(x)
+
 class DroneSimEnv(gym.Env):
     """
     Gymnasium-compatible environment for drone RL using ROS 2 and Ignition Gazebo.
@@ -336,14 +339,11 @@ class DroneSimEnv(gym.Env):
         """
         pass
 
-    def _to_float(self, x: float) -> float:
-        return float(x)
-
     def _clamp(self, x: float, lo: float, hi: float) -> float:
-        return self._to_float(clamp(x, lo, hi))
+        return _to_float(clamp(x, lo, hi))
 
     def _normalize_angle(self, angle: float) -> float:
-        return self._to_float(angle)
+        return _to_float(angle)
 
     def _denormalize_angle(self, norm: float) -> float:
-        return self._to_float(norm)
+        return _to_float(norm)
