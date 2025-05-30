@@ -25,6 +25,7 @@ from catkin_pkg.package import (
 )
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, OpaqueFunction, SetEnvironmentVariable
+from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 from ros2pkg.api import get_package_names
 
@@ -46,6 +47,7 @@ e.g.  install(DIRECTORY models
 def launch_gz_sim(context, *args, **kwargs):
     gz_args = LaunchConfiguration('gz_args').perform(context)
     gz_version = LaunchConfiguration('gz_version').perform(context)
+    world_path = LaunchConfiguration('world').perform(context)
     headless = LaunchConfiguration('headless').perform(context).lower() in ('true', '1', 'yes')
     env = {
         # プラグインパスは明示的に必要な場合のみ環境変数で指定すること
@@ -61,6 +63,8 @@ def launch_gz_sim(context, *args, **kwargs):
         ]),
     }
     exec_args = gz_args
+    if world_path:
+        exec_args += f' --world {world_path}'
     if headless:
         actions = []
         actions.append(SetEnvironmentVariable('DISPLAY', ''))
@@ -87,6 +91,12 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument('gz_version', default_value='6', description="Gazebo Sim's major version"),
         DeclareLaunchArgument(
+            'world',
+            default_value=os.path.join(
+                get_package_share_directory('sim_launch'), 'launch', 'empty_custom.sdf'),
+            description='Path to the SDF world file to load',
+        ),
+        DeclareLaunchArgument(
             'ign_args', default_value='',
             description='Deprecated: Arguments to be passed to Gazebo Sim'
         ),
@@ -97,6 +107,12 @@ def generate_launch_description():
         DeclareLaunchArgument('debugger', default_value='false', description='Run in Debugger'),
         DeclareLaunchArgument('on_exit_shutdown', default_value='false', description='Shutdown on gz-sim exit'),
         DeclareLaunchArgument('headless', default_value='false', description='Run in headless mode'),
+        DeclareLaunchArgument('record', default_value='false', description='Enable gz record (simulation recording)'),
+        ExecuteProcess(
+            cmd=['gz', 'record', '-o', '/logs/sim_record'],
+            output='screen',
+            condition=IfCondition(LaunchConfiguration('record')),
+        ),
         OpaqueFunction(function=launch_gz_sim)
     ])
     return ld

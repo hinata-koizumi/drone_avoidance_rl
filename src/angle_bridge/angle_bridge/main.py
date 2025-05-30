@@ -12,6 +12,7 @@ from src.common.bridge_base import BridgeBase
 from src.common.utils import clamp
 import yaml
 import os
+from ament_index_python.packages import get_package_share_directory
 
 _MIN_DEG, _MAX_DEG = -30.0, 30.0              # 制御範囲 [deg]
 _DEG2RAD = math.pi / 180.0
@@ -27,7 +28,7 @@ class AngleBridgeNode(BridgeBase):
         Sets up ROS 2 subscriptions and publishers for command and fan topics.
         """
         # YAMLからデフォルト値取得
-        config_path = os.path.join(os.path.dirname(__file__), '../../../config/sim_params.yaml')
+        config_path = os.path.join(get_package_share_directory('sim_launch'), 'config', 'sim_params.yaml')
         with open(config_path, 'r') as f:
             params = yaml.safe_load(f)
         super().__init__("angle_bridge", {

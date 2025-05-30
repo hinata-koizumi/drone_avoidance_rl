@@ -20,8 +20,12 @@ setup(
             'share/' + package_name + '/resource',
             ['resource/empty_custom.sdf'],
         ),
+        (
+            'share/' + package_name + '/config',
+            ['../../config/sim_params.yaml'],
+        ),
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools==59.6.0'],
     zip_safe=True,
     maintainer='Your Name',
     maintainer_email='you@example.com',

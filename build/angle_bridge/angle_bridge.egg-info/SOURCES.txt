@@ -1,0 +1,10 @@
+setup.py
+angle_bridge/__init__.py
+angle_bridge/main.py
+angle_bridge.egg-info/PKG-INFO
+angle_bridge.egg-info/SOURCES.txt
+angle_bridge.egg-info/dependency_links.txt
+angle_bridge.egg-info/entry_points.txt
+angle_bridge.egg-info/requires.txt
+angle_bridge.egg-info/top_level.txt
+angle_bridge.egg-info/zip-safe

@@ -1,0 +1,25 @@
+[1.673s] Invoking command in '/Users/koizumihinata/drone_avoidance_rl/build/state_bridge': PYTHONPATH=/Users/koizumihinata/drone_avoidance_rl/build/state_bridge/prefix_override:/Users/koizumihinata/.pyenv/versions/3.12.0/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/Users/koizumihinata/drone_avoidance_rl/install/state_bridge/lib/python3.12/site-packages: SHLVL=2 _=/usr/bin/env /Users/koizumihinata/.pyenv/versions/3.12.0/bin/python -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /Users/koizumihinata/drone_avoidance_rl/build/state_bridge/build --no-deps symlink_data
+[2.033s] /Users/koizumihinata/.pyenv/versions/3.12.0/lib/python3.12/site-packages/setuptools/_distutils/dist.py:270: UserWarning: Unknown distribution option: 'tests_require'
+[2.034s]   warnings.warn(msg)
+[2.131s] running develop
+[2.211s] running egg_info
+[2.220s] creating state_bridge.egg-info
+[2.220s] writing state_bridge.egg-info/PKG-INFO
+[2.221s] writing dependency_links to state_bridge.egg-info/dependency_links.txt
+[2.222s] writing entry points to state_bridge.egg-info/entry_points.txt
+[2.222s] writing requirements to state_bridge.egg-info/requires.txt
+[2.222s] writing top-level names to state_bridge.egg-info/top_level.txt
+[2.222s] writing manifest file 'state_bridge.egg-info/SOURCES.txt'
+[2.239s] reading manifest file 'state_bridge.egg-info/SOURCES.txt'
+[2.240s] writing manifest file 'state_bridge.egg-info/SOURCES.txt'
+[2.250s] running build_ext
+[2.251s] Creating /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/lib/python3.12/site-packages/state-bridge.egg-link (link to .)
+[2.252s] Installing state_bridge_node script to /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/bin
+[2.253s] 
+[2.253s] Installed /Users/koizumihinata/drone_avoidance_rl/build/state_bridge
+[2.253s] running symlink_data
+[2.253s] creating /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/share/state_bridge
+[2.253s] symbolically linking /Users/koizumihinata/drone_avoidance_rl/build/state_bridge/package.xml -> /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/share/state_bridge
+[2.254s] creating /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/share/state_bridge/resource
+[2.254s] symbolically linking /Users/koizumihinata/drone_avoidance_rl/build/state_bridge/resource/state_bridge -> /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/share/state_bridge/resource
+[2.289s] Invoked command in '/Users/koizumihinata/drone_avoidance_rl/build/state_bridge' returned '0': PYTHONPATH=/Users/koizumihinata/drone_avoidance_rl/build/state_bridge/prefix_override:/Users/koizumihinata/.pyenv/versions/3.12.0/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/Users/koizumihinata/drone_avoidance_rl/install/state_bridge/lib/python3.12/site-packages: SHLVL=2 _=/usr/bin/env /Users/koizumihinata/.pyenv/versions/3.12.0/bin/python -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /Users/koizumihinata/drone_avoidance_rl/build/state_bridge/build --no-deps symlink_data

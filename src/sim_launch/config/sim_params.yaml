@@ -1,0 +1,17 @@
+bridge_topics:
+  - topic: /imu/data
+    ros_type: sensor_msgs/msg/Imu
+    ign_type: ignition.msgs.IMU
+    direction: bidirectional
+  - topic: /mag
+    ros_type: sensor_msgs/msg/MagneticField
+    ign_type: ignition.msgs.Magnetometer
+    direction: bidirectional
+  - topic: /baro
+    ros_type: sensor_msgs/msg/FluidPressure
+    ign_type: ignition.msgs.FluidPressure
+    direction: bidirectional
+  - topic: /model/disaster_relief_drone/joint_cmd
+    ros_type: std_msgs/msg/Float32MultiArray
+    ign_type: ignition.msgs.Float_V
+    direction: bidirectional 

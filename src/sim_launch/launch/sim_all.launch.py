@@ -13,7 +13,7 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 def generate_launch_description() -> LaunchDescription:
     # YAMLからパラメータ読み込み
-    config_path = os.path.join(os.path.dirname(__file__), '../../config/sim_params.yaml')
+    config_path = os.path.join(get_package_share_directory('sim_launch'), 'config', 'sim_params.yaml')
     with open(config_path, 'r') as f:
         params = yaml.safe_load(f)
 
@@ -65,7 +65,44 @@ def generate_launch_description() -> LaunchDescription:
             arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'],
             output='screen',
         ),
-        # 他のブリッジもYAMLからパラメータ化して追加可能
+    ]
+    # YAML bridge_topicsから追加ブリッジノードを生成
+    for bridge in params.get('bridge_topics', []):
+        topic = bridge['topic']
+        ros_type = bridge['ros_type']
+        ign_type = bridge['ign_type']
+        direction = bridge.get('direction', 'bidirectional')
+        if direction == 'bidirectional':
+            arg = f"{topic}@{ros_type}[{ign_type}"
+        elif direction == 'ros_to_ign':
+            arg = f"{topic}@{ros_type}]<{ign_type}"
+        elif direction == 'ign_to_ros':
+            arg = f"{topic}@{ros_type}[>{ign_type}"
+        else:
+            continue
+        bridge_nodes.append(Node(
+            package='ros_gz_bridge',
+            executable='parameter_bridge',
+            arguments=[arg],
+            output='screen',
+        ))
+
+    # === 可視化ツールの自動起動 ===
+    visualization_nodes = [
+        Node(
+            package='rqt_graph',
+            executable='rqt_graph',
+            name='rqt_graph',
+            output='screen',
+        ),
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz2',
+            output='screen',
+            arguments=['-d', os.path.join(get_package_share_directory('sim_launch'), 'resource', 'default.rviz')]
+            if os.path.exists(os.path.join(get_package_share_directory('sim_launch'), 'resource', 'default.rviz')) else [],
+        ),
     ]
 
     return LaunchDescription([
@@ -73,4 +110,5 @@ def generate_launch_description() -> LaunchDescription:
         *set_gz_env,
         ign_gazebo_launch,
         *bridge_nodes,
+        *visualization_nodes,
     ]) 

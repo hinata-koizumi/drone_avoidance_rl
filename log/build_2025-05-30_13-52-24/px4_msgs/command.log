@@ -1,0 +1,2 @@
+Invoking command in '/Users/koizumihinata/drone_avoidance_rl/build/px4_msgs': SHLVL=2 _=/usr/bin/env /opt/homebrew/bin/cmake /Users/koizumihinata/drone_avoidance_rl/src/px4_msgs -DCMAKE_INSTALL_PREFIX=/Users/koizumihinata/drone_avoidance_rl/install/px4_msgs
+Invoked command in '/Users/koizumihinata/drone_avoidance_rl/build/px4_msgs' returned '1': SHLVL=2 _=/usr/bin/env /opt/homebrew/bin/cmake /Users/koizumihinata/drone_avoidance_rl/src/px4_msgs -DCMAKE_INSTALL_PREFIX=/Users/koizumihinata/drone_avoidance_rl/install/px4_msgs

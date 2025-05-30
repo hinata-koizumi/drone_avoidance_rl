@@ -1,0 +1,41 @@
+[0.767s] Invoking command in '/Users/koizumihinata/drone_avoidance_rl/build/px4_msgs': SHLVL=2 _=/usr/bin/env /opt/homebrew/bin/cmake /Users/koizumihinata/drone_avoidance_rl/src/px4_msgs -DCMAKE_INSTALL_PREFIX=/Users/koizumihinata/drone_avoidance_rl/install/px4_msgs
+[1.014s] CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+[1.014s]   Compatibility with CMake < 3.10 will be removed from a future version of
+[1.014s]   CMake.
+[1.014s] 
+[1.014s]   Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+[1.014s]   to tell CMake that the project requires at least <min> but has been updated
+[1.015s]   to work with policies introduced by <max> or earlier.
+[1.017s] 
+[1.019s] 
+[6.803s] -- The C compiler identification is AppleClang 17.0.0.17000013
+[6.921s] -- The CXX compiler identification is AppleClang 17.0.0.17000013
+[6.939s] -- Detecting C compiler ABI info
+[7.374s] -- Detecting C compiler ABI info - done
+[7.409s] -- Check for working C compiler: /Library/Developer/CommandLineTools/usr/bin/cc - skipped
+[7.412s] -- Detecting C compile features
+[7.412s] -- Detecting C compile features - done
+[7.421s] -- Detecting CXX compiler ABI info
+[7.696s] -- Detecting CXX compiler ABI info - done
+[7.726s] -- Check for working CXX compiler: /Library/Developer/CommandLineTools/usr/bin/c++ - skipped
+[7.727s] -- Detecting CXX compile features
+[7.727s] -- Detecting CXX compile features - done
+[7.774s] CMake Error at CMakeLists.txt:11 (find_package):
+[7.774s]   By not providing "Findament_cmake.cmake" in CMAKE_MODULE_PATH this project
+[7.774s]   has asked CMake to find a package configuration file provided by
+[7.774s]   "ament_cmake", but CMake did not find one.
+[7.774s] 
+[7.774s]   Could not find a package configuration file provided by "ament_cmake" with
+[7.774s]   any of the following names:
+[7.774s] 
+[7.774s]     ament_cmakeConfig.cmake
+[7.774s]     ament_cmake-config.cmake
+[7.775s] 
+[7.775s]   Add the installation prefix of "ament_cmake" to CMAKE_PREFIX_PATH or set
+[7.775s]   "ament_cmake_DIR" to a directory containing one of the above files.  If
+[7.775s]   "ament_cmake" provides a separate development package or SDK, be sure it
+[7.775s]   has been installed.
+[7.775s] 
+[7.775s] 
+[7.777s] -- Configuring incomplete, errors occurred!
+[7.779s] Invoked command in '/Users/koizumihinata/drone_avoidance_rl/build/px4_msgs' returned '1': SHLVL=2 _=/usr/bin/env /opt/homebrew/bin/cmake /Users/koizumihinata/drone_avoidance_rl/src/px4_msgs -DCMAKE_INSTALL_PREFIX=/Users/koizumihinata/drone_avoidance_rl/install/px4_msgs

@@ -6,6 +6,7 @@ import numpy as np
 from gymnasium.vector import AsyncVectorEnv
 from gym_env import DroneSimEnv
 from typing import Callable
+from torch.utils.tensorboard import SummaryWriter
 
 def make_env(
     instance_id: int,
@@ -36,9 +37,26 @@ if __name__ == "__main__":
     env_fns = [make_env(i, reward_mode="hover", episode_max_steps=1000) for i in range(num_envs)]
     env = AsyncVectorEnv(env_fns)
 
+    writer = SummaryWriter(log_dir="runs/drone_vector_env")
+    num_episodes = 10
+    episode_rewards = [[] for _ in range(num_envs)]
     obs = env.reset()
-    for _ in range(10):
-        actions = np.stack([env.single_action_space.sample() for _ in range(num_envs)])
-        obs, rewards, terminated, truncated, infos = env.step(actions)
-        print(f"obs: {obs}, rewards: {rewards}")
+    for ep in range(num_episodes):
+        terminated = [False] * num_envs
+        truncated = [False] * num_envs
+        rewards = [0.0] * num_envs
+        obs = env.reset()
+        while not all(terminated) and not all(truncated):
+            actions = np.stack([env.single_action_space.sample() for _ in range(num_envs)])
+            obs, step_rewards, terminated, truncated, infos = env.step(actions)
+            for i in range(num_envs):
+                rewards[i] += step_rewards[i]
+        for i in range(num_envs):
+            episode_rewards[i].append(rewards[i])
+            writer.add_scalar(f"Reward/Episode_env{i}", rewards[i], ep)
+    # 各環境の平均reward
+    for i in range(num_envs):
+        mean_reward = np.mean(episode_rewards[i])
+        writer.add_scalar(f"Reward/Mean_env{i}", mean_reward, num_episodes)
+    writer.close()
     env.close() 

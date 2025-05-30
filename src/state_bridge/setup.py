@@ -1,13 +1,13 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
-package_name = 'state_bridge'
+# print('find_packages() result:', find_packages())
 
 setup(
-    name=package_name,
+    name='state_bridge',
     version='0.1.0',
-    packages=['state_bridge'],
-    install_requires=['setuptools', 'rclpy'],
-    zip_safe=True,
+    packages=find_packages(exclude=['tests*']),
+    install_requires=['setuptools==59.6.0', 'rclpy==1.12.0'],
+    zip_safe=False,
     maintainer='Hinata Koizumi',
     maintainer_email='example@example.com',
     description='PX4 fan PWM → Gazebo joint コマンド橋渡しノード',
@@ -15,11 +15,11 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'state_bridge_node = state_bridge.state_bridge:main',
+            'state_bridge_node = state_bridge:main',
         ],
     },
     data_files=[
-        (f'share/{package_name}', ['package.xml']),
-        (f'share/{package_name}/resource', ['resource/state_bridge']),
+        ('share/state_bridge', ['package.xml']),
+        ('share/state_bridge/resource', ['resource/state_bridge']),
     ],
 )

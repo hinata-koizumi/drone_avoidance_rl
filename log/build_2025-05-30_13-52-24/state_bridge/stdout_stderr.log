@@ -1,0 +1,23 @@
+/Users/koizumihinata/.pyenv/versions/3.12.0/lib/python3.12/site-packages/setuptools/_distutils/dist.py:270: UserWarning: Unknown distribution option: 'tests_require'
+  warnings.warn(msg)
+running develop
+running egg_info
+creating state_bridge.egg-info
+writing state_bridge.egg-info/PKG-INFO
+writing dependency_links to state_bridge.egg-info/dependency_links.txt
+writing entry points to state_bridge.egg-info/entry_points.txt
+writing requirements to state_bridge.egg-info/requires.txt
+writing top-level names to state_bridge.egg-info/top_level.txt
+writing manifest file 'state_bridge.egg-info/SOURCES.txt'
+reading manifest file 'state_bridge.egg-info/SOURCES.txt'
+writing manifest file 'state_bridge.egg-info/SOURCES.txt'
+running build_ext
+Creating /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/lib/python3.12/site-packages/state-bridge.egg-link (link to .)
+Installing state_bridge_node script to /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/bin
+
+Installed /Users/koizumihinata/drone_avoidance_rl/build/state_bridge
+running symlink_data
+creating /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/share/state_bridge
+symbolically linking /Users/koizumihinata/drone_avoidance_rl/build/state_bridge/package.xml -> /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/share/state_bridge
+creating /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/share/state_bridge/resource
+symbolically linking /Users/koizumihinata/drone_avoidance_rl/build/state_bridge/resource/state_bridge -> /Users/koizumihinata/drone_avoidance_rl/install/state_bridge/share/state_bridge/resource

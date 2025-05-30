@@ -1,0 +1,13 @@
+Metadata-Version: 2.2
+Name: common
+Version: 0.1.0
+Summary: 共通ユーティリティ・ベースクラス
+Maintainer: Hinata Koizumi
+Maintainer-email: example@example.com
+License: Apache-2.0
+Requires-Dist: setuptools==59.6.0
+Dynamic: license
+Dynamic: maintainer
+Dynamic: maintainer-email
+Dynamic: requires-dist
+Dynamic: summary

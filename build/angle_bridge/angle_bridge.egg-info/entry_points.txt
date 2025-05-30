@@ -1,0 +1,2 @@
+[console_scripts]
+angle_bridge_node = angle_bridge.angle_bridge:main

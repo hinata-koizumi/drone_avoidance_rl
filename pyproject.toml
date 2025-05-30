@@ -17,4 +17,15 @@ skip-magic-trailing-comma = false
 [tool.mypy]
 exclude = [
     "src/sim_launch/launch/.*\\.py$"
+]
+
+[project]
+dependencies = [
+    "pyyaml==6.0.2",
+    "types-PyYAML==6.0.0",
+    "numpy==1.26.4",
+    "gymnasium==1.1.1",
+    "lark==1.2.2",
+    "ruff==0.4.4",
+    "mypy==1.10.0"
 ] 

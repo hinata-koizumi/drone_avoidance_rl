@@ -1,0 +1,2 @@
+[console_scripts]
+state_bridge_node = state_bridge:main

@@ -11,6 +11,7 @@ from rclpy.executors import MultiThreadedExecutor
 from src.common.bridge_base import BridgeBase
 import yaml
 import os
+from ament_index_python.packages import get_package_share_directory
 
 
 class OuterMotorBridge(BridgeBase):
@@ -23,7 +24,7 @@ class OuterMotorBridge(BridgeBase):
         Initialize OuterMotorBridge with parameters loaded from YAML config.
         Sets up ROS 2 subscriptions and publishers for input and output topics.
         """
-        config_path = os.path.join(os.path.dirname(__file__), '../../../config/sim_params.yaml')
+        config_path = os.path.join(get_package_share_directory('sim_launch'), 'config', 'sim_params.yaml')
         with open(config_path, 'r') as f:
             params = yaml.safe_load(f)
         super().__init__("outer_motor_bridge", {

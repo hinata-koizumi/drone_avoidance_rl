@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  px4-sitl:
+    build:
+      context: .
+      dockerfile: Dockerfile.px4_sitl
+    image: px4-sitl:1.0.0
+    container_name: px4-sitl
+    environment:
+      - PX4_SIM_SPEED_FACTOR=1
+    command: ["/home/px4user/PX4-Autopilot/build/px4_sitl_default/bin/px4", "-d"]
+    tty: true
+    stdin_open: true
+    networks:
+      - px4_net
+    ports:
+      - "14540:14540/udp"
+      - "14550:14550/udp"
+      - "14556:14556/udp"
+      - "5760:5760/tcp"
+    volumes:
+      - type: volume
+        source: px4_data
+        target: /home/px4user/PX4-Autopilot/logs
+    restart: unless-stopped
+
+volumes:
+  px4_data:
+
+networks:
+  px4_net:
+    driver: bridge 

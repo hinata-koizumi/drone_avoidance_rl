@@ -3,11 +3,8 @@ services:
   sim:
     build:
       context: .
-      dockerfile: Dockerfile.unified
-      args:
-        ROS_DISTRO: ${ROS_DISTRO}
-        IGNITION_VERSION: ${IGNITION_VERSION}
-    image: drone_rl:unified
+      dockerfile: docker/Dockerfile.unified
+    image: drone-avoidance-sim:2.0.1
     environment:
       - ROS_DOMAIN_ID=0
       - HEADLESS=1
@@ -17,9 +14,9 @@ services:
     command: bash -c "source /opt/ros/${ROS_DISTRO}/setup.sh && /entrypoint.sh"
     networks:
       - default
-    depends_on:
-      - msgs
-      - bridge
+    # depends_on:
+    #   - msgs
+    #   - bridge
     mem_limit: 4g
     cpus: 2
 
@@ -27,14 +24,14 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.bridge
-    image: drone-avoidance-bridge:latest
+    image: drone-avoidance-bridge:2.0.1
     environment:
       - ROS_DOMAIN_ID=0
     command: bash -c "/entrypoint.sh"
     networks:
       - default
-    depends_on:
-      - msgs
+    # depends_on:
+    #   - msgs
     mem_limit: 4g
     cpus: 2
 
@@ -42,16 +39,16 @@ services:
     build:
       context: .
       dockerfile: docker/rl-agent/Dockerfile.agent
-    image: drone-avoidance-rl-agent:latest
+    image: drone-avoidance-rl-agent:2.0.1
     environment:
       - ROS_DOMAIN_ID=0
     working_dir: /drone_ws
     networks:
       - default
-    depends_on:
-      - sim
-      - bridge
-      - msgs
+    # depends_on:
+    #   - sim
+    #   - bridge
+    #   - msgs
     mem_limit: 4g
     cpus: 2
 
@@ -59,7 +56,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.msgs
-    image: drone-avoidance-msgs:latest
+    image: drone-avoidance-msgs:2.0.1
     networks:
       - default
     mem_limit: 4g

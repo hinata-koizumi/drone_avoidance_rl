@@ -1,0 +1,25 @@
+[1.176s] Invoking command in '/Users/koizumihinata/drone_avoidance_rl/build/outer_motor_bridge': PYTHONPATH=/Users/koizumihinata/drone_avoidance_rl/build/outer_motor_bridge/prefix_override:/Users/koizumihinata/.pyenv/versions/3.12.0/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/Users/koizumihinata/drone_avoidance_rl/install/outer_motor_bridge/lib/python3.12/site-packages: SHLVL=2 _=/usr/bin/env /Users/koizumihinata/.pyenv/versions/3.12.0/bin/python -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /Users/koizumihinata/drone_avoidance_rl/build/outer_motor_bridge/build --no-deps symlink_data
+[1.536s] /Users/koizumihinata/.pyenv/versions/3.12.0/lib/python3.12/site-packages/setuptools/_distutils/dist.py:270: UserWarning: Unknown distribution option: 'tests_require'
+[1.537s]   warnings.warn(msg)
+[1.803s] running develop
+[1.880s] running egg_info
+[1.890s] creating outer_motor_bridge.egg-info
+[1.891s] writing outer_motor_bridge.egg-info/PKG-INFO
+[1.892s] writing dependency_links to outer_motor_bridge.egg-info/dependency_links.txt
+[1.892s] writing entry points to outer_motor_bridge.egg-info/entry_points.txt
+[1.893s] writing requirements to outer_motor_bridge.egg-info/requires.txt
+[1.896s] writing top-level names to outer_motor_bridge.egg-info/top_level.txt
+[1.900s] writing manifest file 'outer_motor_bridge.egg-info/SOURCES.txt'
+[1.923s] reading manifest file 'outer_motor_bridge.egg-info/SOURCES.txt'
+[1.924s] writing manifest file 'outer_motor_bridge.egg-info/SOURCES.txt'
+[1.934s] running build_ext
+[1.935s] Creating /Users/koizumihinata/drone_avoidance_rl/install/outer_motor_bridge/lib/python3.12/site-packages/outer-motor-bridge.egg-link (link to .)
+[1.936s] Installing outer_motor_bridge_node script to /Users/koizumihinata/drone_avoidance_rl/install/outer_motor_bridge/bin
+[1.936s] 
+[1.938s] Installed /Users/koizumihinata/drone_avoidance_rl/build/outer_motor_bridge
+[1.938s] running symlink_data
+[1.939s] creating /Users/koizumihinata/drone_avoidance_rl/install/outer_motor_bridge/share/outer_motor_bridge
+[1.939s] symbolically linking /Users/koizumihinata/drone_avoidance_rl/build/outer_motor_bridge/package.xml -> /Users/koizumihinata/drone_avoidance_rl/install/outer_motor_bridge/share/outer_motor_bridge
+[1.939s] creating /Users/koizumihinata/drone_avoidance_rl/install/outer_motor_bridge/share/outer_motor_bridge/resource
+[1.939s] symbolically linking /Users/koizumihinata/drone_avoidance_rl/build/outer_motor_bridge/resource/outer_motor_bridge -> /Users/koizumihinata/drone_avoidance_rl/install/outer_motor_bridge/share/outer_motor_bridge/resource
+[1.980s] Invoked command in '/Users/koizumihinata/drone_avoidance_rl/build/outer_motor_bridge' returned '0': PYTHONPATH=/Users/koizumihinata/drone_avoidance_rl/build/outer_motor_bridge/prefix_override:/Users/koizumihinata/.pyenv/versions/3.12.0/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/Users/koizumihinata/drone_avoidance_rl/install/outer_motor_bridge/lib/python3.12/site-packages: SHLVL=2 _=/usr/bin/env /Users/koizumihinata/.pyenv/versions/3.12.0/bin/python -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /Users/koizumihinata/drone_avoidance_rl/build/outer_motor_bridge/build --no-deps symlink_data

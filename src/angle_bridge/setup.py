@@ -6,7 +6,7 @@ setup(
     name=package_name,
     version='0.1.0',
     packages=['angle_bridge'],
-    install_requires=['setuptools', 'rclpy'],
+    install_requires=['setuptools==59.6.0', 'rclpy==1.12.0'],
     zip_safe=True,
     maintainer='Hinata Koizumi',
     maintainer_email='example@example.com',

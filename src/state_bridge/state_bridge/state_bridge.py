@@ -4,13 +4,14 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 from rclpy.executors import MultiThreadedExecutor
-from src.common.bridge_base import BridgeBase
+from common.bridge_base import BridgeBase
 from px4_msgs.msg import VehicleOdometry
 from drone_msgs.msg import DroneState
 from geometry_msgs.msg import Vector3
 import numpy as np
 import yaml
 import os
+from ament_index_python.packages import get_package_share_directory
 
 def main():
     rclpy.init()
@@ -25,10 +26,11 @@ def main():
 
 class StateBridgeNode(Node):
     def __init__(self):
-        config_path = os.path.join(os.path.dirname(__file__), '../../../config/sim_params.yaml')
+        config_path = os.path.join(get_package_share_directory('sim_launch'), 'config', 'sim_params.yaml')
         with open(config_path, 'r') as f:
             params = yaml.safe_load(f)
         super().__init__('state_bridge')
+        self.log_level = params.get('log_level', 'info')
         self.declare_parameter('input_topic', params['state_input_topic'])
         self.declare_parameter('output_topic', params['state_output_topic'])
         input_topic = self.get_parameter('input_topic').get_parameter_value().string_value

@@ -1,0 +1,1 @@
+/Users/koizumihinata/drone_avoidance_rl/src/outer_motor_bridge/setup.py

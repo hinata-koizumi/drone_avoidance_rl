@@ -29,9 +29,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build drone-avoidance-base image
-        run: docker buildx build --platform linux/amd64 -t drone-avoidance-base:latest -f docker/Dockerfile.base --load .
+        run: docker buildx build --platform linux/amd64 -t drone-avoidance-base:2.0.1 -f docker/Dockerfile.base --load .
       - name: Save drone-avoidance-base image
-        run: docker save drone-avoidance-base:latest -o drone-avoidance-base.tar
+        run: docker save drone-avoidance-base:2.0.1 -o drone-avoidance-base.tar
       - uses: actions/upload-artifact@v4
         with:
           name: drone-avoidance-base
@@ -63,7 +63,7 @@ jobs:
       - name: Load drone-avoidance-base image
         run: docker load -i drone-avoidance-base.tar
       - name: Build msgs_ws (multi-arch)
-        run: docker buildx build --platform linux/${{ matrix.arch }} --target msgs_ws -f docker/Dockerfile.msgs --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load .
+        run: docker buildx build --platform linux/${{ matrix.arch }} --target msgs_ws -t drone-avoidance-msgs:2.0.1 -f docker/Dockerfile.msgs --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load .
 
   build-bridge:
     needs: build-msgs
@@ -85,7 +85,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-bridge-${{ matrix.arch }}-
       - name: Build bridge_ws (multi-arch)
-        run: docker buildx build --platform linux/${{ matrix.arch }} --target bridge_ws -f docker/Dockerfile.bridge --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load .
+        run: docker buildx build --platform linux/${{ matrix.arch }} --target bridge_ws -t drone-avoidance-bridge:2.0.1 -f docker/Dockerfile.bridge --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load .
       - name: Test bridge_ws
         run: docker run --rm $(docker buildx build --platform linux/${{ matrix.arch }} --target bridge_ws -f docker/Dockerfile.bridge --load -q .) colcon test --base-paths src --packages-ignore gmock gtest
 
@@ -109,9 +109,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-sim-${{ matrix.arch }}-
       - name: Build sim_ws (multi-arch)
-        run: docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:unified --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load -f docker/Dockerfile.unified .
+        run: docker buildx build --platform linux/${{ matrix.arch }} -t drone-avoidance-sim:2.0.1 --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load -f docker/Dockerfile.unified .
       - name: Test sim_ws
-        run: docker run --rm drone_rl:unified ros2 launch sim_launch sim_all.launch.py
+        run: docker run --rm drone-avoidance-sim:2.0.1 ros2 launch sim_launch sim_all.launch.py
 
   lint:
     runs-on: ubuntu-22.04
@@ -244,10 +244,10 @@ jobs:
           set -a
           [ -f .env ] && . .env
           set +a
-      - name: Set up Python 3.13
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.10.13'
       - name: Set up ROS 2 Humble
         uses: ros-tooling/setup-ros@v0.7
         with:
@@ -314,7 +314,7 @@ jobs:
           set -a
           [ -f .env ] && . .env
           set +a
-      - name: Set up Python 3.13
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -425,4 +425,58 @@ jobs:
         run: ${{ steps.setup_python.outputs.python-path }} -c "import yaml; print(yaml.__file__)"
       - name: Check rosdep YAML consistency
         run: ${{ steps.setup_python.outputs.python-path }} tools/check_rosdep_consistency.py
+
+  px4-sitl-test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build PX4 SITL image
+        run: docker build -t px4-sitl:ci -f docker/px4-simulator/Dockerfile.px4_sitl docker/px4-simulator
+      - name: Run PX4 SITL (smoke test)
+        run: |
+          docker run --rm -d --name px4-sitl-test px4-sitl:ci
+          sleep 10
+          docker logs px4-sitl-test
+          docker stop px4-sitl-test
+
+  gym-env-test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10.13'
+      - name: Set up ROS 2 Humble
+        uses: ros-tooling/setup-ros@v0.7
+        with:
+          required-ros-distributions: humble
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest gymnasium numpy pyyaml lark
+      - name: Install ROS 2 dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-colcon-common-extensions python3-empy
+          sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list
+          sudo rosdep init || true
+          for i in {1..5}; do rosdep update && break || sleep 5; done || true
+          rosdep install --from-paths src --ignore-src -r -y --rosdistro=humble
+      - name: Build ROS 2 workspace
+        run: |
+          source /opt/ros/${{ env.ROS_DISTRO || 'humble' }}/setup.sh
+          export PYTHONPATH=/usr/lib/python3/dist-packages:$PYTHONPATH
+          colcon build --merge-install --base-paths src
+      - name: Run Gym Env API tests
+        run: |
+          source /opt/ros/${{ env.ROS_DISTRO || 'humble' }}/setup.sh
+          source install/setup.sh
+          export PYTHONPATH=/usr/lib/python3/dist-packages:$PYTHONPATH:$(pwd):$(pwd)/src
+          pytest tests/test_gym_env.py
+        shell: bash
 

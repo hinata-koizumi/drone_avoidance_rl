@@ -1,0 +1,43 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    python3-pip \
+    python3-jinja2 \
+    python3-empy \
+    python3-toml \
+    python3-numpy \
+    python3-yaml \
+    python3-setuptools \
+    python3-pexpect \
+    python3-psutil \
+    python3-serial \
+    python3-pyros-genmsg \
+    build-essential \
+    ccache \
+    g++ \
+    cmake \
+    ninja-build \
+    exiftool \
+    wget \
+    zip \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# PX4ユーザー作成
+RUN useradd -ms /bin/bash px4user
+USER px4user
+WORKDIR /home/px4user
+
+# PX4-Autopilotクローン
+RUN git clone --recursive https://github.com/PX4/PX4-Autopilot.git
+WORKDIR /home/px4user/PX4-Autopilot
+
+# PX4 SITLビルド
+RUN make distclean && make px4_sitl_default
+
+# デフォルトコマンド: PX4 SITLのみ起動
+CMD ["/home/px4user/PX4-Autopilot/build/px4_sitl_default/bin/px4", "-d"] 

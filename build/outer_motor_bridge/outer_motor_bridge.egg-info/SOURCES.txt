@@ -1,0 +1,13 @@
+package.xml
+setup.py
+outer_motor_bridge/__init__.py
+outer_motor_bridge/__main__.py
+outer_motor_bridge/main.py
+outer_motor_bridge.egg-info/PKG-INFO
+outer_motor_bridge.egg-info/SOURCES.txt
+outer_motor_bridge.egg-info/dependency_links.txt
+outer_motor_bridge.egg-info/entry_points.txt
+outer_motor_bridge.egg-info/requires.txt
+outer_motor_bridge.egg-info/top_level.txt
+outer_motor_bridge.egg-info/zip-safe
+resource/outer_motor_bridge

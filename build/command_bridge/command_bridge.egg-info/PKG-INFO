@@ -1,0 +1,13 @@
+Metadata-Version: 2.2
+Name: command_bridge
+Version: 0.0.1
+Summary: DroneControlCommand → px4_msgs/ActuatorMotors bridge
+Maintainer: you
+Maintainer-email: user@example.com
+License: Apache 2.0
+Requires-Dist: setuptools==59.6.0
+Dynamic: license
+Dynamic: maintainer
+Dynamic: maintainer-email
+Dynamic: requires-dist
+Dynamic: summary

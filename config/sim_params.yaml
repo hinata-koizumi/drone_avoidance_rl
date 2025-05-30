@@ -38,6 +38,11 @@ physics:
     type: float
     desc: "慣性モーメント（簡易）"
 
+# 風・乱流パラメータ（シンプル環境用、全て0.0で明示）
+wind_max: 0.0      # [float] 最大風速[m/s]
+gust_max: 0.0      # [float] 最大突風[m/s]
+gust_prob: 0.0     # [float] 突風発生確率
+
 # ブリッジトピックリスト（自動生成用）
 bridge_topics:
   - topic: "/clock"

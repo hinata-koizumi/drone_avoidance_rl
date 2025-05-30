@@ -8,7 +8,7 @@
 ## Overview
 
 - **PX4 SITL + ROS 2 Humble + Gazebo Fortress (LTS) + RL (Gym API) Unified Stack**
-- **Reproducibility**: Ubuntu 22.04, ROS 2 Humble, PX4 v1.15, Gazebo Fortress (LTS), ros_gz, multi-stage Docker
+- **Reproducibility**: Ubuntu 22.04, ROS 2 Humble, PX4 v1.15, Gazebo Garden (LTS), ros_gz 0.244.0, multi-stage Docker
 - **CI/CD Automation**: GitHub Actions for build, test, static analysis, E2E, coverage, security, release notes
 - **Custom model/airframe support**
 - **Type safety, code quality gates, auto-generated docs**
@@ -122,7 +122,7 @@ docker compose down
    これによりCIと同じ環境・コマンドでテストできます。
 
 2. Gym APIテストや静的解析もCI/CDと同じコマンドで実行してください。
-   - Python 3.10系を推奨（pyenvで合わせる）
+   - Python 3.10.13系を推奨（pyenvで合わせる）
    - 依存インストール:
      ```sh
      python3 -m pip install --upgrade pip
@@ -289,3 +289,29 @@ docker build -f docker/Dockerfile.base -t drone-avoidance-base:latest .
 > Gazebo Garden以降では`ign`コマンドの代わりに`gz`コマンドが標準です。多くの環境では`ign`が無い場合があります。その場合は`gz`コマンドを使ってください。
 > 例: `gz sdf -k ...`
 > Dockerイメージ内では`ign`→`gz`のシンボリックリンクも自動作成されます。
+
+---
+
+## ROS 2トピック可視化・デバッグ
+
+- **rqt_graph**: ROS2ノード・トピックの全体構造を可視化できます。
+  - 起動方法: `ros2 run rqt_graph rqt_graph`
+  - Docker/launch自動起動時は自動で立ち上がります。
+- **rviz2**: センサデータや座標系、トピックの可視化に利用できます。
+  - 起動方法: `ros2 run rviz2 rviz2`
+  - launch自動起動時は `src/sim_launch/resource/default.rviz` 設定があれば自動ロードされます。
+- **自動起動**: `sim_launch/launch/sim_all.launch.py` で両ツールが自動起動されます。
+- **トラブル時**: GUIが表示されない場合は`DISPLAY`環境変数やX11転送設定を確認してください。
+
+---
+
+## Gazeboシミュレーション録画（gz record）
+
+- デフォルトでは録画はOFFです。
+- 必要な場合のみ、launch引数 `record:=true` を指定すると `gz record` によるシミュレーション録画が有効化されます。
+- 例:
+  ```bash
+  ros2 launch sim_launch gz_sim.launch.py record:=true
+  ```
+- 録画ファイルは `/logs/sim_record` に保存されます。
+- CIやheadless運用では録画は推奨されません（計算・ストレージリソース節約のため）。

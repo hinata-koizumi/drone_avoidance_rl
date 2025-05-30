@@ -9,7 +9,7 @@ setup(
     name=package_name,
     version='0.0.1',
     packages=['command_bridge'],
-    install_requires=['setuptools'],
+    install_requires=['setuptools==59.6.0'],
     zip_safe=True,
     maintainer='you',
     maintainer_email='user@example.com',

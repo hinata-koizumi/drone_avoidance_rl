@@ -1,17 +1,17 @@
-#!/usr/bin/env bash
-set -euo pipefail
-set +u
-
-# ROS 2 Humble環境セットアップ
-source /opt/ros/humble/setup.bash
+#!/bin/bash
+set -e
+source /opt/ros/${ROS_DISTRO}/setup.bash
 if [ -f /bridge_ws/install/setup.bash ]; then
   source /bridge_ws/install/setup.bash
 fi
+export PYTHONPATH=/bridge_ws/src:/bridge_ws/install/lib/python3.10/site-packages:$PYTHONPATH
+exec "$@"
 
 # デバッグ用出力
 export PATH="/bridge_ws/install/bin:$PATH"
 echo "[entrypoint-bridge] PATH=$PATH"
 
+echo "[entrypoint-bridge] PYTHONPATH=$PYTHONPATH"
 # 引数があればそのまま実行、なければros2 launch
 if [ $# -gt 0 ]; then
   exec "$@"

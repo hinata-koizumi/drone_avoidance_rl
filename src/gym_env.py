@@ -12,6 +12,7 @@ import subprocess
 import time
 import threading
 import yaml
+from ament_index_python.packages import get_package_share_directory
 
 import gymnasium as gym
 import numpy as np
@@ -113,7 +114,7 @@ class DroneSimEnv(gym.Env):
         self.max_steps = self.episode_max_steps
         self.crashed = False
 
-        config_path = os.path.join(os.path.dirname(__file__), '../config/sim_params.yaml')
+        config_path = os.path.join(get_package_share_directory('sim_launch'), 'config', 'sim_params.yaml')
         with open(config_path, 'r') as f:
             params = yaml.safe_load(f)
         # 報酬重みをYAMLから取得し型バリデーション
