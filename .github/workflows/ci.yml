@@ -38,11 +38,11 @@ jobs:
       - name: Build drone-avoidance-base image
         run: docker buildx build --platform linux/amd64 -t drone-avoidance-base:2.0.1 -f docker/Dockerfile.base --load .
       - name: Save drone-avoidance-base image
-        run: docker save drone-avoidance-base:2.0.1 -o drone-avoidance-base.tar
+        run: docker save drone-avoidance-base:2.0.1 | gzip > drone-avoidance-base.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: drone-avoidance-base
-          path: drone-avoidance-base.tar
+          path: drone-avoidance-base.tar.gz
 
   build-msgs:
     needs: build-base
@@ -68,7 +68,7 @@ jobs:
         with:
           name: drone-avoidance-base
       - name: Load drone-avoidance-base image
-        run: docker load -i drone-avoidance-base.tar
+        run: gunzip -c drone-avoidance-base.tar.gz | docker load
       - name: Build msgs_ws (multi-arch)
         run: docker buildx build --platform linux/${{ matrix.arch }} --target msgs_ws -t drone-avoidance-msgs:2.0.1 -f docker/Dockerfile.msgs --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load .
 
