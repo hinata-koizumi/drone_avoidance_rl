@@ -1,3 +1,5 @@
+"""Bridge base for ROS 2 bridge nodes (typed for mypy)."""
+
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy

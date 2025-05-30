@@ -1,3 +1,5 @@
+"""Utility functions for drone RL (typed for mypy, PEP 561)."""
+
 def clamp(v: float, lo: float, hi: float) -> float:
     """
     Clamp a value v between lower (lo) and upper (hi) bounds.
