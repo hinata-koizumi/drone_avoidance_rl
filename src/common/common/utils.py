@@ -8,4 +8,4 @@ def clamp(v: float, lo: float, hi: float) -> float:
     Returns:
         float: Clamped value.
     """
-    return max(lo, min(hi, v)) 
+    return float(max(lo, min(hi, v))) 
