@@ -290,14 +290,14 @@ jobs:
           which gz || echo 'gz not found'
           ls -l /usr/local/bin/ign || echo '/usr/local/bin/ign not found'
           ls -l /usr/bin/gz || echo '/usr/bin/gz not found'
-      - name: Install Ignition Tools
-        run: sudo apt-get update && sudo apt-get install -y ignition-tools
-      - name: Symlink ign to gz if needed
+      - name: Install Ignition Garden
         run: |
-          if ! command -v ign >/dev/null 2>&1 && command -v gz >/dev/null 2>&1; then
-            sudo ln -s $(command -v gz) /usr/local/bin/ign;
-            echo '[INFO] Created symlink: ign -> gz';
-          fi
+          sudo apt-get update
+          sudo apt-get install -y lsb-release wget gnupg
+          sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list'
+          wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y ignition-garden ignition-tools
       - name: Validate SDF
         run: ign sdf -k custom_model/drone_model/model.sdf
       - name: Validate XML
