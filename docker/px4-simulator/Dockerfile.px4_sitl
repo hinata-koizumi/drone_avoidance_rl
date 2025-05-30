@@ -24,10 +24,13 @@ RUN apt-get update && apt-get install -y \
     wget \
     zip \
     unzip \
+    libxml2-dev libxslt1-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --no-cache-dir pyros-genmsg
 RUN pip3 install --no-cache-dir kconfiglib
+RUN pip3 install --no-cache-dir lxml
+RUN pip3 install --no-cache-dir jsonschema
 
 # PX4ユーザー作成
 RUN useradd -ms /bin/bash px4user
