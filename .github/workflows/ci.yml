@@ -290,16 +290,16 @@ jobs:
           which gz || echo 'gz not found'
           ls -l /usr/local/bin/ign || echo '/usr/local/bin/ign not found'
           ls -l /usr/bin/gz || echo '/usr/bin/gz not found'
-      - name: Install Ignition Garden
+      - name: Install Gazebo Garden
         run: |
           sudo apt-get update
           sudo apt-get install -y lsb-release wget gnupg
-          sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list'
+          sudo sh -c 'echo "deb [arch=amd64] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list'
           wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
           sudo apt-get update
-          sudo apt-get install -y ign-garden ignition-tools
+          sudo apt-get install -y gz-garden
       - name: Validate SDF
-        run: ign sdf -k custom_model/drone_model/model.sdf
+        run: gz sdf -k custom_model/drone_model/model.sdf
       - name: Validate XML
         run: sudo apt-get install -y libxml2-utils && xmllint --noout custom_model/drone_model/model.config
 
