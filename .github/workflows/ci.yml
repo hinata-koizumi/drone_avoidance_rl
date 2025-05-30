@@ -74,7 +74,7 @@ jobs:
       - name: Load drone-avoidance-base image
         run: gunzip -c drone-avoidance-base.tar.gz | docker load
       - name: Build msgs_ws (multi-arch)
-        run: docker buildx build --platform linux/${{ matrix.arch }} --target msgs_ws -t drone-avoidance-msgs:2.0.1 -f docker/Dockerfile.msgs --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load .
+        run: docker buildx build --platform linux/${{ matrix.arch }} --target msgs_ws -t drone-avoidance-msgs:2.0.1 -f docker/Dockerfile.msgs --load .
 
   build-bridge:
     needs: build-msgs
@@ -88,15 +88,8 @@ jobs:
           submodules: recursive
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-bridge-${{ matrix.arch }}-${{ github.sha }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-bridge-${{ matrix.arch }}-
       - name: Build bridge_ws (multi-arch)
-        run: docker buildx build --platform linux/${{ matrix.arch }} --target bridge_ws -t drone-avoidance-bridge:2.0.1 -f docker/Dockerfile.bridge --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load .
+        run: docker buildx build --platform linux/${{ matrix.arch }} --target bridge_ws -t drone-avoidance-bridge:2.0.1 -f docker/Dockerfile.bridge --load .
       - name: Test bridge_ws
         run: docker run --rm $(docker buildx build --platform linux/${{ matrix.arch }} --target bridge_ws -f docker/Dockerfile.bridge --load -q .) colcon test --base-paths src --packages-ignore gmock gtest
 
@@ -112,15 +105,8 @@ jobs:
           submodules: recursive
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-sim-${{ matrix.arch }}-${{ github.sha }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-sim-${{ matrix.arch }}-
       - name: Build sim_ws (multi-arch)
-        run: docker buildx build --platform linux/${{ matrix.arch }} -t drone-avoidance-sim:2.0.1 --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max --load -f docker/Dockerfile.unified .
+        run: docker buildx build --platform linux/${{ matrix.arch }} -t drone-avoidance-sim:2.0.1 --load -f docker/Dockerfile.unified .
       - name: Test sim_ws
         run: docker run --rm drone-avoidance-sim:2.0.1 ros2 launch sim_launch sim_all.launch.py
 
