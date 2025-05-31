@@ -1,3 +1,4 @@
+ARG GITHUB_REPOSITORY_OWNER=library
 FROM ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1 AS msgs_ws
 
 USER root
