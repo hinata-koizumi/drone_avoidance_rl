@@ -61,9 +61,23 @@ jobs:
           fi
       - name: List files after artifact download
         run: ls -l ${{ github.workspace }}
+      - name: Check artifact file size
+        run: |
+          FILE=${{ github.workspace }}/drone-avoidance-base.tar.gz
+          if [ ! -s "$FILE" ]; then
+            echo "ERROR: $FILE is empty or does not exist. Artifact may be corrupted or upload failed." >&2
+            exit 1
+          fi
       - name: Load drone-avoidance-base image
         run: |
-          gunzip -c ${{ github.workspace }}/drone-avoidance-base.tar.gz | docker load
+          set -e
+          FILE=${{ github.workspace }}/drone-avoidance-base.tar.gz
+          gunzip -c "$FILE" | docker load > docker_load.log 2>&1 || (cat docker_load.log && exit 1)
+          if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
+            echo "ERROR: drone-avoidance-base:2.0.1 failed to load. See docker_load.log below:" >&2
+            cat docker_load.log
+            exit 1
+          fi
       - name: List Docker images after load
         run: docker images
       - name: Ensure base image is present before build
