@@ -126,6 +126,12 @@ jobs:
           else
             echo "drone-avoidance-base:2.0.1 already loaded"
           fi
+      - name: Ensure base image is present before build
+        run: |
+          if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
+            echo "ERROR: drone-avoidance-base:2.0.1 is not present. Artifact load may have failed." >&2
+            exit 1
+          fi
       - name: List Docker images (debug)
         run: docker images
       - name: Build bridge_ws (multi-arch)
