@@ -1,9 +1,15 @@
-ARG GITHUB_REPOSITORY_OWNER=library
-FROM ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1 AS bridge_ws
+ARG BASE_IMAGE=drone-avoidance-base:2.0.1
+FROM ${BASE_IMAGE} AS bridge_ws
 
 USER root
 WORKDIR /bridge_ws
-COPY src/ src/
+COPY src/angle_bridge src/angle_bridge
+COPY src/command_bridge src/command_bridge
+COPY src/outer_motor_bridge src/outer_motor_bridge
+COPY src/state_bridge src/state_bridge
+COPY src/common src/common
+COPY src/drone_msgs src/drone_msgs
+COPY src/px4_msgs src/px4_msgs
 COPY config/ config/
 COPY rosdep/rosdep-bridge.yaml rosdep/rosdep-bridge.yaml
 
