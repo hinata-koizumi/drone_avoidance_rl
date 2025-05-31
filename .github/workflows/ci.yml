@@ -39,10 +39,18 @@ jobs:
           driver: docker
       - name: Build drone-avoidance-base image
         run: docker buildx build --platform linux/amd64 -t drone-avoidance-base:2.0.1 -f docker/Dockerfile.base --load .
+      - name: Ensure base image exists before save
+        run: |
+          if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
+            echo "ERROR: drone-avoidance-base:2.0.1 does not exist after build. Build may have failed." >&2
+            exit 1
+          fi
       - name: Save drone-avoidance-base image
-        run: docker save drone-avoidance-base:2.0.1 | gzip > ${{ github.workspace }}/drone-avoidance-base.tar.gz
+        run: |
+          set -e
+          docker save drone-avoidance-base:2.0.1 | gzip > ${{ github.workspace }}/drone-avoidance-base.tar.gz
       - name: Check base image artifact before upload
-        run: ls -l ${{ github.workspace }}/drone-avoidance-base.tar.gz
+        run: ls -lh ${{ github.workspace }}/drone-avoidance-base.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: drone-avoidance-base
@@ -72,7 +80,12 @@ jobs:
         run: |
           set -e
           FILE=${{ github.workspace }}/drone-avoidance-base.tar.gz
-          gunzip -c "$FILE" | docker load > docker_load.log 2>&1 || (cat docker_load.log && exit 1)
+          gunzip -c "$FILE" | docker load | tee docker_load.log
+          if ! grep -q "Loaded image: drone-avoidance-base:2.0.1" docker_load.log; then
+            echo "ERROR: docker load did not report loading drone-avoidance-base:2.0.1" >&2
+            cat docker_load.log
+            exit 1
+          fi
           if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
             echo "ERROR: drone-avoidance-base:2.0.1 failed to load. See docker_load.log below:" >&2
             cat docker_load.log
