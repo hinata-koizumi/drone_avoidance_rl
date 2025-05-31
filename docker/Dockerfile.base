@@ -97,4 +97,7 @@ fi \
 && if ! command -v ign >/dev/null 2>&1 && command -v gz >/dev/null 2>&1; then \
   ln -s $(command -v gz) /usr/local/bin/ign; \
   echo '[INFO] Created symlink: ign -> gz'; \
-fi 
+fi
+
+# --- Final cleanup for slimming ---
+RUN rm -rf /tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* || true 

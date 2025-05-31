@@ -18,7 +18,11 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     rosdep install --from-paths src --rosdistro ${ROS_DISTRO} -y --ignore-src
 
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    colcon build --symlink-install --merge-install --packages-select drone_msgs
+    colcon build --symlink-install --merge-install --packages-select drone_msgs && \
+    rm -rf build/ log/
+
+# --- Final cleanup for slimming ---
+RUN rm -rf /tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* || true
 
 COPY docker/rl-agent/entrypoint-rl-agent.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

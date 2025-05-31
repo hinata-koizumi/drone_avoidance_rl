@@ -17,6 +17,8 @@ RUN rm -rf build/ install/ log/
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
     colcon build --symlink-install --merge-install && \
     rm -rf build/ log/
+# --- Final cleanup for slimming ---
+RUN rm -rf /tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* || true
 
 COPY docker/entrypoint-bridge.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

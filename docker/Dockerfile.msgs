@@ -12,10 +12,14 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     rosdep install --from-paths src --rosdistro ${ROS_DISTRO} -y --ignore-src
 
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    colcon build --symlink-install --merge-install --packages-select drone_msgs
+    colcon build --symlink-install --merge-install --packages-select drone_msgs && \
+    rm -rf build/ log/
 
 ENV OVERLAY_WS=/msgs_ws/install
 
 RUN if [ "$(dpkg --print-architecture)" != "amd64" ]; then \
   echo "[WARN] This image is officially supported only on amd64. For arm64 or other architectures, additional validation and support are required."; \
 fi
+
+# --- Final cleanup for slimming ---
+RUN rm -rf /tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* || true
