@@ -21,8 +21,7 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
 RUN rm -rf build/ install/ log/
 
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    colcon build --symlink-install --merge-install && \
-    rm -rf build/ log/
+    colcon build --symlink-install --merge-install
 # --- Final cleanup for slimming ---
 RUN rm -rf /tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* || true
 

@@ -145,7 +145,7 @@ jobs:
       - name: Build bridge_ws (multi-arch)
         run: docker buildx build --platform linux/amd64 --target bridge_ws -t drone-avoidance-bridge:2.0.1 -f docker/Dockerfile.bridge --load .
       - name: Test bridge_ws
-        run: docker run --rm $(docker buildx build --platform linux/${{ matrix.arch }} --target bridge_ws -f docker/Dockerfile.bridge --load -q .) colcon test --base-paths src --packages-ignore gmock gtest
+        run: docker run --rm $(docker buildx build --platform linux/${{ matrix.arch }} --target bridge_ws -f docker/Dockerfile.bridge --load -q .) colcon test --merge-install --base-paths src --packages-ignore gmock gtest
 
   build-sim:
     needs: build-bridge
