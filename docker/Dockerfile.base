@@ -83,7 +83,7 @@ RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/p
 RUN apt-get update
 
 # ros-gz-bridge, ros-gz-simのインストール
-RUN apt-get install -y --no-install-recommends ros-humble-ros-gz-bridge ros-humble-ros-gz-sim || true
+RUN apt-get install -y --no-install-recommends ros-humble-ros-gz-bridge ros-humble-ros-gz-sim || true && rm -rf /var/lib/apt/lists/*
 
 # --- Entrypoint placeholder ---
 USER builder

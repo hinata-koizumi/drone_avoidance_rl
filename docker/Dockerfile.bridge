@@ -15,7 +15,8 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
 RUN rm -rf build/ install/ log/
 
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    colcon build --symlink-install --merge-install
+    colcon build --symlink-install --merge-install && \
+    rm -rf build/ log/
 
 COPY docker/entrypoint-bridge.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
