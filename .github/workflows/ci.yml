@@ -45,6 +45,11 @@ jobs:
         with:
           name: drone-avoidance-base
           path: drone-avoidance-base.tar.gz
+      - name: Download drone-avoidance-base image
+        uses: actions/download-artifact@v4
+        with:
+          name: drone-avoidance-base
+        continue-on-error: false
       - name: Check for base image artifact
         run: |
           if [ ! -f drone-avoidance-base.tar.gz ]; then
