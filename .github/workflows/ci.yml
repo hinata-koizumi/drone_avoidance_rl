@@ -45,6 +45,12 @@ jobs:
         with:
           name: drone-avoidance-base
           path: drone-avoidance-base.tar.gz
+      - name: Check for base image artifact
+        run: |
+          if [ ! -f drone-avoidance-base.tar.gz ]; then
+            echo "ERROR: drone-avoidance-base.tar.gz artifact not found! build-base job may have failed or been skipped." >&2
+            exit 1
+          fi
 
   build-msgs:
     needs: build-base
