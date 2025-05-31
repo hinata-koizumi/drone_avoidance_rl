@@ -74,7 +74,15 @@ jobs:
       - name: Load drone-avoidance-base image
         run: |
           if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
+            if [ ! -f drone-avoidance-base.tar.gz ]; then
+              echo "ERROR: drone-avoidance-base.tar.gz artifact not found!" >&2
+              exit 1
+            fi
             gunzip -c drone-avoidance-base.tar.gz | docker load
+            if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
+              echo "ERROR: Failed to load drone-avoidance-base:2.0.1 from artifact" >&2
+              exit 1
+            fi
           else
             echo "drone-avoidance-base:2.0.1 already loaded"
           fi
@@ -100,7 +108,15 @@ jobs:
       - name: Load drone-avoidance-base image
         run: |
           if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
+            if [ ! -f drone-avoidance-base.tar.gz ]; then
+              echo "ERROR: drone-avoidance-base.tar.gz artifact not found!" >&2
+              exit 1
+            fi
             gunzip -c drone-avoidance-base.tar.gz | docker load
+            if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
+              echo "ERROR: Failed to load drone-avoidance-base:2.0.1 from artifact" >&2
+              exit 1
+            fi
           else
             echo "drone-avoidance-base:2.0.1 already loaded"
           fi
