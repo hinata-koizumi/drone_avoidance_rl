@@ -39,6 +39,11 @@ jobs:
           driver: docker
       - name: Build drone-avoidance-base image
         run: docker buildx build --platform linux/amd64 -t drone-avoidance-base:2.0.1 -f docker/Dockerfile.base --load .
+      - name: Tag and Push to GHCR
+        run: |
+          docker tag drone-avoidance-base:2.0.1 ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1
       - name: Ensure base image exists before save
         run: |
           if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
@@ -121,35 +126,10 @@ jobs:
           key: ${{ runner.os }}-buildx-msgs-${{ matrix.arch }}-${{ github.sha }}-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-buildx-msgs-${{ matrix.arch }}-
-      - name: Download drone-avoidance-base image
-        uses: actions/download-artifact@v4
-        with:
-          name: drone-avoidance-base
-      - name: Load drone-avoidance-base image
+      - name: Pull drone-avoidance-base image from GHCR
         run: |
-          if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
-            if [ ! -f drone-avoidance-base.tar.gz ]; then
-              echo "ERROR: drone-avoidance-base.tar.gz artifact not found!" >&2
-              exit 1
-            fi
-            gunzip -c drone-avoidance-base.tar.gz | docker load
-            if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
-              echo "ERROR: Failed to load drone-avoidance-base:2.0.1 from artifact" >&2
-              exit 1
-            fi
-          else
-            echo "drone-avoidance-base:2.0.1 already loaded"
-          fi
-      - name: List files after artifact download
-        run: ls -l
-      - name: List Docker images after load
-        run: docker images
-      - name: Ensure base image is present before build
-        run: |
-          if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
-            echo "ERROR: drone-avoidance-base:2.0.1 is not present. Artifact load may have failed." >&2
-            exit 1
-          fi
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker pull ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1
       - name: Build msgs_ws (multi-arch)
         run: docker buildx build --platform linux/${{ matrix.arch }} --target msgs_ws -t drone-avoidance-msgs:2.0.1 -f docker/Dockerfile.msgs --load .
 
@@ -165,28 +145,10 @@ jobs:
           submodules: recursive
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Download drone-avoidance-base image
-        uses: actions/download-artifact@v4
-        with:
-          name: drone-avoidance-base
-          path: ${{ github.workspace }}
-        continue-on-error: false
-      - name: Check for base image artifact
+      - name: Pull drone-avoidance-base image from GHCR
         run: |
-          if [ ! -f ${{ github.workspace }}/drone-avoidance-base.tar.gz ]; then
-            echo "ERROR: drone-avoidance-base.tar.gz artifact not found! build-base job may have failed or been skipped." >&2
-            exit 1
-          fi
-      - name: List files after artifact download
-        run: ls -l ${{ github.workspace }}
-      - name: List Docker images after load
-        run: docker images
-      - name: Ensure base image is present before build
-        run: |
-          if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
-            echo "ERROR: drone-avoidance-base:2.0.1 is not present. Artifact load may have failed." >&2
-            exit 1
-          fi
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker pull ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1
       - name: Build bridge_ws (multi-arch)
         run: docker buildx build --pull=false --platform linux/${{ matrix.arch }} --target bridge_ws -t drone-avoidance-bridge:2.0.1 -f docker/Dockerfile.bridge --load .
       - name: Test bridge_ws

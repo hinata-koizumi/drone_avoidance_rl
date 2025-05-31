@@ -1,7 +1,7 @@
 # docker/rl-agent/Dockerfile.agent   2025-04-30 R3
 ARG ROS_DISTRO=humble
 ARG IGNITION_VERSION=garden
-FROM drone-avoidance-base:latest
+FROM ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
 
 USER root
 WORKDIR /rl_ws

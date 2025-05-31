@@ -277,10 +277,10 @@ ign --version
 
 ## Docker ベースイメージのビルド
 
-本プロジェクトの各サービスは `drone-avoidance-base` イメージをベースにしています。CIやローカルでエラーが出る場合、以下のコマンドで事前にビルドしてください。
+本プロジェクトの各サービスは `drone-avoidance-base` イメージをベースにしています。CIやローカルでエラーが出る場合、以下のコマンドで事前にpullしてください。
 
-```bash
-docker build -f docker/Dockerfile.base -t drone-avoidance-base:latest .
+```sh
+docker pull ghcr.io/<your-org>/drone-avoidance-base:2.0.1
 ```
 
 その後、通常通り `docker-compose build` で他のサービスをビルドできます。

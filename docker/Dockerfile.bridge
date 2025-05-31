@@ -1,4 +1,4 @@
-FROM drone-avoidance-base:2.0.1 AS bridge_ws
+FROM ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1 AS bridge_ws
 
 USER root
 WORKDIR /bridge_ws
