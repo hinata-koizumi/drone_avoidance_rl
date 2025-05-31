@@ -72,7 +72,12 @@ jobs:
         with:
           name: drone-avoidance-base
       - name: Load drone-avoidance-base image
-        run: gunzip -c drone-avoidance-base.tar.gz | docker load
+        run: |
+          if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
+            gunzip -c drone-avoidance-base.tar.gz | docker load
+          else
+            echo "drone-avoidance-base:2.0.1 already loaded"
+          fi
       - name: Build msgs_ws (multi-arch)
         run: docker buildx build --platform linux/${{ matrix.arch }} --target msgs_ws -t drone-avoidance-msgs:2.0.1 -f docker/Dockerfile.msgs --load .
 
@@ -93,7 +98,12 @@ jobs:
         with:
           name: drone-avoidance-base
       - name: Load drone-avoidance-base image
-        run: gunzip -c drone-avoidance-base.tar.gz | docker load
+        run: |
+          if ! docker image inspect drone-avoidance-base:2.0.1 > /dev/null 2>&1; then
+            gunzip -c drone-avoidance-base.tar.gz | docker load
+          else
+            echo "drone-avoidance-base:2.0.1 already loaded"
+          fi
       - name: List Docker images (debug)
         run: docker images
       - name: Build bridge_ws (multi-arch)
