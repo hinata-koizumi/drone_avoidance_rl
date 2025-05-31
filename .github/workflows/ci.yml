@@ -77,7 +77,7 @@ jobs:
         run: docker buildx build --platform linux/${{ matrix.arch }} --target msgs_ws -t drone-avoidance-msgs:2.0.1 -f docker/Dockerfile.msgs --load .
 
   build-bridge:
-    needs: build-msgs
+    needs: [build-base, build-msgs]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -94,6 +94,8 @@ jobs:
           name: drone-avoidance-base
       - name: Load drone-avoidance-base image
         run: gunzip -c drone-avoidance-base.tar.gz | docker load
+      - name: List Docker images (debug)
+        run: docker images
       - name: Build bridge_ws (multi-arch)
         run: docker buildx build --platform linux/${{ matrix.arch }} --target bridge_ws -t drone-avoidance-bridge:2.0.1 -f docker/Dockerfile.bridge --load .
       - name: Test bridge_ws
