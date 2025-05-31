@@ -136,7 +136,12 @@ jobs:
       - name: Load drone-avoidance-base image
         run: gunzip -c drone-avoidance-base.tar.gz | docker load
       - name: Set up Docker Buildx (host driver)
-        run: docker buildx create --use --driver docker
+        run: |
+          if ! docker buildx inspect default > /dev/null 2>&1; then
+            docker buildx create --name default --use --driver docker
+          else
+            docker buildx use default
+          fi
       - name: Build bridge_ws (multi-arch)
         run: docker buildx build --platform linux/amd64 --target bridge_ws -t drone-avoidance-bridge:2.0.1 -f docker/Dockerfile.bridge --load .
       - name: Test bridge_ws
