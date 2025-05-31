@@ -1,4 +1,4 @@
-FROM drone-avoidance-base:latest
+FROM drone-avoidance-base:latest AS bridge_ws
 
 USER root
 WORKDIR /bridge_ws
