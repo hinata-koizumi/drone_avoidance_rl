@@ -60,7 +60,8 @@ RUN git clone --depth 1 --recursive -b main https://github.com/PX4/PX4-Autopilot
 WORKDIR /PX4-Autopilot
 ENV PX4_WITH_GZ_TRANSPORT=ON
 RUN pip3 install --no-cache-dir pyulog==1.2.0 pyros-genmsg==0.5.8
-RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
+RUN for i in {1..5}; do apt-get update --fix-missing && break || sleep 10; done && \
+    for i in {1..5}; do SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && break || sleep 10; done && \
     make -j$(nproc) px4_sitl_default && \
     cp /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
     chmod +x /usr/local/bin/px4
