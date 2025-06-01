@@ -1,7 +1,8 @@
 FROM osrf/ros:humble-desktop
 
-# --- Fix for expired ROS 2 GPG key (2024) ---
-RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-keys F42ED6FBAB17C654 || true
+# --- Remove old ROS 2 GPG key and add the new one (2024 workaround) ---
+RUN apt-key del F42ED6FBAB17C654 || true && \
+    apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-keys F42ED6FBAB17C654 || true
 
 # 必要なツール・依存のインストール
 RUN apt-get update && \
