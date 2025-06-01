@@ -71,6 +71,7 @@ RUN chmod +x /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
 WORKDIR /sim_ws
 COPY src/ src/
 COPY rosdep/rosdep-bridge.yaml rosdep/rosdep-msgs.yaml /rosdep/
+COPY src/sim_launch/config/sim_params.yaml /sim_ws/config/sim_params.yaml
 RUN rm -f /etc/ros/rosdep/sources.list.d/20-default.list && \
     rosdep init && \
     rosdep update --include-eol-distros && \
