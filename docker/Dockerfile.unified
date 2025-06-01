@@ -2,7 +2,9 @@
 # 新しい構成では共通ベースイメージを使い、各機能ごとに差分のみを管理します。
 # PX4 SITL + ROS 2 Humble + Gazebo Fortress + カスタムモデル統合Dockerfile
 ARG GITHUB_REPOSITORY_OWNER=your-default-org-or-username
-FROM ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
+
+# --- Build Stage ---
+FROM ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1 as builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 ARG ROS_DISTRO=humble
@@ -55,8 +57,8 @@ RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     chmod +x /usr/local/bin/px4 && \
     ls -l /usr/local/bin/px4 && \
     mkdir -p /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/build/px4_sitl_rtps
-COPY custom_airframes/4001_custom_drone /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone
-COPY custom_airframes/4001_custom_drone /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_custom_drone
+COPY ../../custom_airframes/4001_custom_drone /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone
+COPY ../../custom_airframes/4001_custom_drone /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_custom_drone
 RUN mkdir -p /etc/init.d-posix/airframes && cp /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone /etc/init.d-posix/airframes/4001_custom_drone
 RUN ls -l /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone || (echo 'ERROR: 4001_custom_drone not found in build/px4_sitl_default/etc/init.d-posix/airframes/' && exit 1)
 RUN ls -l /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_custom_drone || (echo 'ERROR: 4001_custom_drone not found in ROMFS/px4fmu_common/init.d-posix/airframes/' && exit 1)
@@ -67,14 +69,14 @@ RUN if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS ]; then
 RUN sed -i '/px4-alias.sh/d' /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
 
 # --- PX4カスタムrcSをビルド後に上書きコピー ---
-COPY custom_airframes/rcS_custom /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
+COPY ../../custom_airframes/rcS_custom /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
 RUN chmod +x /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
 
 # --- ROS 2 workspace setup ---
 WORKDIR /sim_ws
-COPY src/ src/
-COPY rosdep/rosdep-bridge.yaml rosdep/rosdep-msgs.yaml /rosdep/
-COPY src/sim_launch/config/sim_params.yaml /sim_ws/config/sim_params.yaml
+COPY ../../src/ src/
+COPY ../../rosdep/rosdep-bridge.yaml ../../rosdep/rosdep-msgs.yaml /rosdep/
+COPY ../../src/sim_launch/config/sim_params.yaml /sim_ws/config/sim_params.yaml
 RUN rm -f /etc/ros/rosdep/sources.list.d/20-default.list && \
     rosdep init && \
     rosdep update --include-eol-distros && \
@@ -111,7 +113,7 @@ RUN apt-get update && \
     ln -sf /usr/bin/bsondump /PX4-Autopilot/build/px4_sitl_default/bin/bsondump || true
 
 # --- カスタムモデル配置 ---
-COPY custom_model/drone_model /models/drone_model
+COPY ../../custom_model/drone_model /models/drone_model
 RUN mkdir -p /usr/share/gz/fortress/models && \
     ln -s /models/drone_model /usr/share/gz/fortress/models/drone_model
 
@@ -135,18 +137,33 @@ RUN mkdir -p /usr/share/gz/garden/models && \
 RUN ls -l /usr/share/gz/garden/models/ground_plane || echo 'ground_plane model not found!'
 RUN ls -l /usr/share/gz/garden/models/sun || echo 'sun model not found!'
 
-# --- Entrypoint ---
-COPY docker/entrypoint-unified.sh /entrypoint.sh
+# --- Runtime Stage ---
+FROM ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
+
+ARG ROS_DISTRO=humble
+ARG IGNITION_VERSION=garden
+ENV ROS_DISTRO=${ROS_DISTRO}
+ENV IGNITION_VERSION=${IGNITION_VERSION}
+SHELL ["/bin/bash", "-lc"]
+
+# PX4バイナリと必要なairframe/rcS/ROMFS
+COPY --from=builder /usr/local/bin/px4 /usr/local/bin/px4
+COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone
+COPY --from=builder /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_custom_drone /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_custom_drone
+COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
+
+# ROS2ワークスペース成果物
+COPY --from=builder /sim_ws/install /sim_ws/install
+COPY --from=builder /sim_ws/config /sim_ws/config
+
+# カスタムモデル
+COPY --from=builder /models/drone_model /models/drone_model
+
+# Entrypoint
+COPY ../../docker/entrypoint-unified.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENV ROS_DOMAIN_ID=0
 ENTRYPOINT ["/entrypoint.sh"]
-
-RUN python3 -m pip install --upgrade pip \
- && python3 -m pip install 'setuptools==59.6.0'
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-ros-gz-sim && \
-    rm -rf /var/lib/apt/lists/*
 
 ENV QT_QPA_PLATFORM=offscreen
 
