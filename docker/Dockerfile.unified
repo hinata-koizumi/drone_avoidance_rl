@@ -11,6 +11,9 @@ ENV ROS_DISTRO=${ROS_DISTRO}
 ENV IGNITION_VERSION=${IGNITION_VERSION}
 SHELL ["/bin/bash", "-lc"]
 
+# --- Fix for expired ROS 2 GPG key (2024) ---
+RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-keys F42ED6FBAB17C654 || true
+
 # --- base packages ---
 RUN function robust_apt_install() { \
       for i in {1..5}; do \
