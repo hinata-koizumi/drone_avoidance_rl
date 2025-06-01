@@ -42,6 +42,14 @@ RUN set -e && \
 # --- PX4 clone & build ---
 RUN rm -rf /PX4-Autopilot && \
     git clone --depth 1 --recursive -b main https://github.com/PX4/PX4-Autopilot.git /PX4-Autopilot
+# ROS 2 GPG key再登録（PX4依存解決前に必須）
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl gnupg2 ca-certificates && \
+    mkdir -p /usr/share/keyrings && \
+    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /tmp/ros.key && \
+    gpg --dearmor --batch /tmp/ros.key > /usr/share/keyrings/ros-archive-keyring.gpg && \
+    rm -f /tmp/ros.key && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list
 WORKDIR /PX4-Autopilot
 ENV PX4_WITH_GZ_TRANSPORT=ON
 RUN pip3 install --no-cache-dir --index-url https://pypi.org/simple pyulog pyros-genmsg
