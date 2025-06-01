@@ -1,6 +1,7 @@
 # [DEPRECATED] このDockerfile.unifiedは今後非推奨です。docker/Dockerfile.base および分割Dockerfile（bridge, msgs, rl-agent等）を利用してください。
 # 新しい構成では共通ベースイメージを使い、各機能ごとに差分のみを管理します。
 # PX4 SITL + ROS 2 Humble + Gazebo Fortress + カスタムモデル統合Dockerfile
+ARG GITHUB_REPOSITORY_OWNER=your-default-org-or-username
 FROM ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
 
 ENV DEBIAN_FRONTEND=noninteractive
