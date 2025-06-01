@@ -103,9 +103,7 @@ RUN (ls /sim_ws/install/lib/python3.10/site-packages/drone_msgs/msg/_drone_contr
 RUN ls /sim_ws/install/lib/python3.10/site-packages/px4_msgs || echo 'px4_msgs not found'
 
 # --- Gazebo Fortress, netcat, PX4バイナリのPATH ---
-RUN apt-get update && \
-    robust_apt_install --fix-missing netcat wget lsb-release mongodb-org-tools && \
-    apt-get clean && \
+RUN apt-get update && apt-get install -y --no-install-recommends netcat wget lsb-release mongodb-org-tools && apt-get clean && \
     ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
     if [ ! -f /usr/local/bin/px4 ]; then cp /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && chmod +x /usr/local/bin/px4; fi && \
     ln -sf /PX4-Autopilot/build/px4_sitl_default/bin/param /usr/local/bin/param || true && \
@@ -121,11 +119,10 @@ RUN mkdir -p /usr/share/gz/fortress/models && \
 RUN for i in {1..5}; do apt-get update && apt-get install -y lsb-release wget gnupg2 && break || sleep 10; done
 RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
 RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list
-RUN for i in {1..5}; do apt-get update && robust_apt_install --no-install-recommends \
-      gz-${IGNITION_VERSION} libgz-sim8 libgz-sim8-plugins libogre-next-2.3.0 && break || sleep 10; done && \
+RUN for i in {1..5}; do apt-get update && apt-get install -y --no-install-recommends gz-${IGNITION_VERSION} libgz-sim8 libgz-sim8-plugins libogre-next-2.3.0 && break || sleep 10; done && \
     rm -rf /var/lib/apt/lists/*
 # 必要に応じてros-gz-bridge等も
-RUN for i in {1..5}; do apt-get update && robust_apt_install --no-install-recommends ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-ros-gz-sim && break || sleep 10; done && \
+RUN for i in {1..5}; do apt-get update && apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-ros-gz-sim && break || sleep 10; done && \
     rm -rf /var/lib/apt/lists/*
 
 # --- Gazebo Garden 標準モデルのダウンロードとリンク強化 ---

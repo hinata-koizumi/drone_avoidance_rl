@@ -13,6 +13,9 @@ export PX4_SIM_MODEL=4001_custom_drone
 # Gazebo Gardenモデルパスを追加
 export GZ_SIM_RESOURCE_PATH=/root/.gz/models:/usr/share/gz/garden/models:$GZ_SIM_RESOURCE_PATH
 
+# PYTHONPATH追加（drone_msgs, px4_msgs両対応）
+export PYTHONPATH=/sim_ws/install/lib/python3.10/site-packages:/sim_ws/install/drone_msgs/local/lib/python3.10/dist-packages:$PYTHONPATH
+
 # PX4 SITL起動（バックグラウンド）
 echo "[entrypoint] PX4 airframes in build dir:" && ls -l /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/
 if [ -x /usr/local/bin/px4 ]; then
