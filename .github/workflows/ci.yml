@@ -104,6 +104,13 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           driver: docker
+      - name: Clean up disk space before build
+        run: |
+          docker system prune -af || true
+          docker volume prune -f || true
+          sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          sudo apt-get clean
       - name: Cache Docker layers
         uses: actions/cache@v4
         with:
@@ -159,6 +166,13 @@ jobs:
           submodules: recursive
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Clean up disk space before build
+        run: |
+          docker system prune -af || true
+          docker volume prune -f || true
+          sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          sudo apt-get clean
       - name: Build sim_ws (multi-arch)
         run: docker buildx build --platform linux/${{ matrix.arch }} -t drone-avoidance-sim:2.0.1 --load -f docker/Dockerfile.unified --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} .
       - name: Test sim_ws
@@ -190,6 +204,13 @@ jobs:
           submodules: recursive
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Clean up disk space before build
+        run: |
+          docker system prune -af || true
+          docker volume prune -f || true
+          sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          sudo apt-get clean
       - name: Build all docker images (multi-arch)
         run: |
           docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:msgs -f docker/Dockerfile.msgs --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
