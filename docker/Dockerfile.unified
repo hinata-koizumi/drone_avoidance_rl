@@ -49,7 +49,7 @@ RUN mkdir -p /etc/apt/keyrings && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list
 WORKDIR /PX4-Autopilot
 ENV PX4_WITH_GZ_TRANSPORT=ON
-RUN pip3 install --no-cache-dir --index-url https://pypi.org/simple pyulog pyros-genmsg
+RUN pip3 install --no-cache-dir --index-url https://pypi.org/simple pyulog pyros-genmsg && rm -rf /root/.cache/pip
 RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
     make -j$(nproc) px4_sitl_default && \
     ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
@@ -167,4 +167,7 @@ ENV QT_QPA_PLATFORM=offscreen
 RUN if [ "$(dpkg --print-architecture)" != "amd64" ]; then \
   echo "[ERROR] This image is officially supported only on amd64. For arm64 or other architectures, additional validation and support are required. Exiting."; \
   exit 1; \
-fi 
+fi
+
+# ビルドステージの最後にビルドツールを削除
+RUN apt-get purge -y build-essential cmake ninja-build git && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /root/.cache/* 
