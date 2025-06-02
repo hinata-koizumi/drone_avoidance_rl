@@ -3,14 +3,16 @@ ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
 FROM ${BASE_IMAGE}
 
 RUN useradd -m px4user
-USER px4user
 WORKDIR /home/px4user
+
+COPY entrypoint-px4-sitl.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+USER px4user
 
 # PX4バイナリはベースイメージから利用
 # 必要に応じてPX4-Autopilotの設定や起動スクリプトのみ追加
 
-COPY entrypoint-px4-sitl.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["/PX4-Autopilot/build/px4_sitl_default/bin/px4", "-d"] 
