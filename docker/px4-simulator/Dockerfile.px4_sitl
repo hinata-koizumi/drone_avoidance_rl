@@ -3,7 +3,7 @@ ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
 FROM ${BASE_IMAGE}
 
 RUN useradd -m px4user
-WORKDIR /home/px4user
+WORKDIR /PX4-Autopilot
 
 COPY entrypoint-px4-sitl.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
