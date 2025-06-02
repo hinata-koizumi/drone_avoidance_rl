@@ -280,38 +280,5 @@ ign --version
 本プロジェクトの各サービスは `drone-avoidance-base` イメージをベースにしています。CIやローカルでエラーが出る場合、以下のコマンドで事前にpullしてください。
 
 ```sh
-docker pull ghcr.io/<your-org>/drone-avoidance-base:2.0.1
+docker pull ghcr.io/Hinata-Koizumi/drone-avoidance-base:2.0.1
 ```
-
-その後、通常通り `docker-compose build` で他のサービスをビルドできます。
-
-> **Note:**
-> Gazebo Garden以降では`ign`コマンドの代わりに`gz`コマンドが標準です。多くの環境では`ign`が無い場合があります。その場合は`gz`コマンドを使ってください。
-> 例: `gz sdf -k ...`
-> Dockerイメージ内では`ign`→`gz`のシンボリックリンクも自動作成されます。
-
----
-
-## ROS 2トピック可視化・デバッグ
-
-- **rqt_graph**: ROS2ノード・トピックの全体構造を可視化できます。
-  - 起動方法: `ros2 run rqt_graph rqt_graph`
-  - Docker/launch自動起動時は自動で立ち上がります。
-- **rviz2**: センサデータや座標系、トピックの可視化に利用できます。
-  - 起動方法: `ros2 run rviz2 rviz2`
-  - launch自動起動時は `src/sim_launch/resource/default.rviz` 設定があれば自動ロードされます。
-- **自動起動**: `sim_launch/launch/sim_all.launch.py` で両ツールが自動起動されます。
-- **トラブル時**: GUIが表示されない場合は`DISPLAY`環境変数やX11転送設定を確認してください。
-
----
-
-## Gazeboシミュレーション録画（gz record）
-
-- デフォルトでは録画はOFFです。
-- 必要な場合のみ、launch引数 `record:=true` を指定すると `gz record` によるシミュレーション録画が有効化されます。
-- 例:
-  ```bash
-  ros2 launch sim_launch gz_sim.launch.py record:=true
-  ```
-- 録画ファイルは `/logs/sim_record` に保存されます。
-- CIやheadless運用では録画は推奨されません（計算・ストレージリソース節約のため）。
