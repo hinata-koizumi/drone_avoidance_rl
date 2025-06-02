@@ -1,7 +1,9 @@
 # docker/rl-agent/Dockerfile.agent   2025-04-30 R3
 ARG ROS_DISTRO=humble
 ARG IGNITION_VERSION=garden
-FROM ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
+ARG GITHUB_REPOSITORY_OWNER=your-org
+ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
+FROM ${BASE_IMAGE} AS builder
 
 USER root
 WORKDIR /rl_ws
@@ -9,20 +11,17 @@ COPY docker/rl-agent/requirements.lock /tmp/requirements.lock
 RUN pip install --no-cache-dir -r /tmp/requirements.lock
 
 COPY src/ src/
-COPY src/drone_msgs/ src/drone_msgs/
 COPY rosdep/rosdep-msgs.yaml rosdep/rosdep-msgs.yaml
 
 RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     echo "yaml file:///rl_ws/rosdep/rosdep-msgs.yaml" > /etc/ros/rosdep/sources.list.d/10-local.yaml && \
     rosdep update && \
-    rosdep install --from-paths src --rosdistro ${ROS_DISTRO} -y --ignore-src
+    rosdep install --from-paths src --rosdistro ${ROS_DISTRO} -y --ignore-src && \
+    . /opt/ros/${ROS_DISTRO}/setup.sh && \
+    colcon build --symlink-install --merge-install --packages-skip drone_msgs && \
+    rm -rf build/ log/ /tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/*
 
-RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    colcon build --symlink-install --merge-install --packages-select drone_msgs && \
-    rm -rf build/ log/
-
-# --- Final cleanup for slimming ---
-RUN rm -rf /tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* || true
+# drone_msgsはmsgsイメージの成果物を利用する想定
 
 COPY docker/rl-agent/entrypoint-rl-agent.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

@@ -1,8 +1,10 @@
-ARG BASE_IMAGE=drone-avoidance-base:2.0.1
-FROM ${BASE_IMAGE} AS bridge_ws
+ARG GITHUB_REPOSITORY_OWNER=your-org
+ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
+FROM ${BASE_IMAGE} AS builder
 
 USER root
 WORKDIR /bridge_ws
+
 COPY src/angle_bridge src/angle_bridge
 COPY src/command_bridge src/command_bridge
 COPY src/outer_motor_bridge src/outer_motor_bridge
@@ -16,14 +18,10 @@ COPY rosdep/rosdep-bridge.yaml rosdep/rosdep-bridge.yaml
 RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     echo "yaml file:///bridge_ws/rosdep/rosdep-bridge.yaml" > /etc/ros/rosdep/sources.list.d/10-local.yaml && \
     rosdep update && \
-    rosdep install --from-paths src --rosdistro ${ROS_DISTRO} -y --ignore-src
-
-RUN rm -rf build/ install/ log/
-
-RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    colcon build --symlink-install --merge-install
-# --- Final cleanup for slimming ---
-RUN rm -rf /tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* || true
+    rosdep install --from-paths src --rosdistro ${ROS_DISTRO} -y --ignore-src && \
+    . /opt/ros/${ROS_DISTRO}/setup.sh && \
+    colcon build --symlink-install --merge-install && \
+    rm -rf build/ log/ /tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/*
 
 COPY docker/entrypoint-bridge.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

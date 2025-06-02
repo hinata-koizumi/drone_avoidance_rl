@@ -1,48 +1,15 @@
-FROM ubuntu:22.04
+ARG GITHUB_REPOSITORY_OWNER=your-org
+ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
+FROM ${BASE_IMAGE}
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && apt-get install -y \
-    git \
-    python3 \
-    python3-pip \
-    python3-jinja2 \
-    python3-empy \
-    python3-toml \
-    python3-numpy \
-    python3-yaml \
-    python3-setuptools \
-    python3-pexpect \
-    python3-psutil \
-    python3-serial \
-    build-essential \
-    ccache \
-    g++ \
-    cmake \
-    ninja-build \
-    exiftool \
-    wget \
-    zip \
-    unzip \
-    libxml2-dev libxslt1-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN pip3 install --no-cache-dir pyros-genmsg
-RUN pip3 install --no-cache-dir kconfiglib
-RUN pip3 install --no-cache-dir lxml
-RUN pip3 install --no-cache-dir jsonschema
-
-# PX4ユーザー作成
-RUN useradd -ms /bin/bash px4user
 USER px4user
 WORKDIR /home/px4user
 
-# PX4-Autopilotクローン
-RUN git clone --recursive https://github.com/PX4/PX4-Autopilot.git
-WORKDIR /home/px4user/PX4-Autopilot
+# PX4バイナリはベースイメージから利用
+# 必要に応じてPX4-Autopilotの設定や起動スクリプトのみ追加
 
-# PX4 SITLビルド
-RUN make distclean && make px4_sitl_default
+COPY docker/px4-simulator/entrypoint-px4-sitl.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
-# デフォルトコマンド: PX4 SITLのみ起動
-CMD ["/home/px4user/PX4-Autopilot/build/px4_sitl_default/bin/px4", "-d"] 
+CMD ["/PX4-Autopilot/build/px4_sitl_default/bin/px4", "-d"] 

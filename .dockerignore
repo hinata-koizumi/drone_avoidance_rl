@@ -3,3 +3,10 @@
 **/.DS_Store
 .vscode/
 *.swp
+.git/
+logs/
+log/
+build/
+install/
+.venv/
+datasets/
