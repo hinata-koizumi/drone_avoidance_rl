@@ -1,7 +1,7 @@
 # docker/rl-agent/Dockerfile.agent   2025-04-30 R3
 ARG ROS_DISTRO=humble
 ARG IGNITION_VERSION=garden
-ARG GITHUB_REPOSITORY_OWNER=Hinata-Koizumi
+ARG GITHUB_REPOSITORY_OWNER=hinata-koizumi
 ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
 FROM ${BASE_IMAGE} AS builder
 

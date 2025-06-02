@@ -280,5 +280,5 @@ ign --version
 本プロジェクトの各サービスは `drone-avoidance-base` イメージをベースにしています。CIやローカルでエラーが出る場合、以下のコマンドで事前にpullしてください。
 
 ```sh
-docker pull ghcr.io/Hinata-Koizumi/drone-avoidance-base:2.0.1
+docker pull ghcr.io/hinata-koizumi/drone-avoidance-base:2.0.1
 ```
