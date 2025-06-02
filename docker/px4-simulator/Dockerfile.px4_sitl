@@ -8,7 +8,7 @@ WORKDIR /home/px4user
 # PX4バイナリはベースイメージから利用
 # 必要に応じてPX4-Autopilotの設定や起動スクリプトのみ追加
 
-COPY docker/px4-simulator/entrypoint-px4-sitl.sh /entrypoint.sh
+COPY entrypoint-px4-sitl.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
