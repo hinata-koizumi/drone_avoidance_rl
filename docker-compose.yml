@@ -1,10 +1,7 @@
 version: '3.8'
 services:
   sim:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.unified
-    image: drone-avoidance-sim:2.0.1
+    image: ghcr.io/hinata-koizumi/drone-avoidance-sim:2.0.1
     environment:
       - ROS_DOMAIN_ID=0
       - HEADLESS=1
@@ -21,10 +18,7 @@ services:
     cpus: 2
 
   bridge:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.bridge
-    image: drone-avoidance-bridge:2.0.1
+    image: ghcr.io/hinata-koizumi/drone-avoidance-bridge:2.0.1
     environment:
       - ROS_DOMAIN_ID=0
     command: bash -c "/entrypoint.sh"
@@ -36,10 +30,7 @@ services:
     cpus: 2
 
   rl-agent:
-    build:
-      context: .
-      dockerfile: docker/rl-agent/Dockerfile.agent
-    image: drone-avoidance-rl-agent:2.0.1
+    image: ghcr.io/hinata-koizumi/drone-avoidance-rl-agent:2.0.1
     environment:
       - ROS_DOMAIN_ID=0
     working_dir: /drone_ws
@@ -53,10 +44,7 @@ services:
     cpus: 2
 
   msgs:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.msgs
-    image: drone-avoidance-msgs:2.0.1
+    image: ghcr.io/hinata-koizumi/drone-avoidance-msgs:2.0.1
     networks:
       - default
     mem_limit: 4g

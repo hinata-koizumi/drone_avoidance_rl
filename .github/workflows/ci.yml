@@ -89,6 +89,12 @@ jobs:
             echo "ERROR: drone-avoidance-base:2.0.1 is not present. Artifact load may have failed." >&2
             exit 1
           fi
+      - name: Log in to GitHub Container Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Tag and push drone-avoidance-base image to GHCR
+        run: |
+          docker tag drone-avoidance-base:2.0.1 ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1
+          docker push ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1
 
   build-msgs:
     needs: build-base
