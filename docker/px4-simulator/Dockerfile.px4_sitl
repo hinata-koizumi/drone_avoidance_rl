@@ -13,6 +13,6 @@ USER px4user
 # PX4バイナリはベースイメージから利用
 # 必要に応じてPX4-Autopilotの設定や起動スクリプトのみ追加
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash"]
 
 CMD ["/PX4-Autopilot/build/px4_sitl_default/bin/px4", "-d"] 
