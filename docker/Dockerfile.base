@@ -27,7 +27,9 @@ ENV PX4_WITH_GZ_TRANSPORT=ON
 # PX4 SITL build
 RUN apt-get update && apt-get install -y --no-install-recommends ninja-build && rm -rf /var/lib/apt/lists/* && \
     make px4_sitl_default && \
-    ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4
+    ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
+    useradd -m px4user && \
+    chown -R px4user:px4user /PX4-Autopilot
 
 # Gazebo Garden install（必要最小限）
 RUN for i in {1..5}; do apt-get update && apt-get install -y lsb-release wget gnupg2 && break || sleep 10; done
