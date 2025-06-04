@@ -529,6 +529,7 @@ jobs:
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker pull ghcr.io/hinata-koizumi/drone-avoidance-base:2.0.1
+          docker inspect --format='{{.Id}}' ghcr.io/hinata-koizumi/drone-avoidance-base:2.0.1
       - name: Build PX4 SITL image
         run: docker build --no-cache -t px4-sitl:ci -f docker/px4-simulator/Dockerfile.px4_sitl docker/px4-simulator
       - name: Run PX4 SITL (smoke test)
