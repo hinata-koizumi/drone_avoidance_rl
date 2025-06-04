@@ -22,6 +22,8 @@ jobs:
   build-base:
     needs: setup-buildx
     runs-on: ubuntu-22.04
+    outputs:
+      digest: ${{ steps.get_digest.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -95,6 +97,11 @@ jobs:
         run: |
           docker tag drone-avoidance-base:2.0.1 ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1
           docker push ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1
+      - name: Get image digest
+        id: get_digest
+        run: |
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
   build-msgs:
     needs: build-base
@@ -520,18 +527,16 @@ jobs:
         run: ${{ steps.setup_python.outputs.python-path }} tools/check_rosdep_consistency.py
 
   px4-sitl-test:
+    needs: build-base
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Pull latest base image from GHCR
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker pull ghcr.io/hinata-koizumi/drone-avoidance-base:2.0.1
-          docker inspect --format='{{.Id}}' ghcr.io/hinata-koizumi/drone-avoidance-base:2.0.1
+      - name: Pull base image by digest
+        run: docker pull ${{ needs.build-base.outputs.digest }}
       - name: Build PX4 SITL image
-        run: docker build --no-cache -t px4-sitl:ci -f docker/px4-simulator/Dockerfile.px4_sitl docker/px4-simulator
+        run: docker build --no-cache -t px4-sitl:ci --build-arg BASE_IMAGE=${{ needs.build-base.outputs.digest }} -f docker/px4-simulator/Dockerfile.px4_sitl docker/px4-simulator
       - name: Run PX4 SITL (smoke test)
         run: |
           docker run --rm -d --name px4-sitl-test px4-sitl:ci
