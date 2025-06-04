@@ -1,4 +1,4 @@
-FROM osrf/ros:humble-ros-base
+FROM ros:humble-ros-base
 
 ARG ROS_DISTRO=humble
 ARG IGNITION_VERSION=garden
@@ -26,6 +26,7 @@ ENV PX4_WITH_GZ_TRANSPORT=ON
 
 # PX4 SITL build
 RUN apt-get update && apt-get install -y --no-install-recommends ninja-build && rm -rf /var/lib/apt/lists/* && \
+    pip3 install kconfiglib pyros-genmsg jsonschema && \
     make px4_sitl_default && \
     ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4
 
