@@ -539,10 +539,11 @@ jobs:
         run: docker build --no-cache -t px4-sitl:ci --build-arg BASE_IMAGE=${{ needs.build-base.outputs.digest }} -f docker/px4-simulator/Dockerfile.px4_sitl docker/px4-simulator
       - name: Run PX4 SITL (smoke test)
         run: |
-          docker run --rm -d --name px4-sitl-test px4-sitl:ci
+          docker run -d --name px4-sitl-test px4-sitl:ci
           sleep 10
-          docker logs px4-sitl-test
-          docker stop px4-sitl-test
+          docker logs px4-sitl-test || true
+          docker stop px4-sitl-test || true
+          docker rm px4-sitl-test || true
 
   gym-env-test:
     runs-on: ubuntu-22.04
