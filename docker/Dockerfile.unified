@@ -46,7 +46,7 @@ RUN mkdir -p /etc/apt/keyrings && \
 WORKDIR /PX4-Autopilot
 ENV PX4_WITH_GZ_TRANSPORT=ON
 RUN pip3 install --no-cache-dir --index-url https://pypi.org/simple pyulog pyros-genmsg && rm -rf /root/.cache/pip
-RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx && \
+RUN SUDO="" NO_SUDO=1 Tools/setup/ubuntu.sh --no-nuttx --no-ros-deps --no-sim-tools && \
     make -j$(nproc) px4_sitl_default && \
     ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
     cp /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
