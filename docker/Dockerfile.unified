@@ -47,25 +47,29 @@ WORKDIR /PX4-Autopilot
 ENV PX4_WITH_GZ_TRANSPORT=ON
 RUN pip3 install --no-cache-dir --index-url https://pypi.org/simple pyulog pyros-genmsg && rm -rf /root/.cache/pip
 RUN make -j$(nproc) px4_sitl_default && \
-    ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
     cp /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
     chmod +x /usr/local/bin/px4 && \
-    ls -l /usr/local/bin/px4 && \
-    mkdir -p /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/build/px4_sitl_rtps
-COPY ../../custom_airframes/4001_custom_drone /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone
-COPY ../../custom_airframes/4001_custom_drone /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_custom_drone
-RUN mkdir -p /etc/init.d-posix/airframes && cp /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone /etc/init.d-posix/airframes/4001_custom_drone
-RUN ls -l /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone || (echo 'ERROR: 4001_custom_drone not found in build/px4_sitl_default/etc/init.d-posix/airframes/' && exit 1)
-RUN ls -l /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_custom_drone || (echo 'ERROR: 4001_custom_drone not found in ROMFS/px4fmu_common/init.d-posix/airframes/' && exit 1)
-RUN ls -l /etc/init.d-posix/airframes/4001_custom_drone || (echo 'ERROR: 4001_custom_drone not found in /etc/init.d-posix/airframes/' && exit 1)
-RUN if [ ! -f /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS ]; then \
-      cp /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS; \
-    fi
-RUN sed -i '/px4-alias.sh/d' /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
+    rm -rf /PX4-Autopilot/.git \
+           /PX4-Autopilot/build/*/bin/* \
+           /PX4-Autopilot/build/*/lib/* \
+           /PX4-Autopilot/build/*/logs \
+           /PX4-Autopilot/build/*/CMakeFiles \
+           /PX4-Autopilot/build/*/Makefile \
+           /PX4-Autopilot/build/*/Testing \
+           /PX4-Autopilot/build/*/px4_sitl_rtps \
+           /PX4-Autopilot/build/*/src \
+           /PX4-Autopilot/build/*/tmp \
+           /PX4-Autopilot/build/*/tools \
+           /PX4-Autopilot/build/*/etc \
+           /PX4-Autopilot/build/*/ROMFS \
+           /PX4-Autopilot/build/*/test* \
+           /PX4-Autopilot/build/*/CMakeCache.txt
 
-# --- PX4カスタムrcSをビルド後に上書きコピー ---
-COPY ../../custom_airframes/rcS_custom /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
-RUN chmod +x /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
+# ROS2ワークスペースの不要ファイル削除
+RUN rm -rf /sim_ws/build /sim_ws/log /sim_ws/install/local_setup.*
+
+# man, doc, localeの削除
+RUN rm -rf /usr/share/doc /usr/share/man /usr/share/locale
 
 # --- ROS 2 workspace setup ---
 WORKDIR /sim_ws
