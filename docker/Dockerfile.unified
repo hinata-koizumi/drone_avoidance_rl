@@ -46,8 +46,8 @@ RUN mkdir -p /etc/apt/keyrings && \
 WORKDIR /PX4-Autopilot
 ENV PX4_WITH_GZ_TRANSPORT=ON
 RUN pip3 install --no-cache-dir --index-url https://pypi.org/simple pyulog pyros-genmsg && rm -rf /root/.cache/pip
-RUN make -j$(nproc) px4_sitl_default && \
-    cp /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
+RUN make -j$(nproc) px4_sitl_default
+RUN cp /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
     chmod +x /usr/local/bin/px4 && \
     find /PX4-Autopilot/build/px4_sitl_default/bin -type f ! -name 'px4' -delete && \
     rm -rf /PX4-Autopilot/.git \
@@ -55,9 +55,9 @@ RUN make -j$(nproc) px4_sitl_default && \
            /PX4-Autopilot/build/px4_sitl_default/CMakeFiles \
            /PX4-Autopilot/build/px4_sitl_default/Testing \
            /PX4-Autopilot/build/px4_sitl_default/tmp \
-           /PX4-Autopilot/build/px4_sitl_default/CMakeCache.txt && \
-    # PX4ビルド後にカスタムairframeとrcSを再配置
-    cp /custom_airframes/4001_custom_drone /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone && \
+           /PX4-Autopilot/build/px4_sitl_default/CMakeCache.txt
+RUN [ -f /custom_airframes/4001_custom_drone ] && [ -f /custom_airframes/rcS_custom ]
+RUN cp /custom_airframes/4001_custom_drone /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone && \
     cp /custom_airframes/4001_custom_drone /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_custom_drone && \
     cp /custom_airframes/rcS_custom /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
 
