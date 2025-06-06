@@ -49,15 +49,17 @@ RUN pip3 install --no-cache-dir --index-url https://pypi.org/simple pyulog pyros
 RUN make -j$(nproc) px4_sitl_default && \
     cp /PX4-Autopilot/build/px4_sitl_default/bin/px4 /usr/local/bin/px4 && \
     chmod +x /usr/local/bin/px4 && \
-    # PX4バイナリ以外のbinファイルを削除
     find /PX4-Autopilot/build/px4_sitl_default/bin -type f ! -name 'px4' -delete && \
-    # 不要なビルドキャッシュのみ削除
     rm -rf /PX4-Autopilot/.git \
            /PX4-Autopilot/build/px4_sitl_default/logs \
            /PX4-Autopilot/build/px4_sitl_default/CMakeFiles \
            /PX4-Autopilot/build/px4_sitl_default/Testing \
            /PX4-Autopilot/build/px4_sitl_default/tmp \
-           /PX4-Autopilot/build/px4_sitl_default/CMakeCache.txt
+           /PX4-Autopilot/build/px4_sitl_default/CMakeCache.txt && \
+    # PX4ビルド後にカスタムairframeとrcSを再配置
+    cp /custom_airframes/4001_custom_drone /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/airframes/4001_custom_drone && \
+    cp /custom_airframes/4001_custom_drone /PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/4001_custom_drone && \
+    cp /custom_airframes/rcS_custom /PX4-Autopilot/build/px4_sitl_default/etc/init.d-posix/rcS
 
 # ROS2ワークスペースの不要ファイル削除
 RUN rm -rf /sim_ws/build /sim_ws/log /sim_ws/install/local_setup.*
