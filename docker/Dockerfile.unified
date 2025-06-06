@@ -129,6 +129,9 @@ RUN mkdir -p /usr/share/gz/garden/models && \
 RUN ls -l /usr/share/gz/garden/models/ground_plane || echo 'ground_plane model not found!'
 RUN ls -l /usr/share/gz/garden/models/sun || echo 'sun model not found!'
 
+# PX4ビルド前にカスタムairframesをコピー
+COPY ../../custom_airframes /custom_airframes
+
 # --- Runtime Stage ---
 FROM ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
 
