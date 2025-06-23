@@ -1,8 +1,9 @@
 import gymnasium as gym
 import numpy as np
+from typing import Any
 
 class DroneSimEnv(gym.Env):
-    def __init__(self, instance_id=0, reward_mode="default", episode_max_steps=2000):
+    def __init__(self, instance_id: int = 0, reward_mode: str = "default", episode_max_steps: int = 2000) -> None:
         super().__init__()
         self.instance_id = instance_id
         self.reward_mode = reward_mode
@@ -12,22 +13,28 @@ class DroneSimEnv(gym.Env):
         self.observation_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(4,), dtype=np.float32)
         self.action_space = gym.spaces.Box(low=-1.0, high=1.0, shape=(2,), dtype=np.float32)
 
-    def reset(self, *, seed=None, options=None):
+    def reset(self, *, seed: int | None = None, options: dict[str, Any] | None = None) -> tuple[np.ndarray, dict[str, Any]]:
         self.current_step = 0
-        obs = np.zeros(self.observation_space.shape, dtype=np.float32)
+        shape = self.observation_space.shape
+        if shape is None:
+            shape = (4,)  # デフォルト値
+        obs = np.zeros(shape, dtype=np.float32)
         return obs, {}
 
-    def step(self, action):
+    def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
         self.current_step += 1
-        obs = np.zeros(self.observation_space.shape, dtype=np.float32)
+        shape = self.observation_space.shape
+        if shape is None:
+            shape = (4,)  # デフォルト値
+        obs = np.zeros(shape, dtype=np.float32)
         reward = 0.0
         terminated = self.current_step >= self.episode_max_steps
         truncated = False
-        info = {}
+        info: dict[str, Any] = {}
         return obs, reward, terminated, truncated, info
 
-    def render(self):
+    def render(self) -> None:
         pass
 
-    def close(self):
+    def close(self) -> None:
         pass 
