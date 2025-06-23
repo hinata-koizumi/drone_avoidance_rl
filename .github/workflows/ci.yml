@@ -225,12 +225,12 @@ jobs:
           sudo rm -rf /tmp/*
           sudo rm -rf /var/tmp/*
           sudo apt-get clean
-      - name: Build all docker images (multi-arch)
+      - name: Build Docker images
         run: |
           docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:msgs -f docker/Dockerfile.msgs --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
-          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:unified -f docker/Dockerfile.unified --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
-          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:rl-agent -f docker/rl-agent/Dockerfile.agent --load .
           docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:bridge -f docker/Dockerfile.bridge --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
+          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:sim -f docker/px4-simulator/Dockerfile.px4_sitl --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
+          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:rl-agent -f docker/rl-agent/Dockerfile --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
       - name: Launch all services and run E2E tests
         run: |
           docker compose -f tests/ci-compose.yml up --build --abort-on-container-exit

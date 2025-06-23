@@ -1,7 +1,7 @@
-# ドローン回避RLスタック
+# Drone Avoidance RL Stack
 
-[![CI](https://github.com/yourname/drone_avoidance_rl/actions/workflows/ci.yml/badge.svg)](https://github.com/yourname/drone_avoidance_rl/actions)  
-📄 [English version here](README.md)
+[![CI](https://github.com/hinata-koizumi/drone_avoidance_rl/actions/workflows/ci.yml/badge.svg)](https://github.com/hinata-koizumi/drone_avoidance_rl/actions)  
+📘 [English version is here](README.md)
 
 ---
 
@@ -44,8 +44,8 @@ drone_avoidance_rl/
 ## クイックスタート
 
 ```bash
-# 1. クローン＆サブモジュール
-git clone https://github.com/yourname/drone_avoidance_rl.git
+# 1. Clone & submodules
+git clone https://github.com/hinata-koizumi/drone_avoidance_rl.git
 cd drone_avoidance_rl
 git submodule update --init --recursive
 

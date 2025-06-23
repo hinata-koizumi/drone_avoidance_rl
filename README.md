@@ -1,6 +1,6 @@
 # Drone Avoidance RL Stack
 
-[![CI](https://github.com/yourname/drone_avoidance_rl/actions/workflows/ci.yml/badge.svg)](https://github.com/yourname/drone_avoidance_rl/actions)  
+[![CI](https://github.com/hinata-koizumi/drone_avoidance_rl/actions/workflows/ci.yml/badge.svg)](https://github.com/hinata-koizumi/drone_avoidance_rl/actions)  
 📘 [日本語版はこちら](README.ja.md)
 
 ---
@@ -53,7 +53,7 @@ drone_avoidance_rl/
 
 ```bash
 # 1. Clone & submodules
-git clone https://github.com/yourname/drone_avoidance_rl.git
+git clone https://github.com/hinata-koizumi/drone_avoidance_rl.git
 cd drone_avoidance_rl
 git submodule update --init --recursive
 
