@@ -94,11 +94,10 @@ docker compose down
 - **ローカルテスト例**:
   ```bash
   tools/clean_workspace.sh
-  docker build -t drone_rl:unified -f docker/Dockerfile.unified .
-  docker run --rm drone_rl:unified ros2 launch sim_launch sim_all.launch.py
-  python3 -m pip install pytest gymnasium numpy pyyaml lark
+  docker compose up --build
+  python3 -m pip install pytest gymnasium numpy pyyaml lark types-PyYAML
   cd src && PYTHONPATH=$PYTHONPATH:$(pwd) pytest ../tests/test_gym_api.py
-  python3 -m pip install ruff mypy
+  python3 -m pip install ruff mypy types-PyYAML
   ruff src/ tests/
   mypy src/ tests/
   ```
