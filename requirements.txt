@@ -4,7 +4,7 @@ numpy==1.26.4
 gymnasium==1.1.1
 lark==1.2.2
 ruff==0.4.4
-mypy==1.10.0
+mypy==1.16.1
 torch
 # tensorboardはtorchの依存に含まれるが、明示的に記載
 tensorboard
