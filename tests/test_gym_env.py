@@ -5,7 +5,7 @@ pytest.importorskip("gymnasium")
 
 # Gym環境のimport
 try:
-    from src.gym_env import DroneSimEnv
+    from drone_sim_env import DroneSimEnv
 except ImportError:
     pytest.skip(
         "DroneSimEnvがimportできません。src/gym_env.pyのパスや依存を確認してください。",

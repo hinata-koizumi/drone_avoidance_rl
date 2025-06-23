@@ -4,7 +4,7 @@ SubprocVecEnvでDroneSimEnvをベクトル化して複数同時実行するサ�
 """
 import numpy as np
 from gymnasium.vector import AsyncVectorEnv
-from gym_env import DroneSimEnv
+from drone_sim_env import DroneSimEnv
 from typing import Callable
 from torch.utils.tensorboard import SummaryWriter
 

@@ -73,6 +73,32 @@ docker compose down
 
 ---
 
+## Python環境セットアップ（ローカル開発・テスト用）
+
+このリポジトリのPython依存パッケージは requirements.txt で一元管理されています。
+
+```bash
+# 依存パッケージのインストール
+python3 -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+- 依存パッケージ: numpy, gymnasium, torch, tensorboard, pytest, mypy, ruff, など
+- テスト実行例:
+  ```bash
+  export PYTHONPATH=$(pwd):$(pwd)/src
+  pytest tests/test_gym_api.py
+  pytest tests/test_rl_longrun.py
+  pytest tests/test_gym_env.py
+  ```
+- 静的解析:
+  ```bash
+  ruff src/ tests/
+  mypy src/ tests/
+  ```
+
+---
+
 ## Customization
 
 - **Reward weights**: `REWARD_ORI`, `REWARD_POS`, `REWARD_SMOOTH` env vars (see `src/gym_env.py`)
