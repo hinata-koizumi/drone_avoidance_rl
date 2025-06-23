@@ -1,6 +1,5 @@
-import numpy as np
-
 from drone_sim_env import DroneSimEnv
+import numpy as np
 
 
 def test_gym_api_basic() -> None:

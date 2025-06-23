@@ -1,6 +1,12 @@
+from typing import Any
+
 import gymnasium as gym
 import numpy as np
-from typing import Any
+
+# 型エイリアスを定義
+ResetReturn = tuple[np.ndarray, dict[str, Any]]
+StepReturn = tuple[np.ndarray, float, bool, bool, dict[str, Any]]
+
 
 class DroneSimEnv(gym.Env):
     def __init__(self, instance_id: int = 0, reward_mode: str = "default", episode_max_steps: int = 2000) -> None:
@@ -13,7 +19,9 @@ class DroneSimEnv(gym.Env):
         self.observation_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(4,), dtype=np.float32)
         self.action_space = gym.spaces.Box(low=-1.0, high=1.0, shape=(2,), dtype=np.float32)
 
-    def reset(self, *, seed: int | None = None, options: dict[str, Any] | None = None) -> tuple[np.ndarray, dict[str, Any]]:
+    def reset(
+        self, *, seed: int | None = None, options: dict[str, Any] | None = None
+    ) -> ResetReturn:
         self.current_step = 0
         shape = self.observation_space.shape
         if shape is None:
@@ -21,7 +29,7 @@ class DroneSimEnv(gym.Env):
         obs = np.zeros(shape, dtype=np.float32)
         return obs, {}
 
-    def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
+    def step(self, action: np.ndarray) -> StepReturn:
         self.current_step += 1
         shape = self.observation_space.shape
         if shape is None:

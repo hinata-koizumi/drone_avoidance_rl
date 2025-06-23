@@ -1,7 +1,6 @@
-import numpy as np
-import pytest
-
 from drone_sim_env import DroneSimEnv
+import numpy as np
+
 
 def test_rl_longrun_stability():
     env = DroneSimEnv(episode_max_steps=1000)

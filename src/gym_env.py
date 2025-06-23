@@ -1,1 +1,0 @@
-from vector_env_example import DroneSimEnv 

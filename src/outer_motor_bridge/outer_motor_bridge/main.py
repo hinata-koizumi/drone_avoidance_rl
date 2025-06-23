@@ -4,14 +4,16 @@ outer_motor_bridge.py – PX4 ActuatorMotors (ch0-3) を
 std_msgs/Float32MultiArray で /drone/outer_motor_pwm へ転送。
 配列サイズ 4 なので全ロータ PWM を欠落なく記録できる。
 """
-import rclpy
-from std_msgs.msg import Float32MultiArray
-from px4_msgs.msg import ActuatorMotors
-from rclpy.executors import MultiThreadedExecutor
-from src.common.bridge_base import BridgeBase
-import yaml
 import os
+
 from ament_index_python.packages import get_package_share_directory
+from px4_msgs.msg import ActuatorMotors
+import rclpy
+from rclpy.executors import MultiThreadedExecutor
+from std_msgs.msg import Float32MultiArray
+import yaml
+
+from src.common.bridge_base import BridgeBase
 
 
 class OuterMotorBridge(BridgeBase):

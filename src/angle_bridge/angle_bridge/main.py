@@ -4,15 +4,17 @@ angle_bridge.py – 内側可変プロペラ角度を Gazebo JointController へ
 Topic : /servo/fan1_tilt , /servo/fan2_tilt   (std_msgs/Float64, 単位 rad)
 """
 import math
+import os
+
+from ament_index_python.packages import get_package_share_directory
+from drone_msgs.msg import DroneControlCommand as _DroneControlCommand
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
 from std_msgs.msg import Float64
-from drone_msgs.msg import DroneControlCommand as _DroneControlCommand
+import yaml
+
 from src.common.bridge_base import BridgeBase
 from src.common.utils import clamp
-import yaml
-import os
-from ament_index_python.packages import get_package_share_directory
 
 _MIN_DEG, _MAX_DEG = -30.0, 30.0              # 制御範囲 [deg]
 _DEG2RAD = math.pi / 180.0
