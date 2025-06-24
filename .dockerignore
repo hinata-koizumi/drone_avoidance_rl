@@ -1,12 +1,192 @@
+# Python関連
 **/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ログファイル
 **/*.log
-**/.DS_Store
-.vscode/
-*.swp
-.git/
 logs/
 log/
+*.log.*
+
+# macOS関連
+**/.DS_Store
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Windows関連
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux関連
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# エディタ関連
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Git関連
+.git/
+.gitignore
+.gitmodules
+.gitattributes
+
+# Docker関連
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# ビルド関連
 build/
 install/
-.venv/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# テスト関連
+tests/
+test/
+**/test_*.py
+**/*_test.py
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ドキュメント関連
+docs/
+*.md
+README*
+LICENSE*
+CHANGELOG*
+CONTRIBUTING*
+SECURITY*
+
+# 設定ファイル
+.env
+.env.*
+*.ini
+*.cfg
+*.conf
+*.config
+
+# データセット関連
 datasets/
+data/
+*.csv
+*.json
+*.xml
+*.yaml
+*.yml
+
+# 一時ファイル
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# その他
+node_modules/
+bower_components/
+vendor/
+target/
+out/
+bin/
+obj/
+*.tar
+*.tar.gz
+*.zip
+*.rar
+*.7z
+
+# プロジェクト固有
+.github/
+.github/workflows/
+.github/actions/
+.github/ISSUE_TEMPLATE/
+.github/PULL_REQUEST_TEMPLATE/
+.github/dependabot.yml
+.github/CODEOWNERS
+.github/SECURITY.md
+
+# CI/CD関連
+.travis.yml
+.circleci/
+.gitlab-ci.yml
+azure-pipelines.yml
+Jenkinsfile
+Makefile
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# 開発ツール関連
+.pre-commit-config.yaml
+.ruff_cache/
+.mypy_cache/
+.eslintrc*
+.prettierrc*
+.editorconfig
+.stylelintrc*
+
+# パッケージ管理
+package.json
+package-lock.json
+yarn.lock
+requirements*.txt
+Pipfile
+Pipfile.lock
+poetry.lock
+pyproject.toml
+setup.py
+setup.cfg
+MANIFEST.in
+
+# システムファイル
+*.pid
+*.seed
+*.pid.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

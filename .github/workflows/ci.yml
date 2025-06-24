@@ -6,9 +6,21 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  DOCKER_BUILDKIT: 1
+  BUILDKIT_PROGRESS: plain
+
+# GitHub Actionsのリソース設定
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   setup-buildx:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        runner: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
       - name: Ensure tools scripts are executable
@@ -23,6 +35,9 @@ jobs:
   build-base:
     needs: setup-buildx
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        runner: [ubuntu-latest]
     outputs:
       digest: ${{ steps.get_digest.outputs.digest }}
     steps:
@@ -107,9 +122,11 @@ jobs:
   build-msgs:
     needs: build-base
     runs-on: ubuntu-22.04
+    # 大きなディスク容量を持つランナーを指定
     strategy:
       matrix:
         arch: [amd64]
+        runner: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -118,13 +135,41 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           driver: docker
-      - name: Clean up disk space before build
+      - name: Aggressive disk cleanup before build
         run: |
+          # ディスク容量の確認
+          echo "=== Disk usage before cleanup ==="
+          df -h
+          docker system df || true
+          
+          # Docker関連のクリーンアップ
           docker system prune -af || true
           docker volume prune -f || true
-          sudo rm -rf /tmp/*
-          sudo rm -rf /var/tmp/*
-          sudo apt-get clean
+          docker builder prune -af || true
+          
+          # システムキャッシュのクリーンアップ
+          sudo rm -rf /tmp/* /var/tmp/* || true
+          sudo apt-get clean || true
+          sudo apt-get autoremove -y || true
+          
+          # 不要なファイルの削除
+          sudo find /var/log -type f -name "*.log" -delete || true
+          sudo find /var/cache -type f -delete || true
+          
+          # ディスク使用量の確認
+          echo "=== Disk usage after cleanup ==="
+          df -h
+          docker system df || true
+          
+          # ディスク容量が不足している場合の警告
+          AVAILABLE=$(df / | tail -1 | awk '{print $4}')
+          if [ "$AVAILABLE" -lt 10485760 ]; then  # 10GB未満の場合
+            echo "WARNING: Low disk space available: ${AVAILABLE}KB"
+            echo "Performing additional cleanup..."
+            sudo journalctl --vacuum-time=1s || true
+            sudo rm -rf /var/lib/docker/tmp/* || true
+            sudo rm -rf /var/lib/docker/overlay2/* || true
+          fi
       - name: Cache Docker layers
         uses: actions/cache@v4
         with:
@@ -135,22 +180,49 @@ jobs:
       - name: Pull drone-avoidance-base image from GHCR
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker pull ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1
+          for i in {1..3}; do
+            docker pull ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1 && break || sleep 10
+          done
       - name: Build msgs_ws (multi-arch)
         run: docker buildx build --platform linux/${{ matrix.arch }} --target msgs_ws -t drone-avoidance-msgs:2.0.1 -f docker/Dockerfile.msgs --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
+      - name: Cleanup after build
+        run: |
+          docker system prune -f || true
+          sudo rm -rf /tmp/* /var/tmp/* || true
 
   build-bridge:
     needs: [build-base, build-msgs]
     runs-on: ubuntu-22.04
+    # 大きなディスク容量を持つランナーを指定
     strategy:
       matrix:
         arch: [amd64]
+        runner: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Aggressive disk cleanup before build
+        run: |
+          # Docker関連のクリーンアップ
+          docker system prune -af || true
+          docker volume prune -f || true
+          docker builder prune -af || true
+          
+          # システムキャッシュのクリーンアップ
+          sudo rm -rf /tmp/* /var/tmp/* || true
+          sudo apt-get clean || true
+          sudo apt-get autoremove -y || true
+          
+          # 不要なファイルの削除
+          sudo find /var/log -type f -name "*.log" -delete || true
+          sudo find /var/cache -type f -delete || true
+          
+          # ディスク使用量の確認
+          df -h
+          docker system df || true
       - uses: actions/download-artifact@v4
         with:
           name: drone-avoidance-base
@@ -167,31 +239,79 @@ jobs:
         run: docker buildx build --platform linux/amd64 --target builder -t drone-avoidance-bridge:2.0.1 -f docker/Dockerfile.bridge --load .
       - name: Test bridge_ws
         run: docker run --rm $(docker buildx build --platform linux/${{ matrix.arch }} --target builder -f docker/Dockerfile.bridge --load -q .) colcon test --merge-install --base-paths src --packages-ignore gmock gtest
+      - name: Cleanup after build
+        run: |
+          docker system prune -f || true
+          sudo rm -rf /tmp/* /var/tmp/* || true
 
   e2e:
     runs-on: ubuntu-22.04
+    # 大きなディスク容量を持つランナーを指定
     strategy:
       matrix:
         arch: [amd64]
+        runner: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Clean up disk space before build
+      - name: Aggressive disk cleanup before build
         run: |
+          # Docker関連のクリーンアップ
           docker system prune -af || true
           docker volume prune -f || true
-          sudo rm -rf /tmp/*
-          sudo rm -rf /var/tmp/*
-          sudo apt-get clean
-      - name: Build Docker images
+          docker builder prune -af || true
+          
+          # システムキャッシュのクリーンアップ
+          sudo rm -rf /tmp/* /var/tmp/* || true
+          sudo apt-get clean || true
+          sudo apt-get autoremove -y || true
+          
+          # 不要なファイルの削除
+          sudo find /var/log -type f -name "*.log" -delete || true
+          sudo find /var/cache -type f -delete || true
+          
+          # ディスク使用量の確認
+          df -h
+          docker system df || true
+      - name: Pull base image with retry
         run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          for i in {1..3}; do
+            docker pull ghcr.io/${{ github.repository_owner }}/drone-avoidance-base:2.0.1 && break || sleep 10
+          done
+      - name: Build Docker images with individual cleanup
+        run: |
+          # msgs image
+          echo "=== Building msgs image ==="
           docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:msgs -f docker/Dockerfile.msgs --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
+          docker system prune -f || true
+          df -h
+          
+          # bridge image
+          echo "=== Building bridge image ==="
           docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:bridge -f docker/Dockerfile.bridge --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
+          docker system prune -f || true
+          df -h
+          
+          # sim image
+          echo "=== Building sim image ==="
           docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:sim -f docker/px4-simulator/Dockerfile.px4_sitl --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
+          docker system prune -f || true
+          df -h
+          
+          # rl-agent image
+          echo "=== Building rl-agent image ==="
           docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:rl-agent -f docker/rl-agent/Dockerfile --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
+          docker system prune -f || true
+          df -h
+      - name: Final disk cleanup before tests
+        run: |
+          docker system prune -f || true
+          sudo rm -rf /tmp/* /var/tmp/* || true
+          df -h
       - name: Launch all services and run E2E tests
         run: |
           docker compose -f tests/ci-compose.yml up --build --abort-on-container-exit
@@ -200,6 +320,10 @@ jobs:
           python3 -m pip install pytest gymnasium numpy pyyaml lark
           pytest tests/
           pytest tests/test_rl_longrun.py
+          pytest tests/test_bridge_nodes.py
+          pytest tests/test_simulation_launch.py
+          pytest tests/test_sample_agents.py
+          pytest tests/test_common_utils.py
       - name: Show logs on failure
         if: failure()
         run: docker compose -f tests/ci-compose.yml logs
