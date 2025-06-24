@@ -193,3 +193,5 @@ yarn-error.log*
 
 # 追加の除外
 !docker/px4-simulator/entrypoint-px4-sitl.sh
+!requirements.txt
+!tests/
