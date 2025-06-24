@@ -6,7 +6,8 @@ WORKDIR /drone_ws
 
 # Python依存パッケージのインストール
 COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+RUN rm -rf /tmp/* /var/tmp/* /root/.cache/* || true
 
 # RL関連のソースコードをコピー
 COPY src/drone_sim_env.py src/drone_sim_env.py
