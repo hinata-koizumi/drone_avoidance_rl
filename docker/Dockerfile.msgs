@@ -1,5 +1,6 @@
 ARG GITHUB_REPOSITORY_OWNER=hinata-koizumi
 ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
+ARG BUILDKIT_INLINE_CACHE=1
 
 # ビルドステージ
 FROM ${BASE_IMAGE} AS builder
@@ -14,9 +15,11 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     rosdep update && \
     rosdep install --from-paths src --rosdistro ${ROS_DISTRO} -y --ignore-src && \
     . /opt/ros/${ROS_DISTRO}/setup.sh && \
-    colcon build --symlink-install --merge-install --packages-select drone_msgs && \
+    colcon build --symlink-install --merge-install --packages-select drone_msgs --parallel-workers 1 && \
     rm -rf build/ log/ /tmp/* /var/tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* /var/lib/apt/lists/* && \
-    apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+    apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/* && \
+    find /usr -name "*.pyc" -delete && \
+    find /usr -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
 # ランタイムステージ
 FROM ${BASE_IMAGE} AS msgs_ws

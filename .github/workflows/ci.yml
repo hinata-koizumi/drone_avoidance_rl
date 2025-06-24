@@ -9,6 +9,10 @@ on:
 env:
   DOCKER_BUILDKIT: 1
   BUILDKIT_PROGRESS: plain
+  # ディスク容量管理のための環境変数
+  DOCKER_BUILDKIT_INLINE_CACHE: 1
+  BUILDKIT_STEP_LOG_MAX_SIZE: 10485760
+  BUILDKIT_STEP_LOG_MAX_SPEED: 10485760
 
 # GitHub Actionsのリソース設定
 concurrency:
@@ -156,6 +160,14 @@ jobs:
           sudo find /var/log -type f -name "*.log" -delete || true
           sudo find /var/cache -type f -delete || true
           
+          # より積極的なクリーンアップ
+          sudo journalctl --vacuum-time=1s || true
+          sudo journalctl --vacuum-size=1M || true
+          sudo rm -rf /var/lib/docker/tmp/* || true
+          sudo rm -rf /var/lib/docker/overlay2/* || true
+          sudo rm -rf /var/lib/docker/containers/* || true
+          sudo rm -rf /var/lib/docker/image/* || true
+          
           # ディスク使用量の確認
           echo "=== Disk usage after cleanup ==="
           df -h
@@ -284,34 +296,84 @@ jobs:
           done
       - name: Build Docker images with individual cleanup
         run: |
+          # ビルド設定の最適化
+          export DOCKER_BUILDKIT=1
+          export BUILDKIT_PROGRESS=plain
+          export DOCKER_BUILDKIT_INLINE_CACHE=1
+          export BUILDKIT_STEP_LOG_MAX_SIZE=10485760
+          export BUILDKIT_STEP_LOG_MAX_SPEED=10485760
+          
+          # 並列ビルドを制限
+          export DOCKER_BUILDKIT_BUILDKITD_FLAGS="--oci-worker-parallelism=1"
+          
           # msgs image
           echo "=== Building msgs image ==="
-          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:msgs -f docker/Dockerfile.msgs --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
+          docker buildx build --platform linux/${{ matrix.arch }} \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} \
+            --progress=plain \
+            -t drone_rl:msgs -f docker/Dockerfile.msgs --load .
           docker system prune -f || true
           df -h
           
           # bridge image
           echo "=== Building bridge image ==="
-          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:bridge -f docker/Dockerfile.bridge --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
+          docker buildx build --platform linux/${{ matrix.arch }} \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} \
+            --progress=plain \
+            -t drone_rl:bridge -f docker/Dockerfile.bridge --load .
           docker system prune -f || true
           df -h
           
           # sim image
           echo "=== Building sim image ==="
-          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:sim -f docker/px4-simulator/Dockerfile.px4_sitl --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
+          docker buildx build --platform linux/${{ matrix.arch }} \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} \
+            --progress=plain \
+            -t drone_rl:sim -f docker/px4-simulator/Dockerfile.px4_sitl --load .
           docker system prune -f || true
           df -h
           
           # rl-agent image
           echo "=== Building rl-agent image ==="
-          docker buildx build --platform linux/${{ matrix.arch }} -t drone_rl:rl-agent -f docker/rl-agent/Dockerfile --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} --load .
+          docker buildx build --platform linux/${{ matrix.arch }} \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} \
+            --progress=plain \
+            -t drone_rl:rl-agent -f docker/rl-agent/Dockerfile --load .
           docker system prune -f || true
           df -h
       - name: Final disk cleanup before tests
         run: |
+          echo "=== Final disk cleanup ==="
           docker system prune -f || true
           sudo rm -rf /tmp/* /var/tmp/* || true
+          
+          # より詳細なクリーンアップ
+          sudo journalctl --vacuum-time=1s || true
+          sudo journalctl --vacuum-size=1M || true
+          sudo rm -rf /var/lib/docker/tmp/* || true
+          sudo rm -rf /var/lib/docker/overlay2/* || true
+          sudo rm -rf /var/lib/docker/containers/* || true
+          sudo rm -rf /var/lib/docker/image/* || true
+          
+          # ディスク使用量の最終確認
+          echo "=== Final disk usage ==="
           df -h
+          docker system df || true
+          
+          # 警告レベルの確認
+          AVAILABLE=$(df / | tail -1 | awk '{print $4}')
+          echo "Available disk space: ${AVAILABLE}KB"
+          if [ "$AVAILABLE" -lt 5242880 ]; then  # 5GB未満の場合
+            echo "CRITICAL: Very low disk space available: ${AVAILABLE}KB"
+            echo "Attempting emergency cleanup..."
+            sudo rm -rf /var/lib/docker/* || true
+            sudo rm -rf /tmp/* /var/tmp/* /root/.cache/* || true
+            df -h
+          fi
       - name: Launch all services and run E2E tests
         run: |
           docker compose -f tests/ci-compose.yml up --build --abort-on-container-exit
