@@ -4,7 +4,7 @@ FROM ${BASE_IMAGE}
 
 WORKDIR /PX4-Autopilot
 
-COPY entrypoint-px4-sitl.sh /entrypoint.sh
+COPY docker/px4-simulator/entrypoint-px4-sitl.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 RUN id px4user || (echo "px4user does not exist in base image!" && exit 1)

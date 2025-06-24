@@ -190,3 +190,6 @@ MANIFEST.in
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# 追加の除外
+!docker/px4-simulator/entrypoint-px4-sitl.sh
