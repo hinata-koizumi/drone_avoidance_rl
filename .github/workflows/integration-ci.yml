@@ -73,8 +73,18 @@ jobs:
         
     - name: Build all ROS 2 packages
       run: |
+        # Clean previous build artifacts
+        rm -rf build/ install/ log/
+        
+        # Check available packages
+        echo "Available packages in src/:"
+        ls -la src/
+        
+        # Source ROS 2 environment
         source /opt/ros/humble/setup.bash
-        colcon build --packages-select drone_msgs px4_msgs common command_bridge state_bridge angle_bridge outer_motor_bridge sim_launch manual_control
+        
+        # Build packages with explicit workspace
+        colcon build --packages-select drone_msgs px4_msgs common command_bridge state_bridge angle_bridge outer_motor_bridge sim_launch manual_control --build-base build --install-base install
         
     - name: Run cross-environment tests
       run: |
