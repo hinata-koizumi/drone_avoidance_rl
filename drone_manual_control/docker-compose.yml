@@ -4,11 +4,11 @@ services:
   # メッセージ定義ビルド
   drone_msgs:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile.msgs
     volumes:
-      - ./src/drone_msgs:/workspace/src/drone_msgs:ro
-      - ./src/px4_msgs:/workspace/src/px4_msgs:ro
+      - ../src/drone_msgs:/workspace/src/drone_msgs:ro
+      - ../src/px4_msgs:/workspace/src/px4_msgs:ro
       - ./install:/workspace/install
     environment:
       - COLCON_OPTIONS=--packages-select drone_msgs px4_msgs
@@ -17,10 +17,10 @@ services:
   # ブリッジノードビルド
   bridge:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile.bridge
     volumes:
-      - ./src:/workspace/src:ro
+      - ../src:/workspace/src:ro
       - ./install:/workspace/install
       - ./config:/workspace/config:ro
     environment:
@@ -32,12 +32,12 @@ services:
   # シミュレーション起動
   simulator:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile.sim
     volumes:
-      - ./src/sim_launch:/workspace/src/sim_launch:ro
-      - ./models:/workspace/models:ro
-      - ./custom_airframes:/workspace/custom_airframes:ro
+      - ../src/sim_launch:/workspace/src/sim_launch:ro
+      - ../models:/workspace/models:ro
+      - ../custom_airframes:/workspace/custom_airframes:ro
       - ./config:/workspace/config:ro
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     environment:

@@ -81,40 +81,31 @@ jobs:
         
         sudo pip3 install empy
         
+        # Create em module using simple echo commands
         ROS2_PYTHON_PATH="/opt/ros/humble/lib/python3/dist-packages"
         sudo mkdir -p "$ROS2_PYTHON_PATH/em"
         
-        # Create em module using a simple Python script
-        cat > create_em_module.py << 'EOF'
-import sys
-import os
+        # Create em module line by line
+        sudo echo 'import sys' > "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo 'try:' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '    import empy' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '    globals().update(empy.__dict__)' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '    sys.modules["em.empy"] = empy' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '    print("em module: Using empy package")' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo 'except ImportError:' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '    print("em module: Creating minimal compatibility layer")' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '    class Interpreter:' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '        def __init__(self, *args, **kwargs):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '            raise NotImplementedError("em.Interpreter not available - empy package is required")' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '    def expand_template(template, data):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '        raise NotImplementedError("em.expand_template not available - empy package is required")' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '    __all__ = ["Interpreter", "expand_template"]' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo 'if "em" not in sys.modules:' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '    sys.modules["em"] = sys.modules[__name__]' >> "$ROS2_PYTHON_PATH/em/__init__.py"
 
-content = '''import sys
-try:
-    import empy
-    globals().update(empy.__dict__)
-    sys.modules["em.empy"] = empy
-    print("em module: Using empy package")
-except ImportError:
-    print("em module: Creating minimal compatibility layer")
-    class Interpreter:
-        def __init__(self, *args, **kwargs):
-            raise NotImplementedError("em.Interpreter not available - empy package is required")
-    def expand_template(template, data):
-        raise NotImplementedError("em.expand_template not available - empy package is required")
-    __all__ = ["Interpreter", "expand_template"]
-if "em" not in sys.modules:
-    sys.modules["em"] = sys.modules[__name__]
-'''
-
-with open('/opt/ros/humble/lib/python3/dist-packages/em/__init__.py', 'w') as f:
-    f.write(content)
-print("em module created successfully")
-EOF
-
-        sudo python3 create_em_module.py
         sudo chmod 644 "$ROS2_PYTHON_PATH/em/__init__.py"
         
+        # Verify em module is available
         python3 -c "import sys; sys.path.insert(0, '/opt/ros/humble/lib/python3/dist-packages'); import em; print('✅ em module available'); print('em module path:', em.__file__)"
 
     - name: Install Python dependencies
