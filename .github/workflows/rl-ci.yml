@@ -92,7 +92,7 @@ jobs:
         docker-compose -f tests/ci-compose.yml down
         
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: rl-test-results

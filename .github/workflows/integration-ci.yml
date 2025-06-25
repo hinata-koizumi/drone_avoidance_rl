@@ -112,7 +112,7 @@ jobs:
         echo "- Docker Integration: ✅ Passed" >> integration-report.md
         
     - name: Upload integration report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: integration-report
         path: integration-report.md 
