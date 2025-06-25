@@ -4,7 +4,14 @@ source /opt/ros/${ROS_DISTRO}/setup.bash
 if [ -f /bridge_ws/install/setup.bash ]; then
   source /bridge_ws/install/setup.bash
 fi
-export PYTHONPATH=/bridge_ws/src:/bridge_ws/install/lib/python3.10/site-packages:$PYTHONPATH
+
+# PYTHONPATHの安全な設定
+if [ -z "$PYTHONPATH" ]; then
+  export PYTHONPATH="/bridge_ws/src:/bridge_ws/install/lib/python3.10/site-packages"
+else
+  export PYTHONPATH="/bridge_ws/src:/bridge_ws/install/lib/python3.10/site-packages:$PYTHONPATH"
+fi
+
 exec "$@"
 
 # デバッグ用出力

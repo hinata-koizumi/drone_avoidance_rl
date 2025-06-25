@@ -65,10 +65,11 @@ $RECYCLE.BIN/
 .gitmodules
 .gitattributes
 
-# Docker関連
-Dockerfile*
-docker-compose*.yml
-.dockerignore
+# Docker関連（drone_manual_control以外）
+docker/px4-simulator/
+docker/rl-agent/
+Dockerfile.unified
+docker-compose.yml
 
 # ビルド関連
 build/
@@ -80,7 +81,7 @@ install/
 *.dll
 *.exe
 
-# テスト関連
+# テスト関連（drone_manual_control以外）
 tests/
 test/
 **/test_*.py
@@ -157,9 +158,6 @@ obj/
 azure-pipelines.yml
 Jenkinsfile
 Makefile
-Dockerfile*
-docker-compose*.yml
-.dockerignore
 
 # 開発ツール関連
 .pre-commit-config.yaml
@@ -190,6 +188,15 @@ MANIFEST.in
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# drone_manual_control用の除外設定
+!drone_manual_control/
+!src/
+!rosdep/
+!config/
+!custom_airframes/
+!custom_model/
+!models/
 
 # 追加の除外
 !docker/px4-simulator/entrypoint-px4-sitl.sh
