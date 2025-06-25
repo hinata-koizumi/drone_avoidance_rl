@@ -65,7 +65,8 @@ class TestSimulationLaunch:
             )
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
-            assert hasattr(module, 'generate_launch_description'), "sim_all.launch.py should have generate_launch_description function"
+            assert hasattr(module, 'generate_launch_description'), \
+                "sim_all.launch.py should have generate_launch_description function"
         except Exception as e:
             pytest.fail(f"sim_all.launch.py import failed: {e}")
         

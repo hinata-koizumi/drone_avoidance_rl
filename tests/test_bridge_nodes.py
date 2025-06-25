@@ -16,7 +16,7 @@ from src.command_bridge.command_bridge.main import CommandBridgeNode
 from src.outer_motor_bridge.outer_motor_bridge.main import OuterMotorBridge
 
 # Import message types
-from px4_msgs.msg import VehicleOdometry
+from px4_msgs.msg import VehicleOdometry, ActuatorMotors
 from drone_msgs.msg import DroneControlCommand, DroneState
 from std_msgs.msg import Float64, Float32MultiArray
 
