@@ -175,6 +175,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r drone_manual_control/requirements.txt
         
+    - name: Install Python dependencies for ROS 2 message generation
+      run: |
+        pip install -U lark-parser
+        
     - name: Build ROS 2 packages with empy verification
       run: |
         rm -rf build/ install/ log/
