@@ -218,7 +218,7 @@ jobs:
         EOF
         
         # Use local install directory to avoid permission issues with --install-base and --build-base
-        colcon build --packages-select drone_msgs px4_msgs common manual_control --build-base build --install-base install --event-handlers console_direct+ --symlink-install --install-prefix install
+        colcon build --packages-select drone_msgs px4_msgs common manual_control --build-base build --install-base install --event-handlers console_direct+ --symlink-install
         
     - name: Run linting for manual control
       run: |
