@@ -46,7 +46,12 @@ jobs:
         
     - name: Install system dependencies for ROS 2 and empy
       run: |
-        sudo apt-get install -y python3-empy python3-catkin-pkg colcon-common-extensions
+        sudo apt-get update
+        sudo apt-get install -y python3-empy python3-catkin-pkg || true
+        # Try apt first, fallback to pip if not found
+        if ! dpkg -s colcon-common-extensions >/dev/null 2>&1; then
+          pip install -U colcon-common-extensions
+        fi
         
     - name: Install Docker
       run: |
