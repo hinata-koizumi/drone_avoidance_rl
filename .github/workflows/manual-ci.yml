@@ -128,7 +128,7 @@ jobs:
         sudo echo '        def string(self, template, locals=None):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '            return template' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '        ' >> "$ROS2_PYTHON_PATH/em/__init__.py"
-        sudo echo '        def invoke(self, template, locals=None):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '        def invoke(self, template, locals=None, **kwargs):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '            return template' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '        ' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '        def shutdown(self):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
@@ -141,7 +141,7 @@ jobs:
         sudo echo '        def string(self, template, locals=None):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '            return template' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '        ' >> "$ROS2_PYTHON_PATH/em/__init__.py"
-        sudo echo '        def invoke(self, template, locals=None):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '        def invoke(self, template, locals=None, **kwargs):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '            return template' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '        ' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '        def shutdown(self):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
@@ -189,6 +189,10 @@ jobs:
         export PYTHONUSERBASE="$PWD/install"
         export PIP_USER=no
         
+        # Force colcon to use local installation
+        export COLCON_INSTALL_PREFIX="$PWD/install"
+        export COLCON_BUILD_BASE="$PWD/build"
+        
         echo "=== Pre-build em module verification ==="
         python3 -c "import sys; print('Python path:', sys.path); import em; print('✅ em module imported successfully'); print('em module location:', em.__file__); print('✅ em.Interpreter available' if hasattr(em, 'Interpreter') else '⚠️  em.Interpreter not available')"
         
@@ -209,7 +213,7 @@ jobs:
         EOF
         
         # Use local install directory to avoid permission issues
-        colcon build --packages-select drone_msgs px4_msgs common manual_control --build-base build --install-base install --event-handlers console_direct+
+        colcon build --packages-select drone_msgs px4_msgs common manual_control --build-base build --install-base install --event-handlers console_direct+ --symlink-install
         
     - name: Run linting for manual control
       run: |

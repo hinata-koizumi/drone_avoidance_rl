@@ -20,4 +20,8 @@ setup(
         (f'share/{package_name}', ['package.xml']),
         (f'share/ament_index/resource_index/packages', [f'resource/{package_name}'])
     ],
+    # Development mode options
+    use_2to3=False,
+    convert_2to3_doctests=[],
+    use_2to3_fixers=[],
 ) 
