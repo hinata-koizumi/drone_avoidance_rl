@@ -63,6 +63,8 @@ class TestSimulationLaunch:
                 "sim_all_launch", 
                 "src/sim_launch/launch/sim_all.launch.py"
             )
+            if spec is None or spec.loader is None:
+                pytest.fail("Failed to create module spec for sim_all.launch.py")
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             assert hasattr(module, 'generate_launch_description'), \
@@ -76,6 +78,8 @@ class TestSimulationLaunch:
                 "bridge_launch", 
                 "src/sim_launch/launch/bridge_launch.py"
             )
+            if spec is None or spec.loader is None:
+                pytest.fail("Failed to create module spec for bridge_launch.py")
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
         except Exception as e:
@@ -87,6 +91,8 @@ class TestSimulationLaunch:
                 "gz_sim_launch", 
                 "src/sim_launch/launch/gz_sim.launch.py"
             )
+            if spec is None or spec.loader is None:
+                pytest.fail("Failed to create module spec for gz_sim.launch.py")
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
         except Exception as e:
