@@ -80,6 +80,7 @@ jobs:
         sudo apt install -y ros-humble-rosidl-default-generators ros-humble-rosidl-default-runtime
         
         # Install empy properly and ensure it's available
+        echo "Installing empy package..."
         sudo pip3 install empy
         python3 -c "import empy; print('✅ empy package installed successfully')" || echo "⚠️ empy package not available, will use fallback"
         
@@ -93,6 +94,9 @@ jobs:
         
         # Final check for empy
         python3 -c "import empy; print('✅ empy package available after installation attempts')" || echo "⚠️ empy package still not available, will use fallback"
+        
+        # Wait a moment for installation to complete
+        sleep 2
         
         # Create complete em module compatibility layer
         ROS2_PYTHON_PATH="/opt/ros/humble/lib/python3/dist-packages"
@@ -200,13 +204,12 @@ jobs:
           base: build
         install:
           base: install
-          prefix: install
         workspace:
           base: .
         EOF
         
         # Use local install directory to avoid permission issues
-        colcon build --packages-select drone_msgs px4_msgs common manual_control --build-base build --install-base install --event-handlers console_direct+ --install-prefix install
+        colcon build --packages-select drone_msgs px4_msgs common manual_control --build-base build --install-base install --event-handlers console_direct+
         
     - name: Run linting for manual control
       run: |
