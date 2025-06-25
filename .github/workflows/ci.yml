@@ -570,11 +570,13 @@ jobs:
           
           # rl-agent image
           echo "=== Building rl-agent image ==="
-          docker buildx build --platform linux/${{ matrix.arch }} \
-            --build-arg BUILDKIT_INLINE_CACHE=1 \
-            --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} \
-            --progress=plain \
-            -t drone_rl:rl-agent -f docker/rl-agent/Dockerfile --load .
+          # rl-agentビルドをスキップ（手動制御テストに不要）
+          echo "Skipping rl-agent build for manual control test"
+          # docker buildx build --platform linux/${{ matrix.arch }} \
+          #   --build-arg BUILDKIT_INLINE_CACHE=1 \
+          #   --build-arg GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} \
+          #   --progress=plain \
+          #   -t drone_rl:rl-agent -f docker/rl-agent/Dockerfile.fixed --load .
           docker system prune -f || true
           df -h
       - name: Final disk cleanup before tests
