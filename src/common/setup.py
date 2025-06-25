@@ -8,7 +8,7 @@ setup(
     name=package_name,
     version='0.1.0',
     packages=[package_name],
-    install_requires=['setuptools==59.6.0'],
+    install_requires=['setuptools>=59.6.0'],
     zip_safe=False,  # Development mode
     maintainer='Hinata Koizumi',
     maintainer_email='example@example.com',
@@ -20,8 +20,6 @@ setup(
         (f'share/{package_name}', ['package.xml']),
         (f'share/ament_index/resource_index/packages', [f'resource/{package_name}'])
     ],
-    # Development mode options
-    use_2to3=False,
-    convert_2to3_doctests=[],
-    use_2to3_fixers=[],
+    # Development mode options - remove deprecated options
+    python_requires='>=3.8',
 ) 

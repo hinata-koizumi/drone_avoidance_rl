@@ -179,19 +179,20 @@ jobs:
         ls -la src/
         
         source /opt/ros/humble/setup.bash
-        export PYTHONPATH=/opt/ros/humble/lib/python3/dist-packages:$PYTHONPATH
         
-        # Set environment variables to ensure local installation
+        # Set environment variables to ensure local installation and prevent system-wide installation
         export COLCON_PREFIX_PATH="$PWD/install"
-        export PYTHONPATH="$PWD/install/lib/python3/dist-packages:$PYTHONPATH"
+        export COLCON_INSTALL_PREFIX="$PWD/install"
+        export COLCON_BUILD_BASE="$PWD/build"
+        export PYTHONPATH="$PWD/install/lib/python3/dist-packages:/opt/ros/humble/lib/python3/dist-packages:$PYTHONPATH"
         
         # Additional environment variables to prevent system installation
         export PYTHONUSERBASE="$PWD/install"
         export PIP_USER=no
+        export PYTHONPATH="$PWD/install/lib/python3/dist-packages:$PYTHONPATH"
         
-        # Force colcon to use local installation
-        export COLCON_INSTALL_PREFIX="$PWD/install"
-        export COLCON_BUILD_BASE="$PWD/build"
+        # Prevent setuptools from installing to system directories
+        export SETUPTOOLS_USE_DISTUTILS=stdlib
         
         echo "=== Pre-build em module verification ==="
         python3 -c "import sys; print('Python path:', sys.path); import em; print('✅ em module imported successfully'); print('em module location:', em.__file__); print('✅ em.Interpreter available' if hasattr(em, 'Interpreter') else '⚠️  em.Interpreter not available')"
@@ -212,8 +213,8 @@ jobs:
           base: .
         EOF
         
-        # Use local install directory to avoid permission issues
-        colcon build --packages-select drone_msgs px4_msgs common manual_control --build-base build --install-base install --event-handlers console_direct+ --symlink-install
+        # Use local install directory to avoid permission issues with --install-base and --build-base
+        colcon build --packages-select drone_msgs px4_msgs common manual_control --build-base build --install-base install --event-handlers console_direct+ --symlink-install --install-prefix install
         
     - name: Run linting for manual control
       run: |
@@ -347,4 +348,15 @@ jobs:
         else
           echo "❌ Aether-SL model configuration missing"
           exit 1
-        fi 
+        fi
+
+    - name: Install ROS 2 dependencies and Python packages
+      run: |
+        sudo apt update
+        sudo apt install -y python3-pip python3-colcon-common-extensions
+        sudo apt install -y ros-humble-rosidl-default-generators ros-humble-rosidl-default-runtime
+        
+        # Install required Python packages
+        sudo pip3 install catkin-pkg empy
+        python3 -c "import catkin_pkg; print('✅ catkin_pkg package installed successfully')" || echo "⚠️ catkin_pkg package not available"
+        python3 -c "import empy; print('✅ empy package installed successfully')" || echo "⚠️ empy package not available, will use fallback" 
