@@ -85,7 +85,7 @@ jobs:
         ROS2_PYTHON_PATH="/opt/ros/humble/lib/python3/dist-packages"
         sudo mkdir -p "$ROS2_PYTHON_PATH/em"
         
-        # Create em module using echo commands with all required attributes
+        # Create em module using echo commands with all required attributes and methods
         sudo echo '"""Complete em module compatibility layer for ROS 2"""' > "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo 'import sys' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo 'import os' >> "$ROS2_PYTHON_PATH/em/__init__.py"
@@ -103,18 +103,29 @@ jobs:
         sudo echo '    class Interpreter:' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '        def __init__(self, *args, **kwargs):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '            pass' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '        def string(self, template, locals=None):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '            return template' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '        def shutdown(self):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '            pass' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '    class CachingInterpreter:' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '        def __init__(self, *args, **kwargs):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '            pass' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '        def string(self, template, locals=None):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '            return template' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '        def shutdown(self):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '            pass' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '    def expand_template(template, data):' >> "$ROS2_PYTHON_PATH/em/__init__.py"
-        sudo echo '        pass' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '        return template' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '    OVERRIDE_OPT = "override"' >> "$ROS2_PYTHON_PATH/em/__init__.py"
-        sudo echo '    __all__ = ["Interpreter", "expand_template", "Configuration", "OVERRIDE_OPT"]' >> "$ROS2_PYTHON_PATH/em/__init__.py"
+        sudo echo '    __all__ = ["Interpreter", "CachingInterpreter", "expand_template", "Configuration", "OVERRIDE_OPT"]' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo 'if "em" not in sys.modules:' >> "$ROS2_PYTHON_PATH/em/__init__.py"
         sudo echo '    sys.modules["em"] = sys.modules[__name__]' >> "$ROS2_PYTHON_PATH/em/__init__.py"
 
         sudo chmod 644 "$ROS2_PYTHON_PATH/em/__init__.py"
         
-        # Verify em module is available with all required attributes
-        python3 -c "import sys; sys.path.insert(0, '/opt/ros/humble/lib/python3/dist-packages'); import em; print('✅ em module available'); print('em module path:', em.__file__); required_attrs = ['Interpreter', 'expand_template', 'Configuration', 'OVERRIDE_OPT']; [print(f'✅ em.{attr} available') if hasattr(em, attr) else (print(f'❌ em.{attr} missing'), sys.exit(1)) for attr in required_attrs]"
+        # Verify em module is available with all required attributes and methods
+        python3 -c "import sys; sys.path.insert(0, '/opt/ros/humble/lib/python3/dist-packages'); import em; print('✅ em module available'); print('em module path:', em.__file__); required_attrs = ['Interpreter', 'CachingInterpreter', 'expand_template', 'Configuration', 'OVERRIDE_OPT']; [print(f'✅ em.{attr} available') if hasattr(em, attr) else (print(f'❌ em.{attr} missing'), sys.exit(1)) for attr in required_attrs]; print('✅ em.Interpreter.string available' if hasattr(em.Interpreter, 'string') else '❌ em.Interpreter.string missing'); print('✅ em.Interpreter.shutdown available' if hasattr(em.Interpreter, 'shutdown') else '❌ em.Interpreter.shutdown missing')"
 
     - name: Install Python dependencies
       run: |
