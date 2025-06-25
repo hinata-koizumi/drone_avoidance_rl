@@ -572,23 +572,29 @@ jobs:
           # Try to install em module directly
           sudo apt install -y python3-em || echo "python3-em package not available"
           
-          # Verify empy installation and create em module
-          python3 -c "import em; print('em module available')" || {
-            echo "em module not available, creating compatibility layer"
-            # Find empy module location
-            EMPY_PATH=$(python3 -c "import empy; print(empy.__file__)" 2>/dev/null || echo "")
-            if [ -n "$EMPY_PATH" ]; then
-              echo "Found empy at: $EMPY_PATH"
-              # Create em directory and symlink
-              sudo mkdir -p /usr/lib/python3/dist-packages/em
-              sudo ln -sf "$EMPY_PATH" /usr/lib/python3/dist-packages/em/__init__.py
-              echo "Created symlink for em module"
-            else
-              echo "empy module not found, trying pip install"
-              # Try pip install as last resort
-              sudo pip3 install empy || echo "pip install failed"
-            }
-          }
+          # Install em module directly to ROS 2 environment
+          sudo pip3 install empy || echo "pip install empy failed"
+          
+          # Create em module in ROS 2 Python path
+          ROS2_PYTHON_PATH="/opt/ros/humble/lib/python3/dist-packages"
+          sudo mkdir -p "$ROS2_PYTHON_PATH/em"
+          
+          # Try multiple approaches to create em module
+          if python3 -c "import empy" 2>/dev/null; then
+            EMPY_PATH=$(python3 -c "import empy; print(empy.__file__)")
+            sudo ln -sf "$EMPY_PATH" "$ROS2_PYTHON_PATH/em/__init__.py"
+            echo "Created em module from empy at: $EMPY_PATH"
+          elif [ -f "/usr/lib/python3/dist-packages/empy.py" ]; then
+            sudo ln -sf "/usr/lib/python3/dist-packages/empy.py" "$ROS2_PYTHON_PATH/em/__init__.py"
+            echo "Created em module from system empy.py"
+          else
+            # Create a simple em module
+            echo 'import empy; globals().update(empy.__dict__)' | sudo tee "$ROS2_PYTHON_PATH/em/__init__.py"
+            echo "Created simple em module compatibility layer"
+          fi
+          
+          # Verify em module is available
+          python3 -c "import em; print('em module available')" || echo "em module still not available"
       - name: Remove build, install, and log directories if exist
         run: rm -rf build install log
       - name: Build ROS 2 workspace
@@ -676,23 +682,29 @@ jobs:
           # Try to install em module directly
           sudo apt install -y python3-em || echo "python3-em package not available"
           
-          # Verify empy installation and create em module
-          python3 -c "import em; print('em module available')" || {
-            echo "em module not available, creating compatibility layer"
-            # Find empy module location
-            EMPY_PATH=$(python3 -c "import empy; print(empy.__file__)" 2>/dev/null || echo "")
-            if [ -n "$EMPY_PATH" ]; then
-              echo "Found empy at: $EMPY_PATH"
-              # Create em directory and symlink
-              sudo mkdir -p /usr/lib/python3/dist-packages/em
-              sudo ln -sf "$EMPY_PATH" /usr/lib/python3/dist-packages/em/__init__.py
-              echo "Created symlink for em module"
-            else
-              echo "empy module not found, trying pip install"
-              # Try pip install as last resort
-              sudo pip3 install empy || echo "pip install failed"
-            }
-          }
+          # Install em module directly to ROS 2 environment
+          sudo pip3 install empy || echo "pip install empy failed"
+          
+          # Create em module in ROS 2 Python path
+          ROS2_PYTHON_PATH="/opt/ros/humble/lib/python3/dist-packages"
+          sudo mkdir -p "$ROS2_PYTHON_PATH/em"
+          
+          # Try multiple approaches to create em module
+          if python3 -c "import empy" 2>/dev/null; then
+            EMPY_PATH=$(python3 -c "import empy; print(empy.__file__)")
+            sudo ln -sf "$EMPY_PATH" "$ROS2_PYTHON_PATH/em/__init__.py"
+            echo "Created em module from empy at: $EMPY_PATH"
+          elif [ -f "/usr/lib/python3/dist-packages/empy.py" ]; then
+            sudo ln -sf "/usr/lib/python3/dist-packages/empy.py" "$ROS2_PYTHON_PATH/em/__init__.py"
+            echo "Created em module from system empy.py"
+          else
+            # Create a simple em module
+            echo 'import empy; globals().update(empy.__dict__)' | sudo tee "$ROS2_PYTHON_PATH/em/__init__.py"
+            echo "Created simple em module compatibility layer"
+          fi
+          
+          # Verify em module is available
+          python3 -c "import em; print('em module available')" || echo "em module still not available"
       - name: Run ament_lint_auto
         run: |
           source /opt/ros/${{ env.ROS_DISTRO || 'humble' }}/setup.sh
@@ -833,23 +845,29 @@ jobs:
           # Try to install em module directly
           sudo apt install -y python3-em || echo "python3-em package not available"
           
-          # Verify empy installation and create em module
-          python3 -c "import em; print('em module available')" || {
-            echo "em module not available, creating compatibility layer"
-            # Find empy module location
-            EMPY_PATH=$(python3 -c "import empy; print(empy.__file__)" 2>/dev/null || echo "")
-            if [ -n "$EMPY_PATH" ]; then
-              echo "Found empy at: $EMPY_PATH"
-              # Create em directory and symlink
-              sudo mkdir -p /usr/lib/python3/dist-packages/em
-              sudo ln -sf "$EMPY_PATH" /usr/lib/python3/dist-packages/em/__init__.py
-              echo "Created symlink for em module"
-            else
-              echo "empy module not found, trying pip install"
-              # Try pip install as last resort
-              sudo pip3 install empy || echo "pip install failed"
-            }
-          }
+          # Install em module directly to ROS 2 environment
+          sudo pip3 install empy || echo "pip install empy failed"
+          
+          # Create em module in ROS 2 Python path
+          ROS2_PYTHON_PATH="/opt/ros/humble/lib/python3/dist-packages"
+          sudo mkdir -p "$ROS2_PYTHON_PATH/em"
+          
+          # Try multiple approaches to create em module
+          if python3 -c "import empy" 2>/dev/null; then
+            EMPY_PATH=$(python3 -c "import empy; print(empy.__file__)")
+            sudo ln -sf "$EMPY_PATH" "$ROS2_PYTHON_PATH/em/__init__.py"
+            echo "Created em module from empy at: $EMPY_PATH"
+          elif [ -f "/usr/lib/python3/dist-packages/empy.py" ]; then
+            sudo ln -sf "/usr/lib/python3/dist-packages/empy.py" "$ROS2_PYTHON_PATH/em/__init__.py"
+            echo "Created em module from system empy.py"
+          else
+            # Create a simple em module
+            echo 'import empy; globals().update(empy.__dict__)' | sudo tee "$ROS2_PYTHON_PATH/em/__init__.py"
+            echo "Created simple em module compatibility layer"
+          fi
+          
+          # Verify em module is available
+          python3 -c "import em; print('em module available')" || echo "em module still not available"
       - name: Remove build, install, and log directories if exist
         run: rm -rf build install log
       - name: Build ROS 2 workspace
