@@ -1,0 +1,151 @@
+# 事前定義された行動シーケンス設定
+action_sequences:
+  # 基本動作
+  - name: "hover"
+    action_type: "hover"
+    duration: 10.0  # 10秒間ホバリング
+    parameters:
+      target_altitude: 2.0
+      stability_threshold: 0.1
+    next_action: null
+
+  - name: "takeoff"
+    action_type: "takeoff"
+    duration: 5.0  # 5秒間で離陸
+    parameters:
+      target_altitude: 3.0
+      ascent_rate: 0.6
+    next_action: "hover"
+
+  - name: "landing"
+    action_type: "landing"
+    duration: 8.0  # 8秒間で着陸
+    parameters:
+      descent_rate: 0.375
+      final_altitude: 0.5
+    next_action: null
+
+  # 移動動作
+  - name: "waypoint_forward"
+    action_type: "waypoint"
+    duration: 15.0
+    parameters:
+      target_x: 5.0
+      target_y: 0.0
+      target_z: 2.0
+      approach_speed: 0.5
+    next_action: "hover"
+
+  - name: "waypoint_backward"
+    action_type: "waypoint"
+    duration: 15.0
+    parameters:
+      target_x: -5.0
+      target_y: 0.0
+      target_z: 2.0
+      approach_speed: 0.5
+    next_action: "hover"
+
+  - name: "waypoint_right"
+    action_type: "waypoint"
+    duration: 12.0
+    parameters:
+      target_x: 0.0
+      target_y: 5.0
+      target_z: 2.0
+      approach_speed: 0.5
+    next_action: "hover"
+
+  - name: "waypoint_left"
+    action_type: "waypoint"
+    duration: 12.0
+    parameters:
+      target_x: 0.0
+      target_y: -5.0
+      target_z: 2.0
+      approach_speed: 0.5
+    next_action: "hover"
+
+  # パターン飛行
+  - name: "circle_flight"
+    action_type: "circle"
+    duration: 20.0  # 20秒間で円形飛行
+    parameters:
+      radius: 5.0
+      altitude: 3.0
+      angular_velocity: 2.0  # rad/s
+      center_x: 0.0
+      center_y: 0.0
+    next_action: "hover"
+
+  - name: "square_pattern"
+    action_type: "square"
+    duration: 40.0  # 40秒間で四角形パターン
+    parameters:
+      side_length: 5.0
+      altitude: 3.0
+      corner_radius: 1.0
+      approach_speed: 0.5
+    next_action: "hover"
+
+  # 複合シーケンス
+  - name: "takeoff_and_hover"
+    action_type: "takeoff"
+    duration: 5.0
+    parameters:
+      target_altitude: 3.0
+      ascent_rate: 0.6
+    next_action: "hover"
+
+  - name: "exploration_sequence"
+    action_type: "takeoff"
+    duration: 5.0
+    parameters:
+      target_altitude: 3.0
+      ascent_rate: 0.6
+    next_action: "waypoint_forward"
+
+  - name: "return_to_base"
+    action_type: "waypoint"
+    duration: 15.0
+    parameters:
+      target_x: 0.0
+      target_y: 0.0
+      target_z: 3.0
+      approach_speed: 0.5
+    next_action: "landing"
+
+# 制御パラメータ
+control_parameters:
+  # PID制御ゲイン
+  position_p_gain: 1.0
+  position_i_gain: 0.1
+  position_d_gain: 0.05
+  
+  attitude_p_gain: 2.0
+  attitude_i_gain: 0.2
+  attitude_d_gain: 0.1
+  
+  # 安全制限
+  max_velocity: 5.0  # m/s
+  max_acceleration: 3.0  # m/s²
+  max_angular_velocity: 2.0  # rad/s
+  
+  # 動作閾値
+  position_tolerance: 0.5  # m
+  attitude_tolerance: 0.1  # rad
+  velocity_tolerance: 0.2  # m/s
+
+# 安全設定
+safety_parameters:
+  # 高度制限
+  min_altitude: 0.5  # m
+  max_altitude: 50.0  # m
+  
+  # 範囲制限
+  max_distance_from_base: 100.0  # m
+  
+  # 緊急停止条件
+  emergency_stop_on_collision: true
+  emergency_stop_on_low_battery: true
+  battery_threshold: 0.2  # 20% 

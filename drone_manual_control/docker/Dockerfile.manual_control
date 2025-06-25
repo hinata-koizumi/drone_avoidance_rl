@@ -1,0 +1,31 @@
+FROM ros:humble-ros-base
+
+# 必要なパッケージをインストール
+RUN apt-get update && apt-get install -y \
+    python3-pip \
+    python3-yaml \
+    && rm -rf /var/lib/apt/lists/*
+
+# 作業ディレクトリを設定
+WORKDIR /workspace
+
+# ROS 2環境を設定
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+
+# Python依存関係をインストール
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
+
+# ソースコードをコピー
+COPY src/ src/
+
+# ビルド
+RUN . /opt/ros/humble/setup.sh && \
+    colcon build --packages-select manual_control
+
+# エントリーポイント
+COPY docker/entrypoint-manual-control.sh /
+RUN chmod +x /entrypoint-manual-control.sh
+
+ENTRYPOINT ["/entrypoint-manual-control.sh"]
+CMD ["ros2", "run", "manual_control", "action_executor"] 
