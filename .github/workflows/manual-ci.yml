@@ -35,20 +35,11 @@ jobs:
       with:
         python-version: '3.10'
         
-    - name: Install system dependencies
+    - name: Install system dependencies for ROS 2 and empy
       run: |
         sudo apt-get update
-        sudo apt-get install -y \
-          build-essential \
-          cmake \
-          git \
-          python3-pip \
-          python3-dev \
-          ca-certificates \
-          curl \
-          gnupg \
-          lsb-release
-          
+        sudo apt-get install -y python3-empy python3-catkin-pkg python3-colcon-common-extensions
+        
     - name: Install Docker
       run: |
         curl -fsSL https://get.docker.com -o get-docker.sh
