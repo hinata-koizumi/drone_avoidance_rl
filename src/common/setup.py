@@ -1,4 +1,6 @@
 from setuptools import setup
+import os
+from glob import glob
 
 package_name = 'common'
 
@@ -15,6 +17,7 @@ setup(
     tests_require=['pytest'],
     entry_points={},
     data_files=[
-        (f'share/{package_name}', ['package.xml'])
+        (f'share/{package_name}', ['package.xml']),
+        (f'share/ament_index/resource_index/packages', [f'resource/{package_name}'])
     ],
 ) 

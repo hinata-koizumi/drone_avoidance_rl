@@ -29,12 +29,101 @@ drone_avoidance_rl/
 │   ├── drone_sim_env.py # Gym API 準拠のドローン環境
 │   ├── common/          # 共通ユーティリティ・ベースクラス
 │   └── [bridge_nodes]/  # 各種ブリッジノード
+├── drone_manual_control/ # 手動制御環境
+│   ├── src/manual_control/ # 事前定義行動実行ノード
+│   ├── config/          # 行動シーケンス・パラメータ
+│   └── scripts/         # セットアップ・デモスクリプト
 ├── custom_model/        # カスタムSDFモデル
 ├── custom_airframes/    # PX4エアフレーム設定
 ├── tests/               # 統合・E2Eテスト
 ├── docs/                # 自動生成ドキュメント
 └── tools/               # 開発支援スクリプト
 ```
+
+---
+
+## 🚁 ドローン手動制御チュートリアル
+
+**強化学習なしでドローン制御を体験しましょう！** 手動制御環境では、事前定義されたドローン行動を実行し、基本的な飛行力学を理解できます。
+
+### クイックスタート - 手動制御
+
+#### 1. 手動制御環境のセットアップ
+```bash
+# 手動制御ディレクトリに移動
+cd drone_manual_control
+
+# 環境セットアップ（メインプロジェクトからコンポーネントをコピー）
+./scripts/setup_environment.sh
+
+# Dockerコンテナをビルド
+docker-compose build
+```
+
+#### 2. 事前定義ドローン行動の実行
+```bash
+# 手動制御付きシミュレーションを開始
+./scripts/run_demo.sh
+
+# または段階的に実行：
+docker-compose up -d simulator    # Gazeboシミュレーション開始
+docker-compose up -d bridge       # ブリッジノード開始
+docker-compose up -d manual_control  # 行動実行ノード開始
+```
+
+#### 3. 利用可能な事前定義行動
+
+**基本飛行行動:**
+- **Hover**: 安定したホバリング位置を維持（10秒間）
+- **Takeoff**: 目標高度への垂直上昇（5秒間）
+- **Landing**: 制御された降下と着陸（8秒間）
+
+**移動パターン:**
+- **Waypoint Navigation**: 特定座標への移動
+  - Forward: 前方5m移動
+  - Backward: 後方5m移動
+  - Left/Right: 左右5m移動
+- **Circle Flight**: 半径5mの円形パターン（20秒間）
+- **Square Pattern**: 5m辺の四角形飛行パターン（40秒間）
+
+**複合シーケンス:**
+- **Takeoff and Hover**: 完全な離陸→ホバリングシーケンス
+- **Exploration**: 離陸→前方移動→ホバリング
+- **Return to Base**: 原点への帰還→着陸
+
+#### 4. 行動のカスタマイズ
+`drone_manual_control/config/action_sequences.yaml` を編集して行動を変更：
+
+```yaml
+action_sequences:
+  - name: "custom_hover"
+    action_type: "hover"
+    duration: 15.0  # 15秒間
+    parameters:
+      target_altitude: 5.0  # 5m高度
+    next_action: "landing"  # 次の行動
+```
+
+#### 5. 監視と制御
+```bash
+# ログの表示
+docker-compose logs -f manual_control
+
+# ROSトピックの確認
+docker-compose exec manual_control ros2 topic list
+docker-compose exec manual_control ros2 topic echo /drone/control_command
+
+# 環境の停止
+docker-compose down
+```
+
+### 手動制御の特徴
+
+- **RL不要**: 複雑なアルゴリズムなしでドローン制御を体験
+- **事前定義行動**: すぐに使える飛行パターン
+- **リアルタイム可視化**: Gazeboでドローンの動きを観察
+- **簡単カスタマイズ**: YAML設定で行動を変更
+- **安全機能**: 高度・距離制限が組み込み済み
 
 ---
 

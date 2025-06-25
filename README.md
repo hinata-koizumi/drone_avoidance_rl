@@ -17,6 +17,7 @@ PX4 SITL + ROS 2 Humble + Gazebo Garden + Reinforcement Learning (Gym API) unifi
 - **Customization**: Custom drone model and airframe support
 - **Type Safety**: Code quality management with mypy and ruff
 - **Multi-stage Docker**: Efficient build and deployment
+- **Manual Control**: Predefined drone actions for hands-on experience
 
 ---
 
@@ -29,12 +30,101 @@ drone_avoidance_rl/
 │   ├── drone_sim_env.py # Gym API compliant drone environment
 │   ├── common/          # Common utilities & base classes
 │   └── [bridge_nodes]/  # Various bridge nodes
+├── drone_manual_control/ # Manual control environment
+│   ├── src/manual_control/ # Predefined action executor
+│   ├── config/          # Action sequences & parameters
+│   └── scripts/         # Setup & demo scripts
 ├── custom_model/        # Custom SDF models
 ├── custom_airframes/    # PX4 airframe configurations
 ├── tests/               # Integration & E2E tests
 ├── docs/                # Auto-generated documentation
 └── tools/               # Development helper scripts
 ```
+
+---
+
+## 🚁 Drone Manual Control Tutorial
+
+**Experience drone control without reinforcement learning!** The manual control environment lets you run predefined drone actions and understand basic flight dynamics.
+
+### Quick Start - Manual Control
+
+#### 1. Setup Manual Control Environment
+```bash
+# Navigate to manual control directory
+cd drone_manual_control
+
+# Setup environment (copies components from main project)
+./scripts/setup_environment.sh
+
+# Build Docker containers
+docker-compose build
+```
+
+#### 2. Run Predefined Drone Actions
+```bash
+# Start the simulation with manual control
+./scripts/run_demo.sh
+
+# Or run step by step:
+docker-compose up -d simulator    # Start Gazebo simulation
+docker-compose up -d bridge       # Start bridge nodes
+docker-compose up -d manual_control  # Start action executor
+```
+
+#### 3. Available Predefined Actions
+
+**Basic Flight Actions:**
+- **Hover**: Maintain stable hover position (10 seconds)
+- **Takeoff**: Vertical ascent to target altitude (5 seconds)
+- **Landing**: Controlled descent and landing (8 seconds)
+
+**Movement Patterns:**
+- **Waypoint Navigation**: Move to specific coordinates
+  - Forward: 5m forward movement
+  - Backward: 5m backward movement
+  - Left/Right: 5m lateral movement
+- **Circle Flight**: Circular pattern with 5m radius (20 seconds)
+- **Square Pattern**: Square flight pattern with 5m sides (40 seconds)
+
+**Complex Sequences:**
+- **Takeoff and Hover**: Complete takeoff → hover sequence
+- **Exploration**: Takeoff → forward movement → hover
+- **Return to Base**: Navigation back to origin → landing
+
+#### 4. Customize Actions
+Edit `drone_manual_control/config/action_sequences.yaml` to modify actions:
+
+```yaml
+action_sequences:
+  - name: "custom_hover"
+    action_type: "hover"
+    duration: 15.0  # 15 seconds
+    parameters:
+      target_altitude: 5.0  # 5m altitude
+    next_action: "landing"  # Next action
+```
+
+#### 5. Monitor and Control
+```bash
+# View logs
+docker-compose logs -f manual_control
+
+# Check ROS topics
+docker-compose exec manual_control ros2 topic list
+docker-compose exec manual_control ros2 topic echo /drone/control_command
+
+# Stop the environment
+docker-compose down
+```
+
+### Manual Control Features
+
+- **No RL Required**: Experience drone control without complex algorithms
+- **Predefined Actions**: Ready-to-use flight patterns
+- **Real-time Visualization**: Watch drone movements in Gazebo
+- **Easy Customization**: Modify actions via YAML configuration
+- **Safety Features**: Built-in altitude and distance limits
 
 ---
 

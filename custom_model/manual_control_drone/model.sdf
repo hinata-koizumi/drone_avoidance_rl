@@ -1,0 +1,254 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <model name="aether_sl_drone">
+    <static>false</static>
+
+    <link name="base_link">
+      <pose>0 0 0.035 0 0 0</pose>
+      <inertial>
+        <mass>0.65</mass>
+        <inertia>
+          <ixx>0.08</ixx>
+          <iyy>0.08</iyy>
+          <izz>0.12</izz>
+        </inertia>
+      </inertial>
+      <visual name="base_visual">
+        <geometry>
+          <box>
+            <size>0.325 0.325 0.07</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.1 0.6 0.8 1</ambient>
+          <diffuse>0.2 0.7 0.9 1</diffuse>
+        </material>
+      </visual>
+      <collision name="base_collision">
+        <geometry>
+          <box>
+            <size>0.325 0.325 0.07</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <!-- 9軸IMU -->
+      <sensor name="imu_sensor" type="imu">
+        <always_on>true</always_on>
+        <update_rate>500</update_rate>
+        <pose>0 0 0.035 0 0 0</pose>
+        <topic>/imu/data</topic>
+        <imu>
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.00008</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.00008</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.00008</stddev>
+              </noise>
+            </z>
+          </angular_velocity>
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.004</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.004</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.004</stddev>
+              </noise>
+            </z>
+          </linear_acceleration>
+        </imu>
+      </sensor>
+
+      <!-- GPSセンサ -->
+      <sensor name="gps_sensor" type="gps">
+        <always_on>true</always_on>
+        <update_rate>10</update_rate>
+        <pose>0 0 0.035 0 0 0</pose>
+        <topic>/gps</topic>
+        <gps>
+          <horizontal_position_noise>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.3</stddev>
+            </noise>
+          </horizontal_position_noise>
+          <vertical_position_noise>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.6</stddev>
+            </noise>
+          </vertical_position_noise>
+        </gps>
+      </sensor>
+
+      <!-- バロメータ -->
+      <sensor name="barometer_sensor" type="altimeter">
+        <always_on>true</always_on>
+        <update_rate>60</update_rate>
+        <pose>0 0 0.035 0 0 0</pose>
+        <topic>/baro</topic>
+        <altimeter>
+          <vertical_position>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.08</stddev>
+            </noise>
+          </vertical_position>
+          <vertical_velocity>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.04</stddev>
+            </noise>
+          </vertical_velocity>
+        </altimeter>
+      </sensor>
+
+      <!-- 磁気センサ -->
+      <sensor name="magnetometer_sensor" type="magnetometer">
+        <always_on>true</always_on>
+        <update_rate>50</update_rate>
+        <pose>0 0 0.035 0 0 0</pose>
+        <topic>/mag</topic>
+        <magnetometer>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.00004</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.00004</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.00004</stddev>
+            </noise>
+          </z>
+        </magnetometer>
+      </sensor>
+    </link>
+
+    <!-- 4 rotors (6インチプロペラ) -->
+    <link name="rotor_1">
+      <pose>0.1625 0.1625 0.076 0 0 0</pose>
+      <inertial><mass>0.08</mass><inertia><ixx>0.002</ixx><iyy>0.002</iyy><izz>0.002</izz></inertia></inertial>
+      <visual name="rotor_1_visual">
+        <geometry><cylinder><radius>0.076</radius><length>0.015</length></cylinder></geometry>
+        <material>
+          <ambient>0.8 0.8 0.8 1</ambient>
+          <diffuse>0.9 0.9 0.9 1</diffuse>
+        </material>
+      </visual>
+      <collision name="rotor_1_collision"><geometry><cylinder><radius>0.076</radius><length>0.015</length></cylinder></geometry></collision>
+    </link>
+    <joint name="rotor_1_joint" type="fixed">
+      <parent>base_link</parent><child>rotor_1</child>
+    </joint>
+
+    <link name="rotor_2">
+      <pose>-0.1625 0.1625 0.076 0 0 0</pose>
+      <inertial><mass>0.08</mass><inertia><ixx>0.002</ixx><iyy>0.002</iyy><izz>0.002</izz></inertia></inertial>
+      <visual name="rotor_2_visual">
+        <geometry><cylinder><radius>0.076</radius><length>0.015</length></cylinder></geometry>
+        <material>
+          <ambient>0.8 0.8 0.8 1</ambient>
+          <diffuse>0.9 0.9 0.9 1</diffuse>
+        </material>
+      </visual>
+      <collision name="rotor_2_collision"><geometry><cylinder><radius>0.076</radius><length>0.015</length></cylinder></geometry></collision>
+    </link>
+    <joint name="rotor_2_joint" type="fixed">
+      <parent>base_link</parent><child>rotor_2</child>
+    </joint>
+
+    <link name="rotor_3">
+      <pose>-0.1625 -0.1625 0.076 0 0 0</pose>
+      <inertial><mass>0.08</mass><inertia><ixx>0.002</ixx><iyy>0.002</iyy><izz>0.002</izz></inertia></inertial>
+      <visual name="rotor_3_visual">
+        <geometry><cylinder><radius>0.076</radius><length>0.015</length></cylinder></geometry>
+        <material>
+          <ambient>0.8 0.8 0.8 1</ambient>
+          <diffuse>0.9 0.9 0.9 1</diffuse>
+        </material>
+      </visual>
+      <collision name="rotor_3_collision"><geometry><cylinder><radius>0.076</radius><length>0.015</length></cylinder></geometry></collision>
+    </link>
+    <joint name="rotor_3_joint" type="fixed">
+      <parent>base_link</parent><child>rotor_3</child>
+    </joint>
+
+    <link name="rotor_4">
+      <pose>0.1625 -0.1625 0.076 0 0 0</pose>
+      <inertial><mass>0.08</mass><inertia><ixx>0.002</ixx><iyy>0.002</iyy><izz>0.002</izz></inertia></inertial>
+      <visual name="rotor_4_visual">
+        <geometry><cylinder><radius>0.076</radius><length>0.015</length></cylinder></geometry>
+        <material>
+          <ambient>0.8 0.8 0.8 1</ambient>
+          <diffuse>0.9 0.9 0.9 1</diffuse>
+        </material>
+      </visual>
+      <collision name="rotor_4_collision"><geometry><cylinder><radius>0.076</radius><length>0.015</length></cylinder></geometry></collision>
+    </link>
+    <joint name="rotor_4_joint" type="fixed">
+      <parent>base_link</parent><child>rotor_4</child>
+    </joint>
+
+    <!-- 姿勢制御・推力モデルプラグイン -->
+    <plugin name="multicopter_motor_model" filename="libMulticopterMotorModel.so">
+      <motor>
+        <link_name>rotor_1</link_name>
+        <direction>ccw</direction>
+        <thrust_constant>1.6</thrust_constant>
+        <torque_constant>0.03</torque_constant>
+      </motor>
+      <motor>
+        <link_name>rotor_2</link_name>
+        <direction>cw</direction>
+        <thrust_constant>1.6</thrust_constant>
+        <torque_constant>0.03</torque_constant>
+      </motor>
+      <motor>
+        <link_name>rotor_3</link_name>
+        <direction>ccw</direction>
+        <thrust_constant>1.6</thrust_constant>
+        <torque_constant>0.03</torque_constant>
+      </motor>
+      <motor>
+        <link_name>rotor_4</link_name>
+        <direction>cw</direction>
+        <thrust_constant>1.6</thrust_constant>
+        <torque_constant>0.03</torque_constant>
+      </motor>
+      <control>
+        <enable>true</enable>
+      </control>
+    </plugin>
+  </model>
+</sdf> 

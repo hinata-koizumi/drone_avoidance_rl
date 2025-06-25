@@ -1,7 +1,56 @@
-# Drone Manual Control Environment
+# ドローン手動制御環境
+
+> **English**: [README.en.md](README.en.md)
 
 この環境は、事前定義された行動をドローンに実行させるための手動制御システムです。
 元の強化学習環境から再利用可能なコンポーネントを移行して構築されています。
+
+## 専用ドローン機体情報
+
+### Aether-SL
+
+手動制御環境専用に設計された高性能ドローン機体です。
+
+#### **基本仕様**
+- **機体タイプ**: ストリームライン型クアッドコプター
+- **重量**: 0.65kg
+- **サイズ**: 32.5cm × 32.5cm × 7cm
+- **最大速度**: 23.6 m/s（85 km/h）
+- **最大高度**: 50m
+- **飛行時間**: 約25分（シミュレーション）
+- **最大航続距離**: 20km
+
+#### **推進システム**
+- **メインローター**: 4基（6インチプロペラ、最大11000rpm）
+- **制御チャンネル**: 4チャンネル（4ローター）
+- **推力定数**: 1.6（高効率設計）
+
+#### **センサーシステム**
+- **IMU**: 9軸（500Hz更新、高精度）
+- **GPS**: デュアルバンドGNSS（10Hz更新）
+- **バロメータ**: 高度計測（60Hz更新）
+- **磁気センサ**: 3軸（50Hz更新）
+
+#### **安全機能**
+- **ジオフェンス**: 水平20km、垂直50m制限
+- **フェイルセーフ**: RC信号喪失時の自動帰還
+- **速度制限**: 水平23.6m/s、垂直8m/s
+- **加速度制限**: 最大12m/s²
+
+#### **制御パラメータ**
+- **姿勢制御**: PID制御（Roll/Pitch: P=4.8, I=0.18, D=0.09）
+- **位置制御**: PID制御（XY: P=1.0, I=0.1, D=0.05）
+- **手動制御**: 傾斜角制限80%、ヨー角制限80%
+
+#### **フライトモード**
+- **STABILIZE**: 姿勢安定化モード
+- **ALT_HOLD**: 高度保持モード
+- **LOITER**: 位置保持モード
+- **AUTO**: 自動飛行モード
+- **RTL**: 自動帰還モード
+- **MANUAL**: 手動制御モード
+
+詳細仕様は `config/drone_specs.yaml` を参照してください。
 
 ## 特徴
 
@@ -101,136 +150,3 @@ docker-compose logs -f
 ```bash
 docker-compose down
 ```
-
-## 事前定義行動
-
-### 基本動作
-- **Hover**: ホバリング維持（10秒間）
-- **Takeoff**: 離陸シーケンス（5秒間）
-- **Landing**: 着陸シーケンス（8秒間）
-
-### 移動動作
-- **Waypoint Forward**: 前方5m移動（15秒間）
-- **Waypoint Backward**: 後方5m移動（15秒間）
-- **Waypoint Right**: 右方5m移動（12秒間）
-- **Waypoint Left**: 左方5m移動（12秒間）
-
-### パターン飛行
-- **Circle Flight**: 円形飛行（半径5m、20秒間）
-- **Square Pattern**: 四角形パターン飛行（40秒間）
-
-### 複合シーケンス
-- **Takeoff and Hover**: 離陸→ホバリング
-- **Exploration Sequence**: 離陸→前方移動
-- **Return to Base**: 基地帰還→着陸
-
-## 設定
-
-### 行動シーケンスの変更
-`config/action_sequences.yaml` を編集して行動をカスタマイズ：
-
-```yaml
-action_sequences:
-  - name: "custom_hover"
-    action_type: "hover"
-    duration: 15.0  # 15秒間
-    parameters:
-      target_altitude: 5.0  # 5m高度
-    next_action: "landing"  # 次の行動
-```
-
-### 制御パラメータの調整
-```yaml
-control_parameters:
-  position_p_gain: 1.0
-  position_i_gain: 0.1
-  position_d_gain: 0.05
-  max_velocity: 5.0  # m/s
-```
-
-### 安全設定
-```yaml
-safety_parameters:
-  min_altitude: 0.5  # m
-  max_altitude: 50.0  # m
-  max_distance_from_base: 100.0  # m
-```
-
-## トラブルシューティング
-
-### よくある問題
-
-1. **シミュレーションが起動しない**
-   ```bash
-   # X11ディスプレイの確認
-   echo $DISPLAY
-   
-   # 権限の確認
-   xhost +local:docker
-   ```
-
-2. **ブリッジノードが接続できない**
-   ```bash
-   # ネットワークの確認
-   docker network ls
-   
-   # ログの確認
-   docker-compose logs bridge
-   ```
-
-3. **手動制御が動作しない**
-   ```bash
-   # 設定ファイルの確認
-   cat config/action_sequences.yaml
-   
-   # ノードの再起動
-   docker-compose restart manual_control
-   ```
-
-### デバッグ方法
-
-1. **個別ノードのログ確認**
-   ```bash
-   docker-compose logs -f [service_name]
-   ```
-
-2. **ROS 2トピックの確認**
-   ```bash
-   docker-compose exec manual_control ros2 topic list
-   docker-compose exec manual_control ros2 topic echo /drone/control_command
-   ```
-
-3. **ノードの状態確認**
-   ```bash
-   docker-compose exec manual_control ros2 node list
-   docker-compose exec manual_control ros2 node info /action_executor_node
-   ```
-
-## 開発者向け情報
-
-### 新しい行動の追加
-1. `ActionType` 列挙型に新しい行動を追加
-2. `_generate_command()` メソッドに制御ロジックを実装
-3. `action_sequences.yaml` に設定を追加
-
-### カスタムブリッジの追加
-1. 既存のブリッジノードを参考に新しいノードを作成
-2. `docker-compose.yml` にサービスを追加
-3. 依存関係を適切に設定
-
-### テストの実行
-```bash
-# 単体テスト
-docker-compose exec manual_control python3 -m pytest
-
-# 統合テスト
-./scripts/test_integration.sh
-```
-
-## ライセンス
-
-MIT License
-
-## 貢献
-
-プルリクエストやイシューの報告を歓迎します。 

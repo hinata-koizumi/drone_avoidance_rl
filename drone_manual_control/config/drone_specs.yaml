@@ -1,0 +1,162 @@
+# Aether-SL Drone Specifications
+# This file contains detailed specifications for the Aether-SL quadcopter
+
+drone_specifications:
+  # Basic Information
+  name: "Aether_SL"
+  type: "Streamlined Quadcopter"
+  version: "1.0"
+  
+  # Physical Specifications
+  physical:
+    weight: 0.65  # kg
+    dimensions:
+      length: 0.325  # m
+      width: 0.325   # m
+      height: 0.07  # m（高プロペラ配置 + ミニスタンド含む）
+    rotor_arm_length: 0.1625  # m
+    ducted_fan_offset: 0.0  # 無し
+  
+  # Motor Specifications
+  motors:
+    main_rotors:
+      count: 4
+      diameter: 0.152  # m (6インチ)
+      max_rpm: 11000
+      thrust_constant: 1.6
+      torque_constant: 0.03
+      direction: ["ccw", "cw", "ccw", "cw"]
+      
+    ducted_fans:
+      count: 0
+      diameter: 0.0
+      max_rpm: 0
+      thrust_constant: 0.0
+      torque_constant: 0.0
+      direction: []
+  
+  # Performance Limits
+  performance:
+    max_speed_horizontal: 23.6  # m/s（85 km/h）
+    max_speed_vertical: 8.0     # m/s
+    max_acceleration: 12.0      # m/s²
+    max_altitude: 50.0          # m
+    max_distance: 20000.0       # m（ロングレンジ対応）
+    flight_time: 1500           # seconds (25 minutes)
+    
+  # Control Parameters
+  control:
+    attitude:
+      roll_p: 4.8
+      roll_i: 0.18
+      roll_d: 0.09
+      pitch_p: 4.8
+      pitch_i: 0.18
+      pitch_d: 0.09
+      yaw_p: 3.2
+      yaw_i: 0.12
+      yaw_d: 0.06
+      
+    position:
+      xy_p: 1.0
+      xy_i: 0.1
+      xy_d: 0.05
+      z_p: 1.2
+      z_i: 0.12
+      z_d: 0.05
+      
+    manual:
+      tilt_tau: 0.4
+      y_tau: 0.4
+      y_max: 0.8
+      tilt_max: 0.8
+  
+  # Safety Features
+  safety:
+    geofence:
+      enabled: true
+      max_horizontal_distance: 20000.0  # m
+      max_vertical_distance: 50.0       # m
+      action: "RTL"
+      
+    failsafe:
+      rc_loss_timeout: 0.4  # seconds
+      data_link_loss_timeout: 8.0  # seconds
+      arm_without_gps: false
+      
+    limits:
+      min_altitude: 0.5  # m
+      max_altitude: 50.0  # m
+      max_velocity: 25.0  # m/s
+      max_acceleration: 12.0  # m/s²
+  
+  # Sensors
+  sensors:
+    imu:
+      type: "9-axis"
+      update_rate: 500  # Hz
+      noise:
+        angular_velocity: 0.00008  # rad/s
+        linear_acceleration: 0.004  # m/s²
+        
+    gps:
+      type: "Dual-band GNSS"
+      update_rate: 10  # Hz
+      noise:
+        horizontal_position: 0.3  # m
+        vertical_position: 0.6    # m
+        
+    barometer:
+      type: "Barometric"
+      update_rate: 60  # Hz
+      noise: 0.08  # m
+      
+    magnetometer:
+      type: "3-axis"
+      update_rate: 50  # Hz
+      noise: 0.00004  # Tesla
+  
+  # Battery
+  battery:
+    type: "Li-Ion"
+    capacity: 3000  # mAh
+    voltage:
+      empty: 3.3    # V per cell
+      charged: 4.2  # V per cell
+    cells: 4
+    max_current: 15  # A
+    
+  # Flight Modes
+  flight_modes:
+    mode1: "STABILIZE"
+    mode2: "ALT_HOLD"
+    mode3: "LOITER"
+    mode4: "AUTO"
+    mode5: "RTL"
+    mode6: "MANUAL"
+    
+  # Manual Control Actions
+  actions:
+    hover:
+      duration: 15.0  # seconds
+      target_altitude: 4.0  # m
+      
+    takeoff:
+      duration: 4.0  # seconds
+      target_altitude: 4.0  # m
+      
+    landing:
+      duration: 6.0  # seconds
+      descent_rate: 0.6  # m/s
+      
+    waypoint:
+      max_distance: 10.0  # m
+      duration: 20.0  # seconds
+      
+    circle:
+      radius: 6.0  # m
+      duration: 25.0  # seconds
+      
+    square:
+      side_length: 6.0  # m
+      duration: 45.0  # seconds 
