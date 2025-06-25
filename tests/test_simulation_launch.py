@@ -57,61 +57,50 @@ class TestSimulationLaunch:
     def test_launch_files_importable(self):
         """Test that launch files can be imported without syntax errors."""
         import importlib.util
-        import importlib.machinery
+        from typing import cast
+        from importlib.machinery import ModuleSpec, SourceFileLoader
         
         # Test sim_all.launch.py
         try:
-            spec = importlib.util.spec_from_file_location(
+            spec1 = importlib.util.spec_from_file_location(
                 "sim_all_launch", 
                 "src/sim_launch/launch/sim_all.launch.py"
             )
-            if spec is None or spec.loader is None:
+            if spec1 is None or spec1.loader is None:
                 pytest.fail("Failed to create module spec for sim_all.launch.py")
             
-            # Type assertion for mypy
-            spec = spec  # type: importlib.machinery.ModuleSpec
-            loader = spec.loader  # type: importlib.machinery.SourceFileLoader
-            
-            module = importlib.util.module_from_spec(spec)
-            loader.exec_module(module)
-            assert hasattr(module, 'generate_launch_description'), \
+            module1 = importlib.util.module_from_spec(spec1)
+            cast(SourceFileLoader, spec1.loader).exec_module(module1)
+            assert hasattr(module1, 'generate_launch_description'), \
                 "sim_all.launch.py should have generate_launch_description function"
         except Exception as e:
             pytest.fail(f"sim_all.launch.py import failed: {e}")
         
         # Test bridge_launch.py
         try:
-            spec = importlib.util.spec_from_file_location(
+            spec2 = importlib.util.spec_from_file_location(
                 "bridge_launch", 
                 "src/sim_launch/launch/bridge_launch.py"
             )
-            if spec is None or spec.loader is None:
+            if spec2 is None or spec2.loader is None:
                 pytest.fail("Failed to create module spec for bridge_launch.py")
             
-            # Type assertion for mypy
-            spec = spec  # type: importlib.machinery.ModuleSpec
-            loader = spec.loader  # type: importlib.machinery.SourceFileLoader
-            
-            module = importlib.util.module_from_spec(spec)
-            loader.exec_module(module)
+            module2 = importlib.util.module_from_spec(spec2)
+            cast(SourceFileLoader, spec2.loader).exec_module(module2)
         except Exception as e:
             pytest.fail(f"bridge_launch.py import failed: {e}")
         
         # Test gz_sim.launch.py
         try:
-            spec = importlib.util.spec_from_file_location(
+            spec3 = importlib.util.spec_from_file_location(
                 "gz_sim_launch", 
                 "src/sim_launch/launch/gz_sim.launch.py"
             )
-            if spec is None or spec.loader is None:
+            if spec3 is None or spec3.loader is None:
                 pytest.fail("Failed to create module spec for gz_sim.launch.py")
             
-            # Type assertion for mypy
-            spec = spec  # type: importlib.machinery.ModuleSpec
-            loader = spec.loader  # type: importlib.machinery.SourceFileLoader
-            
-            module = importlib.util.module_from_spec(spec)
-            loader.exec_module(module)
+            module3 = importlib.util.module_from_spec(spec3)
+            cast(SourceFileLoader, spec3.loader).exec_module(module3)
         except Exception as e:
             pytest.fail(f"gz_sim.launch.py import failed: {e}")
     
