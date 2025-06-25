@@ -72,10 +72,21 @@ jobs:
         sudo apt install -y ros-humble-desktop python3-colcon-common-extensions
         
         # Install missing Python dependencies
-        sudo apt install -y python3-em python3-empy
+        sudo apt install -y python3-empy python3-catkin-pkg-modules python3-rospkg-modules python3-lxml python3-yaml
         
         # Install ROS 2 development tools
         sudo apt install -y ros-humble-rosidl-default-generators ros-humble-rosidl-default-runtime
+        
+        # Verify empy installation
+        python3 -c "import em; print('em module available')" || echo "em module not available, using empy"
+        
+        # Create symlink for em module if needed
+        python3 -c "import em" 2>/dev/null || {
+          echo "Creating symlink for em module"
+          sudo ln -sf /usr/lib/python3/dist-packages/em.py /usr/lib/python3/dist-packages/em/__init__.py
+          sudo mkdir -p /usr/lib/python3/dist-packages/em
+          sudo ln -sf /usr/lib/python3/dist-packages/em.py /usr/lib/python3/dist-packages/em/__init__.py
+        }
 
     - name: Install Python dependencies
       run: |

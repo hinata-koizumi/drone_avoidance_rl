@@ -563,11 +563,19 @@ jobs:
       - name: Install ROS 2 dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-colcon-common-extensions python3-empy
+          sudo apt-get install -y python3-colcon-common-extensions python3-empy python3-catkin-pkg-modules python3-rospkg-modules python3-lxml python3-yaml
           sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list
           sudo rosdep init || true
           for i in {1..5}; do rosdep update && break || sleep 5; done || true
           rosdep install --from-paths src --ignore-src -r -y --rosdistro=humble
+          
+          # Create symlink for em module if needed
+          python3 -c "import em" 2>/dev/null || {
+            echo "Creating symlink for em module"
+            sudo ln -sf /usr/lib/python3/dist-packages/em.py /usr/lib/python3/dist-packages/em/__init__.py
+            sudo mkdir -p /usr/lib/python3/dist-packages/em
+            sudo ln -sf /usr/lib/python3/dist-packages/em.py /usr/lib/python3/dist-packages/em/__init__.py
+          }
       - name: Remove build, install, and log directories if exist
         run: rm -rf build install log
       - name: Build ROS 2 workspace
@@ -646,11 +654,19 @@ jobs:
       - name: Install ROS 2 dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-colcon-common-extensions python3-empy
+          sudo apt-get install -y python3-colcon-common-extensions python3-empy python3-catkin-pkg-modules python3-rospkg-modules python3-lxml python3-yaml
           sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list
           sudo rosdep init || true
           for i in {1..5}; do rosdep update && break || sleep 5; done || true
           rosdep install --from-paths src --ignore-src -r -y --rosdistro=humble
+          
+          # Create symlink for em module if needed
+          python3 -c "import em" 2>/dev/null || {
+            echo "Creating symlink for em module"
+            sudo ln -sf /usr/lib/python3/dist-packages/em.py /usr/lib/python3/dist-packages/em/__init__.py
+            sudo mkdir -p /usr/lib/python3/dist-packages/em
+            sudo ln -sf /usr/lib/python3/dist-packages/em.py /usr/lib/python3/dist-packages/em/__init__.py
+          }
       - name: Run ament_lint_auto
         run: |
           source /opt/ros/${{ env.ROS_DISTRO || 'humble' }}/setup.sh
@@ -782,11 +798,19 @@ jobs:
       - name: Install ROS 2 dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-colcon-common-extensions python3-empy
+          sudo apt-get install -y python3-colcon-common-extensions python3-empy python3-catkin-pkg-modules python3-rospkg-modules python3-lxml python3-yaml
           sudo rm -f /etc/ros/rosdep/sources.list.d/20-default.list
           sudo rosdep init || true
           for i in {1..5}; do rosdep update && break || sleep 5; done || true
           rosdep install --from-paths src --ignore-src -r -y --rosdistro=humble
+          
+          # Create symlink for em module if needed
+          python3 -c "import em" 2>/dev/null || {
+            echo "Creating symlink for em module"
+            sudo ln -sf /usr/lib/python3/dist-packages/em.py /usr/lib/python3/dist-packages/em/__init__.py
+            sudo mkdir -p /usr/lib/python3/dist-packages/em
+            sudo ln -sf /usr/lib/python3/dist-packages/em.py /usr/lib/python3/dist-packages/em/__init__.py
+          }
       - name: Remove build, install, and log directories if exist
         run: rm -rf build install log
       - name: Build ROS 2 workspace
