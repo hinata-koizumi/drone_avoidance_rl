@@ -6,6 +6,7 @@ import time
 from typing import Dict, List, Any
 from dataclasses import dataclass
 from enum import Enum
+import numpy as np
 
 import rclpy
 from rclpy.node import Node
@@ -208,13 +209,15 @@ class ActionExecutorNode(BridgeBase):
             # 円形飛行
             radius = self.current_action.parameters.get('radius', 5.0)
             elapsed_time = time.time() - self.action_start_time
-            angular_velocity = 2.0  # rad/s
-            
+            duration = self.current_action.duration
+            # 1周分の角速度を計算
+            angular_velocity = 2 * 3.14159265 / duration  # [rad/s] 1周分
             angle = angular_velocity * elapsed_time
+            # 円運動のX/Y成分を角度に反映（簡易的な制御）
             command.throttle1 = 0.5
             command.throttle2 = 0.5
-            command.angle1 = radius * 0.1 * (angle % (2 * 3.14159))
-            command.angle2 = 0.0
+            command.angle1 = radius * 0.1 * float(np.cos(angle))
+            command.angle2 = radius * 0.1 * float(np.sin(angle))
             
         elif self.current_action.action_type == ActionType.SQUARE:
             # 四角形パターン飛行
