@@ -55,16 +55,24 @@ jobs:
         sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
         sudo chmod +x /usr/local/bin/docker-compose
         
-    - name: Install ROS 2 Humble
+    - name: Setup ROS 2 environment
       run: |
-        sudo apt update && sudo apt install software-properties-common
+        # Install ROS 2 Humble
+        sudo apt update
+        sudo apt install -y software-properties-common
         sudo add-apt-repository universe
-        sudo apt update && sudo apt install curl
+        sudo apt update && sudo apt install curl -y
         sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
         sudo apt update
-        sudo apt install ros-humble-desktop python3-colcon-common-extensions
+        sudo apt install -y ros-humble-desktop python3-colcon-common-extensions
         
+        # Install missing Python dependencies
+        sudo apt install -y python3-em python3-empy
+        
+        # Install ROS 2 development tools
+        sudo apt install -y ros-humble-rosidl-default-generators ros-humble-rosidl-default-runtime
+
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
@@ -80,8 +88,9 @@ jobs:
         echo "Available packages in src/:"
         ls -la src/
         
-        # Source ROS 2 environment
+        # Source ROS 2 environment and set Python path
         source /opt/ros/humble/setup.bash
+        export PYTHONPATH=/opt/ros/humble/lib/python3/dist-packages:$PYTHONPATH
         
         # Build packages with explicit workspace
         colcon build --packages-select drone_msgs px4_msgs common command_bridge state_bridge angle_bridge outer_motor_bridge sim_launch manual_control --build-base build --install-base install
