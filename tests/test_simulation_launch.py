@@ -69,6 +69,10 @@ class TestSimulationLaunch:
             if spec1 is None or spec1.loader is None:
                 pytest.fail("Failed to create module spec for sim_all.launch.py")
             
+            # Type assertions for mypy
+            assert spec1 is not None
+            assert spec1.loader is not None
+            
             module1 = importlib.util.module_from_spec(spec1)
             cast(SourceFileLoader, spec1.loader).exec_module(module1)
             assert hasattr(module1, 'generate_launch_description'), \
@@ -85,6 +89,10 @@ class TestSimulationLaunch:
             if spec2 is None or spec2.loader is None:
                 pytest.fail("Failed to create module spec for bridge_launch.py")
             
+            # Type assertions for mypy
+            assert spec2 is not None
+            assert spec2.loader is not None
+            
             module2 = importlib.util.module_from_spec(spec2)
             cast(SourceFileLoader, spec2.loader).exec_module(module2)
         except Exception as e:
@@ -98,6 +106,10 @@ class TestSimulationLaunch:
             )
             if spec3 is None or spec3.loader is None:
                 pytest.fail("Failed to create module spec for gz_sim.launch.py")
+            
+            # Type assertions for mypy
+            assert spec3 is not None
+            assert spec3.loader is not None
             
             module3 = importlib.util.module_from_spec(spec3)
             cast(SourceFileLoader, spec3.loader).exec_module(module3)
