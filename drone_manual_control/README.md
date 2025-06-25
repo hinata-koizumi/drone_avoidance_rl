@@ -149,4 +149,4 @@ docker-compose logs -f
 ### 環境の停止
 ```bash
 docker-compose down
-```
+```# Manual control CI trigger
