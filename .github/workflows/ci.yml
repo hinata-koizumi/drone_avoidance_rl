@@ -147,6 +147,12 @@ jobs:
       - name: Monitor disk space before tests
         run: ./tools/disk_monitor.sh
       
+      - name: Build all compose images
+        run: docker compose -f tests/ci-compose.yml build
+
+      - name: Launch all services and run E2E tests
+        run: docker compose -f tests/ci-compose.yml up --abort-on-container-exit
+      
       - name: Run manual control tests
         run: |
           # 専用のCIテストファイルを使用
