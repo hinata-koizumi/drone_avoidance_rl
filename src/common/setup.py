@@ -9,7 +9,7 @@ setup(
     version='0.1.0',
     packages=[package_name],
     install_requires=['setuptools==59.6.0'],
-    zip_safe=True,
+    zip_safe=False,
     maintainer='Hinata Koizumi',
     maintainer_email='example@example.com',
     description='共通ユーティリティ・ベースクラス',
