@@ -26,6 +26,6 @@ dependencies = [
     "numpy==1.26.4",
     "gymnasium==1.1.1",
     "lark==1.2.2",
-    "ruff==0.4.4",
+    "ruff==0.12.1",
     "mypy==1.10.0"
 ] 
