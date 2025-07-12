@@ -194,9 +194,8 @@ yarn-error.log*
 !src/
 !rosdep/
 !config/
-!custom_airframes/
-!custom_model/
-!models/
+!assets/models/
+!assets/airframes/
 
 # 追加の除外
 !docker/px4-simulator/entrypoint-px4-sitl.sh

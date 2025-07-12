@@ -30,8 +30,9 @@ drone_avoidance_rl/
 │   ├── drone_sim_env.py # Gym API 準拠のドローン環境
 │   ├── common/          # 共通ユーティリティ・ベースクラス
 │   └── [bridge_nodes]/  # 各種ブリッジノード
-├── custom_model/        # カスタムSDFモデル
-├── custom_airframes/    # PX4エアフレーム設定
+├── assets/
+│   ├── models/          # カスタムSDFモデル
+│   └── airframes/       # PX4エアフレーム設定
 ├── tests/               # 統合・E2Eテスト
 ├── docs/                # 自動生成ドキュメント
 └── tools/               # 開発支援スクリプト
@@ -61,8 +62,8 @@ git submodule update --init --recursive
 ### 2. (オプション) カスタムモデルの追加
 ```bash
 # 独自ドローンモデルを追加
-cp -r ~/my_drone_sdf      custom_model/drone_model
-cp    ~/4500_my_drone.json custom_airframes/
+cp -r ~/my_drone_sdf      assets/models/drone_model
+cp    ~/4500_my_drone.json assets/airframes/
 ```
 
 ### 3. ビルド・起動

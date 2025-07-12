@@ -30,8 +30,9 @@ drone_avoidance_rl/
 │   ├── drone_sim_env.py # Gym API compliant drone environment
 │   ├── common/          # Common utilities & base classes
 │   └── [bridge_nodes]/  # Various bridge nodes
-├── custom_model/        # Custom SDF models
-├── custom_airframes/    # PX4 airframe configurations
+├── assets/
+│   ├── models/          # Custom SDF models
+│   └── airframes/       # PX4 airframe configurations
 ├── tests/               # Integration & E2E tests
 ├── docs/                # Auto-generated documentation
 └── tools/               # Development helper scripts
@@ -61,8 +62,8 @@ git submodule update --init --recursive
 ### 2. (Optional) Add Custom Models
 ```bash
 # Add your own drone model
-cp -r ~/my_drone_sdf      custom_model/drone_model
-cp    ~/4500_my_drone.json custom_airframes/
+cp -r ~/my_drone_sdf      assets/models/drone_model
+cp    ~/4500_my_drone.json assets/airframes/
 ```
 
 ### 3. Build & Launch

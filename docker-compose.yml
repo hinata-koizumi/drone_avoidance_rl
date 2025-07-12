@@ -10,7 +10,7 @@ services:
       - HEADLESS=1
       - PX4_SIM_SPEED_FACTOR=2
     volumes:
-      - "./custom_model:/models:ro"
+      - "./assets/models:/models:ro"
     entrypoint: ["/entrypoint.sh"]
     networks:
       - default
