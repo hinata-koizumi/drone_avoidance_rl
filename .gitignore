@@ -1,2 +1,7 @@
 .DS_Store
 .DS_Store
+# Build artifacts to ignore
+build/
+install/
+log/
+logs/
