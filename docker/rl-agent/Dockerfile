@@ -1,12 +1,13 @@
 ARG GITHUB_REPOSITORY_OWNER=hinata-koizumi
 ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
+# syntax=docker/dockerfile:1.4
 FROM ${BASE_IMAGE}
 
 WORKDIR /drone_ws
 
 # Python依存パッケージのインストール
 COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/pip pip install --no-cache-dir -r requirements.txt
 RUN rm -rf /tmp/* /var/tmp/* /root/.cache/* || true
 
 # RL関連のソースコードをコピー

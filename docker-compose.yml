@@ -1,7 +1,7 @@
-version: '3.8'
 services:
   sim:
     # image: ghcr.io/hinata-koizumi/drone-avoidance-sim:2.0.1
+    platform: linux/arm64
     build:
       context: .
       dockerfile: docker/px4-simulator/Dockerfile.px4_sitl
@@ -11,7 +11,7 @@ services:
       - PX4_SIM_SPEED_FACTOR=2
     volumes:
       - "./custom_model:/models:ro"
-    command: bash -c "source /opt/ros/${ROS_DISTRO}/setup.sh && /entrypoint.sh"
+    entrypoint: ["/entrypoint.sh"]
     networks:
       - default
     # depends_on:
@@ -22,6 +22,7 @@ services:
 
   bridge:
     # image: ghcr.io/hinata-koizumi/drone-avoidance-bridge:2.0.1
+    platform: linux/arm64
     build:
       context: .
       dockerfile: docker/Dockerfile.bridge
@@ -37,6 +38,7 @@ services:
 
   rl-agent:
     # image: ghcr.io/hinata-koizumi/drone-avoidance-rl-agent:2.0.1
+    platform: linux/arm64
     build:
       context: .
       dockerfile: docker/rl-agent/Dockerfile
@@ -45,6 +47,7 @@ services:
     working_dir: /drone_ws
     networks:
       - default
+    command: ["bash", "-c", "sleep infinity"]
     # depends_on:
     #   - sim
     #   - bridge
@@ -54,6 +57,7 @@ services:
 
   msgs:
     # image: ghcr.io/hinata-koizumi/drone-avoidance-msgs:2.0.1
+    platform: linux/arm64
     build:
       context: .
       dockerfile: docker/Dockerfile.msgs

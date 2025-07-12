@@ -202,3 +202,4 @@ yarn-error.log*
 !docker/px4-simulator/entrypoint-px4-sitl.sh
 !requirements.txt
 !tests/
+!docker/rl-agent/entrypoint-rl-agent.sh
