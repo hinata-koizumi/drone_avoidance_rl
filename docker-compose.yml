@@ -3,8 +3,8 @@ services:
     # image: ghcr.io/hinata-koizumi/drone-avoidance-sim:2.0.1
     platform: linux/arm64
     build:
-      context: .
-      dockerfile: docker/px4-simulator/Dockerfile.px4_sitl
+      context: docker/px4-simulator
+      dockerfile: Dockerfile.px4_sitl
     environment:
       - ROS_DOMAIN_ID=0
       - HEADLESS=1
@@ -40,8 +40,8 @@ services:
     # image: ghcr.io/hinata-koizumi/drone-avoidance-rl-agent:2.0.1
     platform: linux/arm64
     build:
-      context: .
-      dockerfile: docker/rl-agent/Dockerfile
+      context: docker/rl-agent
+      dockerfile: Dockerfile
     environment:
       - ROS_DOMAIN_ID=0
     working_dir: /drone_ws
