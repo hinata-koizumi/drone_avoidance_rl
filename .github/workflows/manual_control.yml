@@ -39,4 +39,11 @@ jobs:
       - name: Run unit tests
         run: |
           pip install pytest
-          pytest vendor/drone_manual_control/tests 
+          pytest vendor/drone_manual_control/tests
+      - name: Report image sizes
+        run: |
+          echo "=== Manual Control Stack Image Sizes ==="
+          docker images | grep -E "(manual_control|web_viz|bridge|drone_msgs)" | sort
+          echo ""
+          echo "=== Total Size ==="
+          docker images | grep -E "(manual_control|web_viz|bridge|drone_msgs)" | awk '{sum+=$7} END {print "Total: " sum " MB"}' 
