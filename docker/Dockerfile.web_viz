@@ -1,0 +1,23 @@
+# syntax=docker/dockerfile:1.4
+ARG GITHUB_REPOSITORY_OWNER=hinata-koizumi
+ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
+ARG BUILDKIT_INLINE_CACHE=1
+
+FROM ${BASE_IMAGE}
+
+USER root
+WORKDIR /web_viz_ws
+
+# Python dependencies for WebSocket + Flask server
+RUN pip3 install --no-cache-dir websockets flask
+
+# Copy web_viz sources
+COPY vendor/drone_manual_control/web_viz /workspace/web_viz
+
+# Entrypoint
+COPY vendor/drone_manual_control/docker/entrypoint-web-viz.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 8080
+
+ENTRYPOINT ["/entrypoint.sh"] 

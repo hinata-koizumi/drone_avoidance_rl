@@ -1,0 +1,41 @@
+# syntax=docker/dockerfile:1.4
+ARG GITHUB_REPOSITORY_OWNER=hinata-koizumi
+ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
+ARG BUILDKIT_INLINE_CACHE=1
+
+FROM ${BASE_IMAGE} AS builder
+
+USER root
+WORKDIR /manual_ws
+
+# --- Copy source packages (only what is needed for the simulator) ---
+COPY vendor/drone_manual_control/src/manual_control src/manual_control
+COPY src/common src/common
+
+
+
+# --- Dependency resolution & build ---
+RUN rosdep install --from-paths src --rosdistro ${ROS_DISTRO} -y --ignore-src && \
+    . /opt/ros/${ROS_DISTRO}/setup.sh && \
+    colcon build --packages-select manual_control --parallel-workers $(nproc)
+
+# ------------------------------------------------------------------
+FROM ${BASE_IMAGE} AS runtime
+
+USER root
+WORKDIR /manual_ws
+
+# Copy built artifacts only
+COPY --from=builder /manual_ws/install /manual_ws/install
+
+# Entrypoint script
+COPY vendor/drone_manual_control/docker/entrypoint-manual-control.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh && \
+    # Ensure entrypoint sources the correct install path
+    sed -i 's|/workspace/install|/manual_ws/install|g' /entrypoint.sh
+
+# Slim the image: remove build tools & caches
+RUN apt-get purge -y build-essential gcc g++ make cmake && \
+    apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+ENTRYPOINT ["/entrypoint.sh"] 

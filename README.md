@@ -30,10 +30,13 @@ drone_avoidance_rl/
 │   ├── drone_sim_env.py # Gym API compliant drone environment
 │   ├── common/          # Common utilities & base classes
 │   └── [bridge_nodes]/  # Various bridge nodes
+├── vendor/             # Git submodules
+│   └── drone_manual_control/ # Manual control validation stack
 ├── assets/
 │   ├── models/          # Custom SDF models
 │   └── airframes/       # PX4 airframe configurations
 ├── tests/               # Integration & E2E tests
+├── scripts/            # Validation & utility scripts
 ├── docs/                # Auto-generated documentation
 └── tools/               # Development helper scripts
 ```
@@ -94,6 +97,39 @@ docker compose exec rl-agent bash
 ```bash
 docker compose down
 ```
+
+---
+
+## Manual Control Stack (Pre-RL Validation)
+
+Before developing reinforcement learning agents, validate drone responsiveness using the manual control stack:
+
+### Quick Validation
+```bash
+# Build and start manual control stack
+docker compose -f docker-compose.manual_control.yaml up -d
+
+# Access Web UI for manual control
+# http://localhost:8080
+
+# Check container health
+docker compose -f docker-compose.manual_control.yaml ps
+
+# Run validation script
+./scripts/validate_manual_control.sh
+```
+
+### Features
+- **Web-based 3D Control**: Three.js visualization with real-time WebSocket communication
+- **Physics Simulation**: Gravity, thrust, PID control with realistic drone dynamics
+- **ROS 2 Integration**: Topic monitoring for position, velocity, attitude
+- **Health Monitoring**: Container healthchecks and automated validation
+
+### Validation Points
+- ✅ **Drone Physics**: Inertia, thrust response, control characteristics
+- ✅ **Command Transmission**: ROS 2 topic communication verification
+- ✅ **Sensor Data**: Position, velocity, attitude data flow
+- ✅ **Environment Interaction**: Gravity, air resistance simulation
 
 ---
 

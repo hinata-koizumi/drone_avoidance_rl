@@ -196,6 +196,7 @@ yarn-error.log*
 !config/
 !assets/models/
 !assets/airframes/
+!vendor/drone_manual_control/
 
 # 追加の除外
 !docker/px4-simulator/entrypoint-px4-sitl.sh

@@ -136,5 +136,24 @@ drone_avoidance_rl/
 
 ---
 
+## CI Matrix (Manual Control)
+| Job | OS | Architecture | Trigger |
+|-----|----|--------------|---------|
+| manual_control-validation | ubuntu-latest | arm64 (QEMU) | push / PR |  
+
+The workflow builds the **manual control stack**, runs the container health-check script, and executes pytest unit tests.
+
+## Updating Submodules
+```
+# Pull latest submodule refs
+git submodule update --remote vendor/drone_manual_control
+
+# Commit the change
+git commit -am "chore(submodule): bump drone_manual_control"
+```
+CI will automatically rebuild the stack and run the validation pipeline.
+
+---
+
 ## License
 Apache License 2.0 
