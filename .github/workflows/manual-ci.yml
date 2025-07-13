@@ -173,7 +173,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r vendor/drone_manual_control/requirements.txt
+        pip install -r src/manual_control/requirements.txt
         
     - name: Install Python dependencies for ROS 2 message generation
       run: |
@@ -241,7 +241,7 @@ jobs:
       run: |
         docker build -f docker/Dockerfile.msgs -t drone-manual-msgs .
         docker build -f docker/Dockerfile.bridge -t drone-manual-bridge .
-        docker build -f vendor/drone_manual_control/docker/Dockerfile.manual_control -t drone-manual-control .
+        docker build -f docker/Dockerfile.manual_control -t drone-manual-control .
         
     - name: Test Aether-SL drone specifications
       run: |
@@ -294,12 +294,10 @@ jobs:
         
     - name: Test Docker Compose configuration
       run: |
-        cd vendor/drone_manual_control
-        docker-compose config
+        docker-compose -f docker-compose.manual_control.yaml config
         
     - name: Run integration tests for manual control
       run: |
-        cd vendor/drone_manual_control
         cat > ci-test-compose.yml << 'EOF'
         version: '3.8'
         services:
@@ -318,8 +316,8 @@ jobs:
       with:
         name: manual-test-results
         path: |
-          vendor/drone_manual_control/test-results/
-          vendor/drone_manual_control/coverage.xml
+          test-results/
+          coverage.xml
           
   deployment-test:
     runs-on: ubuntu-22.04
@@ -331,13 +329,11 @@ jobs:
       
     - name: Test deployment
       run: |
-        cd vendor/drone_manual_control
         echo "Testing deployment configuration..."
-        docker-compose config
+        docker-compose -f docker-compose.manual_control.yaml config
         
     - name: Validate configuration files
       run: |
-        cd vendor/drone_manual_control
         python -c "
         import yaml
         import sys

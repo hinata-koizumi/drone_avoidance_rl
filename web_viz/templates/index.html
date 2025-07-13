@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Manual Control Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .status-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .action-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 6px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .action-btn:hover {
+            background: #0056b3;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-online {
+            background: #28a745;
+        }
+        .status-offline {
+            background: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Drone Manual Control Dashboard</h1>
+            <p>Monitor and control the Aether_SL drone</p>
+        </div>
+
+        <div class="status-panel">
+            <div class="panel">
+                <h3>Drone Status</h3>
+                <div id="drone-status">
+                    <p><span class="status-indicator status-online"></span>Online</p>
+                    <p><strong>Position:</strong> <span id="position">Loading...</span></p>
+                    <p><strong>Orientation:</strong> <span id="orientation">Loading...</span></p>
+                </div>
+            </div>
+            <div class="panel">
+                <h3>System Information</h3>
+                <p><strong>Drone Model:</strong> Aether_SL</p>
+                <p><strong>Weight:</strong> 0.65kg</p>
+                <p><strong>Max Speed:</strong> 23.6 m/s</p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Available Actions</h3>
+            <div class="action-grid" id="action-grid">
+                <!-- Actions will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load drone status
+        async function loadStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                document.getElementById('position').textContent = 
+                    `X: ${data.drone.position.x.toFixed(2)}, Y: ${data.drone.position.y.toFixed(2)}, Z: ${data.drone.position.z.toFixed(2)}`;
+                document.getElementById('orientation').textContent = 
+                    `Roll: ${data.drone.orientation.roll.toFixed(2)}°, Pitch: ${data.drone.orientation.pitch.toFixed(2)}°, Yaw: ${data.drone.orientation.yaw.toFixed(2)}°`;
+            } catch (error) {
+                console.error('Failed to load status:', error);
+            }
+        }
+
+        // Load available actions
+        async function loadActions() {
+            try {
+                const response = await fetch('/api/actions');
+                const data = await response.json();
+                
+                const actionGrid = document.getElementById('action-grid');
+                actionGrid.innerHTML = '';
+                
+                data.actions.forEach(action => {
+                    const button = document.createElement('button');
+                    button.className = 'action-btn';
+                    button.textContent = action.name;
+                    button.title = action.description;
+                    button.onclick = () => executeAction(action.name);
+                    actionGrid.appendChild(button);
+                });
+            } catch (error) {
+                console.error('Failed to load actions:', error);
+            }
+        }
+
+        // Execute action
+        function executeAction(actionName) {
+            console.log(`Executing action: ${actionName}`);
+            // TODO: Implement action execution
+            alert(`Action "${actionName}" would be executed here`);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStatus();
+            loadActions();
+            
+            // Refresh status every 5 seconds
+            setInterval(loadStatus, 5000);
+        });
+    </script>
+</body>
+</html> 

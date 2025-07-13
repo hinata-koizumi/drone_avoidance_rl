@@ -189,14 +189,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# drone_manual_control用の除外設定
-!drone_manual_control/
+# manual_control用の除外設定
+!src/manual_control/
 !src/
 !rosdep/
 !config/
 !assets/models/
 !assets/airframes/
-!vendor/drone_manual_control/
 
 # 追加の除外
 !docker/px4-simulator/entrypoint-px4-sitl.sh

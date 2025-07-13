@@ -5,6 +5,6 @@ build/
 install/
 log/
 logs/
-vendor/drone_manual_control/build/
-vendor/drone_manual_control/install/
-vendor/drone_manual_control/log/
+src/manual_control/build/
+src/manual_control/install/
+src/manual_control/log/

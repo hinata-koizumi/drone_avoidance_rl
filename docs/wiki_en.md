@@ -143,15 +143,26 @@ drone_avoidance_rl/
 
 The workflow builds the **manual control stack**, runs the container health-check script, and executes pytest unit tests.
 
-## Updating Submodules
-```
-# Pull latest submodule refs
-git submodule update --remote vendor/drone_manual_control
+## Manual Control Package
+The manual control functionality has been integrated into the main repository as `src/manual_control/`. This package provides predefined drone action sequences and state monitoring capabilities.
 
-# Commit the change
-git commit -am "chore(submodule): bump drone_manual_control"
+### Key Features
+- Action executor for predefined drone movements
+- State monitoring and validation
+- Integration with PX4 SITL and Gazebo Garden
+- Docker-based deployment with health checks
+
+### Development
+```bash
+# Build manual control package
+colcon build --packages-select manual_control
+
+# Run tests
+python -m pytest tests/test_manual_control.py
+
+# Build Docker image
+docker build -f docker/Dockerfile.manual_control -t drone-manual-control .
 ```
-CI will automatically rebuild the stack and run the validation pipeline.
 
 ---
 

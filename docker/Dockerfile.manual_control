@@ -10,7 +10,7 @@ USER root
 WORKDIR /manual_ws
 
 # --- Copy source packages (only what is needed for the simulator) ---
-COPY vendor/drone_manual_control/src/manual_control src/manual_control
+COPY src/manual_control src/manual_control
 COPY src/common src/common
 
 
@@ -30,7 +30,7 @@ WORKDIR /manual_ws
 COPY --from=builder /manual_ws/install /manual_ws/install
 
 # Entrypoint script
-COPY vendor/drone_manual_control/docker/entrypoint-manual-control.sh /entrypoint.sh
+COPY docker/entrypoint-manual-control.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh && \
     # Ensure entrypoint sources the correct install path
     sed -i 's|/workspace/install|/manual_ws/install|g' /entrypoint.sh

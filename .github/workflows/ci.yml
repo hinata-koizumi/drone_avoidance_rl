@@ -136,7 +136,7 @@ jobs:
             --progress=plain \
             --no-cache \
             -t drone-manual-control:latest \
-            -f vendor/drone_manual_control/docker/Dockerfile.manual_control \
+            -f docker/Dockerfile.manual_control \
             .
           docker system prune -f || true
           df -h

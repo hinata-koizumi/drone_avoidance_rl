@@ -4,13 +4,13 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'vendor/drone_manual_control/**'
+      - 'src/manual_control/**'
       - 'docker-compose.manual_control.yaml'
       - 'docker/**'
       - 'scripts/validate_manual_control.sh'
   pull_request:
     paths:
-      - 'vendor/drone_manual_control/**'
+      - 'src/manual_control/**'
       - 'docker-compose.manual_control.yaml'
       - 'docker/**'
       - 'scripts/validate_manual_control.sh'
@@ -37,7 +37,7 @@ jobs:
       - name: Run unit tests
         run: |
           pip install pytest
-          pytest vendor/drone_manual_control/tests
+          pytest tests/test_manual_control.py
       - name: Report image sizes
         run: |
           echo "=== Manual Control Stack Image Sizes ==="

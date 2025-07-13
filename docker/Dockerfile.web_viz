@@ -12,10 +12,10 @@ WORKDIR /web_viz_ws
 RUN pip3 install --no-cache-dir websockets flask
 
 # Copy web_viz sources
-COPY vendor/drone_manual_control/web_viz /workspace/web_viz
+COPY web_viz /workspace/web_viz
 
 # Entrypoint
-COPY vendor/drone_manual_control/docker/entrypoint-web-viz.sh /entrypoint.sh
+COPY docker/entrypoint-web-viz.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 8080
