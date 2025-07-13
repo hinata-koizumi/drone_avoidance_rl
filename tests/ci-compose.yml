@@ -17,6 +17,7 @@ services:
       context: ..
       dockerfile: docker/px4-simulator/Dockerfile.px4_sitl
     image: drone_rl:unified
+    entrypoint: ""
     depends_on:
       msgs:
         condition: service_healthy
