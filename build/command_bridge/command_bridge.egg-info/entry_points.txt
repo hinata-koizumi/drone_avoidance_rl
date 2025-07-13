@@ -1,2 +1,0 @@
-[console_scripts]
-command_bridge_node = command_bridge.command_bridge:main

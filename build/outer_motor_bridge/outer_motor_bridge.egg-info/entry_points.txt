@@ -1,2 +1,0 @@
-[console_scripts]
-outer_motor_bridge_node = outer_motor_bridge.main:main
