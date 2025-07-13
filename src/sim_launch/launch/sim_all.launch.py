@@ -26,7 +26,6 @@ def generate_launch_description() -> LaunchDescription:
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     gz_world = LaunchConfiguration('gz_world')
     physics_engine = LaunchConfiguration('physics_engine')
-    headless = LaunchConfiguration('headless', default='true')
 
     # Gazebo起動引数
     gz_args_subs = [

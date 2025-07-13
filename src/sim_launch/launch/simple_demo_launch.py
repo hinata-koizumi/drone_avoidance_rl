@@ -5,14 +5,10 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
     """簡単なドローンシミュレーションデモのlaunchファイル"""
-    
-    # パッケージのshareディレクトリを取得
-    pkg_share = get_package_share_directory('manual_control')
     
     # 引数定義
     drone_specs_file = LaunchConfiguration('drone_specs_file')

@@ -100,7 +100,10 @@ class SimpleDroneSimulator(Node):
         # リセット時間を記録
         self.reset_time = self.get_clock().now().nanoseconds / 1e9
         
-        self.get_logger().info(f"Drone respawned from [{old_position[0]:.2f}, {old_position[1]:.2f}, {old_position[2]:.2f}] to [0.00, 0.00, 0.00]")
+        self.get_logger().info(
+            f"Drone respawned from [{old_position[0]:.2f}, {old_position[1]:.2f}, "
+            f"{old_position[2]:.2f}] to [0.00, 0.00, 0.00]"
+        )
         self.get_logger().info(f"Position array after reset: {self.position}")
         self.get_logger().info(f"Reset cooldown started at {self.reset_time:.2f}s")
         
@@ -185,7 +188,10 @@ class SimpleDroneSimulator(Node):
         # リセット後のクールダウン期間中は制御コマンドを無視
         current_time = self.get_clock().now().nanoseconds / 1e9
         if current_time - self.reset_time < self.reset_cooldown:
-            self.get_logger().debug(f"Ignoring control command during reset cooldown ({current_time - self.reset_time:.2f}s remaining)")
+            self.get_logger().debug(
+                f"Ignoring control command during reset cooldown "
+                f"({current_time - self.reset_time:.2f}s remaining)"
+            )
             return
         
         # 制御コマンドを保存
@@ -229,7 +235,10 @@ class SimpleDroneSimulator(Node):
             abs(msg.twist.angular.y - 999.0) < 0.1 and abs(msg.twist.angular.z - 999.0) < 0.1):
             # リセットコマンドとして処理
             self.get_logger().info("Reset command detected - executing immediate reset")
-            self.get_logger().info(f"Current position before reset: [{self.position[0]:.2f}, {self.position[1]:.2f}, {self.position[2]:.2f}]")
+            self.get_logger().info(
+                f"Current position before reset: [{self.position[0]:.2f}, "
+                f"{self.position[1]:.2f}, {self.position[2]:.2f}]"
+            )
             self.reset_drone()
             return
         
@@ -243,7 +252,10 @@ class SimpleDroneSimulator(Node):
         # 水平移動コマンドの特別なログ
         if abs(self.horizontal_velocity_x) > 0.01 or abs(self.horizontal_velocity_y) > 0.01:
             hover_status = "while hovering" if self.is_hovering else "in normal mode"
-            self.get_logger().info(f"Horizontal movement command: X={self.horizontal_velocity_x:.2f}, Y={self.horizontal_velocity_y:.2f} ({hover_status})")
+            self.get_logger().info(
+                f"Horizontal movement command: X={self.horizontal_velocity_x:.2f}, "
+                f"Y={self.horizontal_velocity_y:.2f} ({hover_status})"
+            )
         
         # 回転コマンドの特別なログ
         if abs(self.control_command[3]) > 0.01:  # yaw command
@@ -445,7 +457,10 @@ class SimpleDroneSimulator(Node):
             hover_info = ""
             if self.is_hovering:
                 altitude_error = self.target_altitude - self.position[2]
-                hover_info = f" | Hover: target={self.target_altitude:.2f}m, error={altitude_error:.2f}m, thrust={thrust:.2f}N"
+                hover_info = (
+                    f" | Hover: target={self.target_altitude:.2f}m, "
+                    f"error={altitude_error:.2f}m, thrust={thrust:.2f}N"
+                )
             
             self.get_logger().info(
                 f"Position: [{self.position[0]:.2f}, {self.position[1]:.2f}, {self.position[2]:.2f}] "

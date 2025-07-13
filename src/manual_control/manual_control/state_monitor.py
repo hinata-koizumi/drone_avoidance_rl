@@ -126,7 +126,10 @@ class StateMonitorNode(Node):
         att_str = f"Attitude: Roll={roll_deg:6.1f}° Pitch={pitch_deg:6.1f}° Yaw={yaw_deg:6.1f}°"
         
         # 角速度情報
-        ang_vel_str = f"AngVel: X={self.angular_velocity[0]:6.2f} Y={self.angular_velocity[1]:6.2f} Z={self.angular_velocity[2]:6.2f}"
+        ang_vel_str = (
+            f"AngVel: X={self.angular_velocity[0]:6.2f} "
+            f"Y={self.angular_velocity[1]:6.2f} Z={self.angular_velocity[2]:6.2f}"
+        )
         
         # 合計速度
         total_velocity = math.sqrt(sum(v**2 for v in self.velocity))
