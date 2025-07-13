@@ -43,24 +43,20 @@ def launch_gz_sim(context, *args, **kwargs):
     gz_version = LaunchConfiguration('gz_version').perform(context)
     world_path = LaunchConfiguration('world').perform(context)
     headless = LaunchConfiguration('headless').perform(context).lower() in ('true', '1', 'yes')
-    env = {
-        # プラグインパスは明示的に必要な場合のみ環境変数で指定すること
-        # "GZ_SIM_SYSTEM_PLUGIN_PATH": "",
-        # "IGN_GAZEBO_SYSTEM_PLUGIN_PATH": "",
-        "GZ_SIM_RESOURCE_PATH": os.pathsep.join([
-            os.environ.get("GZ_SIM_RESOURCE_PATH", default=""),
-            # model_paths,  # ← 削除
-        ]),
-        "IGN_GAZEBO_RESOURCE_PATH": os.pathsep.join([
-            os.environ.get("IGN_GAZEBO_RESOURCE_PATH", default=""),
-            # model_paths,  # ← 削除
-        ]),
-    }
+    # 環境変数は SetEnvironmentVariable で個別に設定
+    resource_path = os.pathsep.join([
+        os.environ.get("GZ_SIM_RESOURCE_PATH", ""),
+    ])
+
+    env_actions = [
+        SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', resource_path),
+        SetEnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH', resource_path),
+    ]
     exec_args = gz_args
     if world_path:
         exec_args += f' --world {world_path}'
     if headless:
-        actions = []
+        actions = [] + env_actions
         actions.append(SetEnvironmentVariable('DISPLAY', ''))
         # DISPLAY未設定時も必ずヘッドレス
         if not os.environ.get('DISPLAY') and '--headless-rendering' not in exec_args:
@@ -69,12 +65,11 @@ def launch_gz_sim(context, *args, **kwargs):
         actions.append(ExecuteProcess(
             cmd=cmd,
             output='screen',
-            additional_env=env,
             shell=True
         ))
         return actions
     else:
-        return []
+        return env_actions
 
 def generate_launch_description():
     ld = LaunchDescription([
