@@ -2,7 +2,7 @@ version: '3.8'
 services:
   msgs:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile.msgs
     image: drone_rl:msgs
     command: bash -c "ls /msgs_ws/install/lib/python3.10/site-packages/drone_msgs/msg/_drone_control_command.py"
@@ -14,7 +14,7 @@ services:
 
   sim:
     build:
-      context: .
+      context: ..
       dockerfile: docker/px4-simulator/Dockerfile.px4_sitl
     image: drone_rl:unified
     depends_on:
@@ -36,7 +36,7 @@ services:
 
   bridge:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile.bridge
     image: drone_rl:bridge
     depends_on:
