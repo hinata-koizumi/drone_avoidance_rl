@@ -827,9 +827,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gz-garden
       - name: Validate SDF
-        run: gz sdf -k custom_model/drone_model/model.sdf
+        run: gz sdf -k assets/models/custom_model/drone_model/model.sdf
       - name: Validate XML
-        run: sudo apt-get install -y libxml2-utils && xmllint --noout custom_model/drone_model/model.config
+        run: sudo apt-get install -y libxml2-utils && xmllint --noout assets/models/custom_model/drone_model/model.config
 
   static-analysis:
     runs-on: ubuntu-22.04
