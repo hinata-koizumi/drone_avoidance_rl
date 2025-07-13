@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.4
 ARG GITHUB_REPOSITORY_OWNER=hinata-koizumi
 ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
-ARG RUNTIME_BASE=osrf/ros:humble-desktop
+ARG RUNTIME_BASE=ros:humble
 ARG BUILDKIT_INLINE_CACHE=1
 
 FROM ${BASE_IMAGE} AS builder
