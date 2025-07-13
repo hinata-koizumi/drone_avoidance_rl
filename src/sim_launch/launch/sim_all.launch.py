@@ -77,29 +77,31 @@ def generate_launch_description() -> LaunchDescription:
             output='screen',
         ))
 
-    # === 可視化ツールの自動起動 ===
-    visualization_nodes = [
-        Node(
-            package='rqt_graph',
-            executable='rqt_graph',
-            name='rqt_graph',
-            output='screen',
-        ),
-        Node(
-            package='rviz2',
-            executable='rviz2',
-            name='rviz2',
-            output='screen',
-            arguments=['-d', os.path.join(get_package_share_directory('sim_launch'), 'resource', 'default.rviz')]
-            if os.path.exists(
-                os.path.join(
-                    get_package_share_directory('sim_launch'),
-                    'resource',
-                    'default.rviz'
-                )
-            ) else [],
-        ),
-    ]
+    # === 可視化ツールの自動起動（CI環境では無効化） ===
+    visualization_nodes = []
+    # CI環境では可視化ツールを無効化
+    # visualization_nodes = [
+    #     Node(
+    #         package='rqt_graph',
+    #         executable='rqt_graph',
+    #         name='rqt_graph',
+    #         output='screen',
+    #     ),
+    #     Node(
+    #         package='rviz2',
+    #         executable='rviz2',
+    #         name='rviz2',
+    #         output='screen',
+    #         arguments=['-d', os.path.join(get_package_share_directory('sim_launch'), 'resource', 'default.rviz')]
+    #         if os.path.exists(
+    #             os.path.join(
+    #                 get_package_share_directory('sim_launch'),
+    #                 'resource',
+    #                 'default.rviz'
+    #             )
+    #         ) else [],
+    #     ),
+    # ]
 
     return LaunchDescription([
         *launch_args,
