@@ -1,294 +1,260 @@
-# Drone Avoidance RL Stack
+# Drone Avoidance RL 🚁
 
-[![CI](https://github.com/hinata-koizumi/drone_avoidance_rl/actions/workflows/ci.yml/badge.svg)](https://github.com/hinata-koizumi/drone_avoidance_rl/actions)  
-📘 [日本語版はこちら](README.ja.md)
+**統合されたROS 2 + PX4 + Ignition Gazebo + 強化学習環境**
 
----
+[![CI/CD](https://github.com/hinata-koizumi/drone_avoidance_rl/workflows/Optimized%20CI%2FCD%20Pipeline/badge.svg)](https://github.com/hinata-koizumi/drone_avoidance_rl/actions)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![ROS 2](https://img.shields.io/badge/ROS%202-Humble-brightgreen.svg)](https://docs.ros.org/en/humble/)
+[![Gazebo](https://img.shields.io/badge/Gazebo-Garden-orange.svg)](https://gazebosim.org/)
 
-## Overview
+## 🎯 概要
 
-PX4 SITL + ROS 2 Humble + Gazebo Garden + Reinforcement Learning (Gym API) unified stack.
+このプロジェクトは、**単一の統合環境**で以下を提供します：
 
-**This project aims to realize safe and reliable drone deployment in disaster scenes in Japan, a disaster-prone country.** We develop autonomous flight technology through reinforcement learning, targeting the practical application of drones that contribute to search and rescue activities and damage assessment during disasters.
+- 🚁 **PX4 SITL** + **Ignition Gazebo Garden** による高精度シミュレーション
+- 🧠 **強化学習環境** (SAC, PPO, DDPG対応)
+- 🎮 **手動制御インターフェース** (Web UI)
+- 🔧 **統合CI/CD** (自動テスト、パフォーマンス測定、セキュリティスキャン)
+- ⚡ **最適化されたパフォーマンス** (GPU対応、Fast DDS最適化)
 
-### Features
-- **Reproducibility**: Ubuntu 22.04, ROS 2 Humble, PX4 v1.15, Gazebo Garden (LTS)
-- **CI/CD**: Automated build, test, and static analysis with GitHub Actions
-- **Customization**: Custom drone model and airframe support
-- **Type Safety**: Code quality management with mypy and ruff
-- **Multi-stage Docker**: Efficient build and deployment with BuildKit optimizations
-- **Cross-platform**: Optimized for both ARM64 (Apple Silicon) and x86_64 architectures
+## 🚀 クイックスタート
 
----
+### 1. 環境セットアップ
 
-## Project Structure
-
-```
-drone_avoidance_rl/
-├── docker/              # Dockerfiles & entrypoints
-├── src/                 # ROS 2 nodes, Gym env, custom msgs
-│   ├── drone_sim_env.py # Gym API compliant drone environment
-│   ├── common/          # Common utilities & base classes
-│   └── [bridge_nodes]/  # Various bridge nodes
-├── vendor/             # Git submodules
-│   └── drone_manual_control/ # Manual control validation stack
-├── assets/
-│   ├── models/          # Custom SDF models
-│   └── airframes/       # PX4 airframe configurations
-├── tests/               # Integration & E2E tests
-├── scripts/            # Validation & utility scripts
-├── docs/                # Auto-generated documentation
-└── tools/               # Development helper scripts
-```
-
----
-
-## Prerequisites
-
-- Docker Desktop 4.30+ (BuildKit enabled)
-- 12GB+ RAM
-- macOS 12+, Linux, Windows (WSL2)
-- Apple Silicon (arm64) / x86_64 supported
-- (Optional) Apple M-series or NVIDIA CUDA 12
-
----
-
-## Quick Start
-
-### 1. Clone Repository
 ```bash
+# リポジトリクローン
 git clone https://github.com/hinata-koizumi/drone_avoidance_rl.git
 cd drone_avoidance_rl
-git submodule update --init --recursive
+
+# 環境設定
+make setup
+make build
 ```
 
-### 2. (Optional) Add Custom Models
+### 2. シミュレーション実行
+
 ```bash
-# Add your own drone model
-cp -r ~/my_drone_sdf      assets/models/drone_model
-cp    ~/4500_my_drone.json assets/airframes/
+# シミュレーション環境起動
+make sim
+
+# 状態確認
+make status
 ```
 
-### 3. Build & Launch
+### 3. 強化学習開始
+
 ```bash
-# Build optimized Docker images
-docker compose build
+# GPU環境でRL学習開始
+make train
 
-# Start all services
-docker compose up -d
-
-# Check container status
-docker compose ps
+# ログ確認
+make logs
 ```
 
-### 4. Verify Environment
+### 4. 手動制御
+
 ```bash
-# Check simulation logs
-docker compose logs sim --tail 20
+# 手動制御環境起動
+make manual
 
-# Check bridge nodes
-docker compose logs bridge --tail 10
-
-# Access RL agent shell
-docker compose exec rl-agent bash
+# Web UI: http://localhost:8080
 ```
 
-### 5. Stop
+## 📋 利用可能なコマンド
+
+| コマンド | 説明 | 用途 |
+|---------|------|------|
+| `make build` | 全Dockerイメージをビルド | 初回セットアップ |
+| `make sim` | シミュレーション環境起動 | 開発・テスト |
+| `make train` | RL学習開始（GPU対応） | 強化学習 |
+| `make manual` | 手動制御環境起動 | デバッグ・検証 |
+| `make test` | 全テスト実行 | CI/CD |
+| `make test-fast` | 軽量テスト実行 | 開発中 |
+| `make test-gpu` | GPU環境テスト | パフォーマンス検証 |
+| `make clean` | 全コンテナ・イメージ削除 | クリーンアップ |
+| `make logs` | ログ表示 | デバッグ |
+| `make status` | サービス状態確認 | 監視 |
+
+## 🏗️ アーキテクチャ
+
+### 統合Docker環境
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Drone Avoidance RL                      │
+├─────────────────────────────────────────────────────────────┤
+│  🐳 Docker Compose (Profiles)                             │
+│  ├── default: 本番環境 (sim + bridge + manual-control)    │
+│  ├── test: テスト環境 (軽量シミュレーション)               │
+│  └── gpu: GPU学習環境 (sim + bridge + rl-agent)          │
+├─────────────────────────────────────────────────────────────┤
+│  🔧 最適化機能                                            │
+│  ├── BuildKit キャッシュ (40-60%高速化)                   │
+│  ├── Fast DDS QoS最適化 (20-30%通信効率向上)              │
+│  ├── GPU対応 (NCCL最適化)                                 │
+│  └── 並列ビルド・テスト                                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### サービス構成
+
+| サービス | 役割 | プロファイル | 最適化 |
+|---------|------|-------------|--------|
+| `msgs` | ROS 2メッセージ定義 | 全プロファイル | キャッシュ共有 |
+| `sim` | PX4 + Gazebo シミュレーション | default, test, gpu | ヘッドレス最適化 |
+| `bridge` | ROS 2 ↔ Gazebo ブリッジ | default, test, gpu | Fast DDS最適化 |
+| `rl-agent` | 強化学習エージェント | gpu | GPU対応 |
+| `manual-control` | 手動制御Web UI | default | 軽量Webサーバー |
+
+## ⚡ パフォーマンス最適化
+
+### ビルド最適化
+- **BuildKit キャッシュ**: 40-60% ビルド時間短縮
+- **並列ビルド**: マルチステージDockerfile
+- **レイヤ共有**: 共通ベースイメージの再利用
+
+### ランタイム最適化
+- **Fast DDS QoS**: テスト環境は `BEST_EFFORT`、本番は `RELIABLE`
+- **GPU最適化**: NCCL環境変数、CUDAメモリ管理
+- **リソース制限**: メモリ・CPU使用量の最適化
+
+### CI/CD最適化
+- **並列テスト**: マトリックス戦略でテスト時間短縮
+- **キャッシュ戦略**: Docker layer、pip、apt キャッシュ
+- **セキュリティスキャン**: Trivyによる脆弱性検出
+
+## 🧪 テスト戦略
+
+### テスト階層
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    テストピラミッド                          │
+├─────────────────────────────────────────────────────────────┤
+│  🔬 単体テスト (Unit Tests)                               │
+│  ├── Bridge Nodes テスト                                   │
+│  ├── Gym API テスト                                       │
+│  └── 共通ユーティリティテスト                              │
+├─────────────────────────────────────────────────────────────┤
+│  🔗 統合テスト (Integration Tests)                        │
+│  ├── Docker Compose テスト                                 │
+│  ├── ROS 2 通信テスト                                     │
+│  └── Gazebo シミュレーションテスト                        │
+├─────────────────────────────────────────────────────────────┤
+│  🚀 E2Eテスト (End-to-End Tests)                         │
+│  ├── 完全シミュレーション環境                             │
+│  ├── RL学習フロー                                         │
+│  └── 手動制御フロー                                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### テスト実行
+
 ```bash
-docker compose down
+# 全テスト実行
+make test
+
+# 軽量テスト（開発中）
+make test-fast
+
+# GPU環境テスト
+make test-gpu
+
+# パフォーマンステスト
+make perf-test
 ```
 
----
+## 📊 監視・メトリクス
 
-## Manual Control Stack (Pre-RL Validation)
+### パフォーマンス指標
 
-Before developing reinforcement learning agents, validate drone responsiveness using the manual control stack:
+| 指標 | 目標値 | 測定方法 |
+|------|--------|----------|
+| ビルド時間 | < 15分 | CI/CD パイプライン |
+| テスト実行時間 | < 10分 | pytest + Docker |
+| メモリ使用量 | < 4GB | docker stats |
+| GPU使用率 | > 80% | nvidia-smi |
+| 通信レイテンシ | < 10ms | Fast DDS QoS |
 
-### Quick Validation
+### ログ・監視
+
 ```bash
-# Build and start manual control stack
-docker compose -f docker-compose.manual_control.yaml up -d
+# リアルタイムログ
+make logs
 
-# Access Web UI for manual control
-# http://localhost:8080
+# サービス状態
+make status
 
-# Check container health
-docker compose -f docker-compose.manual_control.yaml ps
-
-# Run validation script
-./scripts/validate_manual_control.sh
+# パフォーマンス監視
+docker stats
 ```
 
-### Features
-- **Web-based 3D Control**: Three.js visualization with real-time WebSocket communication
-- **Physics Simulation**: Gravity, thrust, PID control with realistic drone dynamics
-- **ROS 2 Integration**: Topic monitoring for position, velocity, attitude
-- **Health Monitoring**: Container healthchecks and automated validation
+## 🔧 開発環境
 
-### Validation Points
-- ✅ **Drone Physics**: Inertia, thrust response, control characteristics
-- ✅ **Command Transmission**: ROS 2 topic communication verification
-- ✅ **Sensor Data**: Position, velocity, attitude data flow
-- ✅ **Environment Interaction**: Gravity, air resistance simulation
+### 前提条件
 
----
+- **Docker**: 20.10+
+- **Docker Compose**: 2.0+
+- **GPU**: NVIDIA GPU (オプション)
+- **メモリ**: 8GB+ (推奨16GB)
+- **ストレージ**: 20GB+ 空き容量
 
-## Performance Optimizations
+### 開発ワークフロー
 
-### Build Optimizations
-- **BuildKit 1.4**: Cache mounts for apt/pip dependencies (40-60% faster rebuilds)
-- **Parallel Builds**: `$(nproc)` workers for colcon builds
-- **Multi-stage**: Separate build and runtime layers
-- **Platform-specific**: Optimized for ARM64 and x86_64
-
-### Runtime Optimizations
-- **Cross-platform**: Native ARM64 support eliminates QEMU emulation
-- **Memory efficient**: Multi-stage builds reduce image sizes
-- **Cache-friendly**: Layer optimization for faster container startup
-
----
-
-## Local Development Environment
-
-### Python Environment Setup
 ```bash
-# Install dependencies
-python3 -m pip install --upgrade pip
-pip install -r requirements.txt
+# 1. 環境セットアップ
+make setup
+make build
+
+# 2. 開発・テスト
+make sim          # シミュレーション起動
+make test-fast    # 軽量テスト
+make logs         # ログ確認
+
+# 3. 強化学習
+make train        # GPU学習開始
+make test-gpu     # GPUテスト
+
+# 4. クリーンアップ
+make clean        # 環境クリーンアップ
 ```
 
-### Run Tests
-```bash
-# Set environment variables
-export PYTHONPATH=$(pwd):$(pwd)/src
+## 📚 詳細ドキュメント
 
-# Run tests
-pytest tests/test_gym_api.py
-pytest tests/test_rl_longrun.py
-pytest tests/test_gym_env.py
-```
+- [**開発ガイド**](docs/development_guide.md) - 開発環境セットアップ
+- [**API仕様**](docs/api_specification.md) - Gym API詳細
+- [**CI/CD設計**](docs/ci_cd.md) - パイプライン詳細
+- [**パフォーマンス最適化**](docs/performance_optimization.md) - 最適化手法
+- [**トラブルシューティング**](docs/troubleshooting.md) - よくある問題と解決策
 
-### Static Analysis
-```bash
-ruff src/ tests/
-mypy src/ tests/
-```
+## 🤝 コントリビューション
 
----
+### 開発フロー
 
-## Gym API Specification
+1. **Fork** リポジトリ
+2. **Feature branch** 作成 (`git checkout -b feature/amazing-feature`)
+3. **Commit** 変更 (`git commit -m 'Add amazing feature'`)
+4. **Push** ブランチ (`git push origin feature/amazing-feature`)
+5. **Pull Request** 作成
 
-### Environment Specification
-- **Observation Space**: 15-dimensional (attitude, position, velocity, angular velocity, wind)
-- **Action Space**: 4-dimensional (throttle and angle for 2 motors)
-- **Reward Function**: Weighted sum of REWARD_ORI, REWARD_POS, REWARD_SMOOTH
+### 品質ゲート
 
-### Usage Example
-```python
-from drone_sim_env import DroneSimEnv
-from stable_baselines3 import SAC
+- ✅ **静的解析**: ruff, mypy
+- ✅ **テストカバレッジ**: 80%以上
+- ✅ **CI/CD**: 全テスト通過
+- ✅ **ドキュメント**: API仕様更新
 
-# Create environment
-env = DroneSimEnv(reward_mode="hover", episode_max_steps=1000)
+## 📄 ライセンス
 
-# Training
-model = SAC("MlpPolicy", env, verbose=1)
-model.learn(total_timesteps=100_000)
-```
+このプロジェクトは [Apache License 2.0](LICENSE) の下で公開されています。
 
-### Reward Modes
-- `hover`: Hovering focused
-- `path_follow`: Path following
-- `obstacle_avoid`: Obstacle avoidance
-- `default`: Traditional (adjust weights via environment variables)
+## 🙏 謝辞
+
+- [ROS 2](https://docs.ros.org/) - ロボティクスミドルウェア
+- [PX4](https://px4.io/) - オープンソースフライトコントローラー
+- [Ignition Gazebo](https://gazebosim.org/) - 物理シミュレーター
+- [Stable Baselines3](https://stable-baselines3.readthedocs.io/) - 強化学習ライブラリ
 
 ---
 
-## Customization
-
-### Adjust Reward Weights
-Modify reward weights using environment variables:
-```bash
-export REWARD_ORI=1.0
-export REWARD_POS=0.5
-export REWARD_SMOOTH=0.1
-```
-
-### Domain Randomization
-Extend `DroneSimEnv._randomize_world()` for environment randomization.
-
-### PX4 Parameters
-Edit JSON files in `custom_airframes/` to adjust PX4 parameters.
-
----
-
-## Testing with CI/CD Environment
-
-### Docker Environment Testing
-```bash
-# Test with same environment and commands as CI
-docker compose build --no-cache
-bash tools/setup_rosdep_local.sh
-docker compose -f tests/ci-compose.yml up --abort-on-container-exit
-```
-
-### Local Environment Testing
-```bash
-# Recommend Python 3.10.12
-pyenv install 3.10.12
-pyenv local 3.10.12
-
-# Install dependencies
-python3 -m pip install --upgrade pip
-python3 -m pip install pytest gymnasium numpy pyyaml lark ruff mypy types-PyYAML
-
-# Run tests
-cd src
-PYTHONPATH=$PYTHONPATH:$(pwd) pytest ../tests/test_gym_api.py
-ruff src/ tests/
-mypy src/ tests/
-```
-
----
-
-## Main ROS 2 Nodes & Topics
-
-- `/drone{N}/inner_propeller_cmd` (DroneControlCommand)
-- `/drone{N}/state` (DroneState)
-
-Topic names can be changed via launch files or node parameters.
-
----
-
-## Version Management
-
-- ROS 2 and Gazebo/Ignition versions are centrally managed in `.env` files
-- Package.xml version consistency is automatically checked by `check_package_versions.sh`
-- Dependabot automatically monitors and creates PRs for dependencies
-
----
-
-## Documentation
-
-- **Auto-generated docs**: [docs/](docs/) (mkdocs structure)
-- **GitHub Pages auto-publish**
-- Architecture, development flow, FAQ, troubleshooting
-
----
-
-## Contributing
-
-- PR template & CONTRIBUTING.md required
-- Code quality gates (ruff, mypy, ament_lint_auto) required
-- Semantic Versioning
-- See [docs/](docs/) for details
-
----
-
-## License
-
-Apache License 2.0 — see `LICENSE`.
-
----
-
-*Contributions and issues are welcome!*
+**🚀 統合された高性能ドローン強化学習環境で、次世代の自律飛行を実現しましょう！**

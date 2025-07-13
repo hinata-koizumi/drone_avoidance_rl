@@ -1,0 +1,241 @@
+# 最適化された統合強化学習設定
+rl:
+  # 基本設定
+  algorithm: "PPO"  # PPO, SAC, TD3, DQN
+  framework: "torch"  # torch, tf
+  
+  # 環境設定
+  env:
+    num_envs: 16  # 並列環境数（最適化）
+    vector_env: true
+    max_episode_steps: 1000
+    
+  # 学習設定
+  training:
+    total_timesteps: 10000000
+    batch_size: 512  # 混合精度で2倍化
+    learning_rate: 3e-4
+    gamma: 0.99
+    gae_lambda: 0.95
+    
+  # 分散学習設定
+  distributed:
+    num_workers: 8  # ワーカー数増加
+    num_gpus: 1
+    backend: "nccl"  # 高速GPU通信
+    
+  # 混合精度学習設定
+  mixed_precision:
+    enabled: true
+    fp16: true
+    bf16: false
+    gradient_scaling: true
+    
+  # チェックポイント設定
+  checkpoint:
+    frequency: 10000
+    keep_last_n: 5
+    
+  # 監視設定
+  monitoring:
+    tensorboard: true
+    wandb: true
+    log_interval: 100
+    
+  # ハイパーパラメータ
+  hyperparameters:
+    # PPO
+    ppo:
+      n_steps: 2048
+      n_epochs: 10
+      batch_size: 128  # 混合精度で2倍化
+      clip_range: 0.2
+      vf_coef: 0.5
+      ent_coef: 0.01
+      
+    # SAC
+    sac:
+      batch_size: 512  # 混合精度で2倍化
+      learning_rate: 3e-4
+      buffer_size: 1000000
+      tau: 0.005
+      gamma: 0.99
+      train_freq: 1
+      gradient_steps: 1
+      
+    # TD3
+    td3:
+      batch_size: 512  # 混合精度で2倍化
+      learning_rate: 3e-4
+      buffer_size: 1000000
+      tau: 0.005
+      gamma: 0.99
+      train_freq: 1
+      gradient_steps: 1
+      policy_delay: 2
+
+# Ray分散学習設定
+ray:
+  # Ray クラスタ設定
+  cluster:
+    head_node:
+      resources: {"CPU": 8, "GPU": 1}
+    worker_nodes:
+      - resources: {"CPU": 16, "GPU": 1}
+      - resources: {"CPU": 16, "GPU": 1}
+      - resources: {"CPU": 16, "GPU": 1}
+      
+  # RLlib設定
+  rllib:
+    # 基本設定
+    framework: "torch"
+    num_workers: 8  # ワーカー数増加
+    num_gpus: 1
+    num_envs_per_worker: 2
+    
+    # 環境設定
+    env:
+      env_name: "DroneAvoidance-v0"
+      max_episode_steps: 1000
+      observation_space: "continuous"
+      action_space: "continuous"
+      
+    # アルゴリズム設定
+    algorithms:
+      ppo:
+        train_batch_size: 4096  # 大容量バッチ
+        sgd_minibatch_size: 256
+        num_sgd_iter: 30
+        lr: 5e-5
+        gamma: 0.99
+        lambda: 0.95
+        kl_coeff: 0.2
+        observation_filter: "NoFilter"
+        
+      sac:
+        twin_q: true
+        policy_lr: 3e-4
+        q_lr: 3e-4
+        tau: 0.005
+        train_batch_size: 512
+        target_network_update_freq: 1
+        store_buffer_in_checkpoints: false
+        
+      td3:
+        twin_q: true
+        policy_lr: 3e-4
+        q_lr: 3e-4
+        tau: 0.005
+        train_batch_size: 512
+        target_network_update_freq: 1
+        policy_delay: 2
+        
+    # チェックポイント設定
+    checkpoint:
+      frequency: 10
+      checkpoint_at_end: true
+      checkpoint_score_attribute: "episode_reward_mean"
+      
+    # 監視設定
+    monitoring:
+      tensorboard: true
+      wandb: true
+      log_interval: 10
+      evaluation_interval: 10
+      evaluation_duration: 10
+      
+  # 分散学習設定
+  distributed:
+    # 通信設定
+    communication:
+      backend: "nccl"
+      timeout: 30
+      
+    # リソース管理
+    resources:
+      cpu_fraction: 0.9  # CPU使用率向上
+      gpu_fraction: 0.95  # GPU使用率向上
+      memory_fraction: 0.8
+      
+  # パフォーマンス最適化
+  optimization:
+    # メモリ最適化（動的設定）
+    memory:
+      object_store_memory: 32000000000  # 32GB (システムRAMの40%)
+      redis_max_memory: 8000000000      # 8GB (システムRAMの10%)
+      max_task_retries: 0               # メモリ爆発防止
+      object_spilling_config:           # スピリング設定
+        type: "filesystem"
+        params:
+          directory_path: "/tmp/ray_spill"
+          
+    # 並列処理
+    parallelism:
+      num_cpus: 16  # CPUコア数増加
+      num_gpus: 1
+      ray_num_cpus: 16
+      ray_num_gpus: 1
+      
+    # 通信最適化
+    communication:
+      max_concurrent_requests: 100
+      timeout: 30
+      retry_on_timeout: true
+      
+  # デバッグ設定
+  debug:
+    log_level: "INFO"
+    local_mode: false
+    ignore_reinit_error: true
+
+# シミュレーション最適化設定
+simulation:
+  # Gazebo最適化
+  gazebo:
+    lockstep: true                    # ロックステップモード
+    physics_rate: 1000               # 物理演算周波数
+    max_step_size: 0.001            # 最大ステップサイズ
+    real_time_factor: 1.0           # リアルタイム係数
+    
+  # センサー最適化
+  sensors:
+    lidar:
+      update_rate: 10               # LiDAR更新周波数
+      range: 50.0                   # 検出範囲
+      resolution: 0.1               # 解像度
+      
+    camera:
+      update_rate: 15               # カメラ更新周波数
+      resolution: [640, 480]        # 解像度
+      
+    imu:
+      update_rate: 100              # IMU更新周波数
+      
+  # 物理エンジン最適化
+  physics:
+    engine: "ode"                   # 物理エンジン
+    max_contacts: 20                # 最大接触数
+    contact_surface_layer: 0.001    # 接触面レイヤー
+    gravity: [0, 0, -9.81]         # 重力
+    
+  # レンダリング最適化
+  rendering:
+    engine: "ogre2"                 # レンダリングエンジン
+    anti_aliasing: false            # アンチエイリアス無効
+    shadows: false                  # シャドウ無効
+    ambient_light: [0.4, 0.4, 0.4] # 環境光
+    
+  # ネットワーク最適化
+  network:
+    ros_domain_id: 0               # ROS 2ドメインID
+    dds_qos_profile: "fast"        # DDS QoSプロファイル
+    
+  # メモリ最適化
+  memory:
+    max_memory: 4096               # 最大メモリ使用量（MB）
+    gc_frequency: 1000             # ガベージコレクション頻度
+    
+  # デバッグ設定
+  debug:
+    verbose: false                  # 詳細ログ無効
+    profile: false                  # プロファイリング無効 

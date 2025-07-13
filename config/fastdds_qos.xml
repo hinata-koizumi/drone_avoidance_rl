@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dds>
+    <profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+        <!-- テスト環境用の最適化プロファイル -->
+        <transport_descriptors>
+            <transport_descriptor>
+                <transport_id>test_transport</transport_id>
+                <type>UDPv4</type>
+                <interfaceWhiteList>
+                    <address>127.0.0.1</address>
+                </interfaceWhiteList>
+                <maxMessageSize>65500</maxMessageSize>
+                <sendBufferSize>65536</sendBufferSize>
+                <receiveBufferSize>65536</receiveBufferSize>
+            </transport_descriptor>
+        </transport_descriptors>
+
+        <!-- パブリッシャープロファイル（最適化） -->
+        <publisher_profile name="test_publisher_profile" is_default_profile="true">
+            <qos>
+                <reliability>
+                    <kind>BEST_EFFORT</kind>
+                </reliability>
+                <durability>
+                    <kind>VOLATILE</kind>
+                </durability>
+                <publishMode>
+                    <kind>ASYNCHRONOUS</kind>
+                    <flow_controller_name>test_flow_controller</flow_controller_name>
+                </publishMode>
+                <resourceLimits>
+                    <max_samples>1000</max_samples>
+                    <max_instances>10</max_instances>
+                    <max_samples_per_instance>100</max_samples_per_instance>
+                </resourceLimits>
+            </qos>
+            <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+            <userTransports>
+                <transport_id>test_transport</transport_id>
+            </userTransports>
+        </publisher_profile>
+
+        <!-- サブスクライバープロファイル（最適化） -->
+        <subscriber_profile name="test_subscriber_profile" is_default_profile="true">
+            <qos>
+                <reliability>
+                    <kind>BEST_EFFORT</kind>
+                </reliability>
+                <durability>
+                    <kind>VOLATILE</kind>
+                </durability>
+                <resourceLimits>
+                    <max_samples>1000</max_samples>
+                    <max_instances>10</max_instances>
+                    <max_samples_per_instance>100</max_samples_per_instance>
+                </resourceLimits>
+            </qos>
+            <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+            <userTransports>
+                <transport_id>test_transport</transport_id>
+            </userTransports>
+        </subscriber_profile>
+
+        <!-- 本番学習用の信頼性プロファイル -->
+        <publisher_profile name="reliable_publisher_profile">
+            <qos>
+                <reliability>
+                    <kind>RELIABLE</kind>
+                </reliability>
+                <durability>
+                    <kind>TRANSIENT_LOCAL</kind>
+                </durability>
+                <publishMode>
+                    <kind>ASYNCHRONOUS</kind>
+                    <flow_controller_name>reliable_flow_controller</flow_controller_name>
+                </publishMode>
+                <resourceLimits>
+                    <max_samples>5000</max_samples>
+                    <max_instances>50</max_instances>
+                    <max_samples_per_instance>100</max_samples_per_instance>
+                </resourceLimits>
+            </qos>
+            <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+        </publisher_profile>
+
+        <subscriber_profile name="reliable_subscriber_profile">
+            <qos>
+                <reliability>
+                    <kind>RELIABLE</kind>
+                </reliability>
+                <durability>
+                    <kind>TRANSIENT_LOCAL</kind>
+                </durability>
+                <resourceLimits>
+                    <max_samples>5000</max_samples>
+                    <max_instances>50</max_instances>
+                    <max_samples_per_instance>100</max_samples_per_instance>
+                </resourceLimits>
+            </qos>
+            <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+        </subscriber_profile>
+
+        <!-- フローコントローラー設定 -->
+        <flow_controllers>
+            <flow_controller name="test_flow_controller">
+                <scheduler>
+                    <policy>FIFO</policy>
+                </scheduler>
+                <max_bytes_per_period>65536</max_bytes_per_period>
+                <period_ms>100</period_ms>
+            </flow_controller>
+            <flow_controller name="reliable_flow_controller">
+                <scheduler>
+                    <policy>FIFO</policy>
+                </scheduler>
+                <max_bytes_per_period>131072</max_bytes_per_period>
+                <period_ms>50</period_ms>
+            </flow_controller>
+        </flow_controllers>
+
+        <!-- パーティシパント設定 -->
+        <participant_profile name="test_participant_profile" is_default_profile="true">
+            <rtps>
+                <name>test_participant</name>
+                <defaultUnicastLocatorList>
+                    <locator/>
+                </defaultUnicastLocatorList>
+                <defaultMulticastLocatorList>
+                    <locator>
+                        <udpv4>
+                            <address>239.255.0.1</address>
+                            <port>7400</port>
+                        </udpv4>
+                    </locator>
+                </defaultMulticastLocatorList>
+                <sendSocketBufferSize>65536</sendSocketBufferSize>
+                <listenSocketBufferSize>65536</listenSocketBufferSize>
+                <builtin>
+                    <discovery_config>
+                        <leaseDuration>
+                            <sec>3</sec>
+                            <nanosec>0</nanosec>
+                        </leaseDuration>
+                        <leaseAnnouncement>
+                            <sec>1</sec>
+                            <nanosec>0</nanosec>
+                        </leaseAnnouncement>
+                    </discovery_config>
+                    <metatrafficUnicastLocatorList>
+                        <locator/>
+                    </metatrafficUnicastLocatorList>
+                    <metatrafficMulticastLocatorList>
+                        <locator>
+                            <udpv4>
+                                <address>239.255.0.1</address>
+                                <port>7400</port>
+                            </udpv4>
+                        </locator>
+                    </metatrafficMulticastLocatorList>
+                    <initialPeersList>
+                        <locator>
+                            <udpv4>
+                                <address>127.0.0.1</address>
+                                <port>7400</port>
+                            </udpv4>
+                        </locator>
+                    </initialPeersList>
+                </builtin>
+            </rtps>
+        </participant_profile>
+    </profiles>
+</dds> 

@@ -1,0 +1,114 @@
+# Ray分散学習設定
+ray:
+  # Ray クラスタ設定
+  cluster:
+    head_node:
+      resources: {"CPU": 4, "GPU": 1}
+    worker_nodes:
+      - resources: {"CPU": 8, "GPU": 1}
+      - resources: {"CPU": 8, "GPU": 1}
+      - resources: {"CPU": 8, "GPU": 1}
+      
+  # RLlib設定
+  rllib:
+    # 基本設定
+    framework: "torch"
+    num_workers: 4
+    num_gpus: 1
+    num_envs_per_worker: 2
+    
+    # 環境設定
+    env:
+      env_name: "DroneAvoidance-v0"
+      max_episode_steps: 1000
+      observation_space: "continuous"
+      action_space: "continuous"
+      
+    # アルゴリズム設定
+    algorithms:
+      ppo:
+        train_batch_size: 4000
+        sgd_minibatch_size: 128
+        num_sgd_iter: 30
+        lr: 5e-5
+        gamma: 0.99
+        lambda: 0.95
+        kl_coeff: 0.2
+        num_sgd_iter: 30
+        observation_filter: "NoFilter"
+        
+      sac:
+        twin_q: true
+        policy_lr: 3e-4
+        q_lr: 3e-4
+        tau: 0.005
+        train_batch_size: 256
+        target_network_update_freq: 1
+        store_buffer_in_checkpoints: false
+        
+      td3:
+        twin_q: true
+        policy_lr: 3e-4
+        q_lr: 3e-4
+        tau: 0.005
+        train_batch_size: 256
+        target_network_update_freq: 1
+        policy_delay: 2
+        
+    # チェックポイント設定
+    checkpoint:
+      frequency: 10
+      checkpoint_at_end: true
+      checkpoint_score_attribute: "episode_reward_mean"
+      
+    # 監視設定
+    monitoring:
+      tensorboard: true
+      wandb: true
+      log_interval: 10
+      evaluation_interval: 10
+      evaluation_duration: 10
+      
+  # 分散学習設定
+  distributed:
+    # 通信設定
+    communication:
+      backend: "nccl"
+      timeout: 30
+      
+    # リソース管理
+    resources:
+      cpu_fraction: 0.8
+      gpu_fraction: 0.9
+      memory_fraction: 0.8
+      
+  # パフォーマンス最適化
+  optimization:
+    # メモリ最適化（動的設定）
+    memory:
+      object_store_memory: 32000000000  # 32GB (システムRAMの40%)
+      redis_max_memory: 8000000000      # 8GB (システムRAMの10%)
+      max_task_retries: 0               # メモリ爆発防止
+      object_spilling_config:           # スピリング設定
+        type: "filesystem"
+        params:
+          directory_path: "/tmp/ray_spill"
+          
+    # 並列処理
+    parallelism:
+      num_cpus: 8
+      num_gpus: 1
+      ray_num_cpus: 8
+      ray_num_gpus: 1
+      
+    # 通信最適化
+    communication:
+      max_concurrent_requests: 100
+      timeout: 30
+      retry_on_timeout: true
+      
+  # デバッグ設定
+  debug:
+    log_level: "INFO"
+    local_mode: false
+    ignore_reinit_error: true 

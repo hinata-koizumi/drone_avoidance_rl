@@ -1,0 +1,213 @@
+name: GPU CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  ROS_DISTRO: humble
+  CUDA_VERSION: "12.4.1"
+
+jobs:
+  # GPU環境チェック
+  gpu-check:
+    runs-on: [self-hosted, gpu]  # セルフホストGPUランナー
+    steps:
+      - name: Check GPU availability
+        run: |
+          echo "Checking GPU environment..."
+          nvidia-smi
+          echo "GPU available"
+          
+      - name: Check CUDA environment
+        run: |
+          python3 -c "
+          import torch
+          print(f'PyTorch version: {torch.__version__}')
+          print(f'CUDA available: {torch.cuda.is_available()}')
+          if torch.cuda.is_available():
+              print(f'GPU count: {torch.cuda.device_count()}')
+              print(f'GPU name: {torch.cuda.get_device_name(0)}')
+          "
+
+  # GPU対応ビルド
+  gpu-build:
+    runs-on: [self-hosted, gpu]  # セルフホストGPUランナー
+    needs: gpu-check
+    strategy:
+      matrix:
+        dockerfile:
+          - "docker/Dockerfile.base-gpu"
+          - "docker/Dockerfile.rl-agent-gpu"
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Build GPU Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: false
+          tags: drone-rl-gpu:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          
+      - name: Test GPU environment
+        run: |
+          docker run --rm --gpus all drone-rl-gpu:latest \
+            python3 -c "
+          import torch
+          print(f'PyTorch version: {torch.__version__}')
+          print(f'CUDA available: {torch.cuda.is_available()}')
+          if torch.cuda.is_available():
+              print(f'GPU count: {torch.cuda.device_count()}')
+              print(f'GPU name: {torch.cuda.get_device_name(0)}')
+          "
+
+  # GPU対応テスト
+  gpu-test:
+    runs-on: [self-hosted, gpu]  # セルフホストGPUランナー
+    needs: gpu-build
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install GPU dependencies
+        run: |
+          pip install torch==2.1.2+cu121 torchvision==0.16.2+cu121 torchaudio==2.1.2+cu121 --index-url https://download.pytorch.org/whl/cu121
+          pip install ray[rllib]==2.8.0
+          pip install -r requirements-gpu.txt
+          
+      - name: Run GPU tests
+        run: |
+          python3 -c "
+          import torch
+          import ray
+          from distributed_rl_env import DistributedDroneEnv
+          
+          # GPU環境テスト
+          print('Testing GPU environment...')
+          assert torch.cuda.is_available(), 'CUDA not available'
+          print(f'GPU: {torch.cuda.get_device_name(0)}')
+          
+          # Ray初期化テスト
+          ray.init(num_gpus=1, local_mode=True)
+          print('Ray initialized successfully')
+          
+          # 分散環境テスト
+          env = DistributedDroneEnv(num_envs=2, use_gpu=True)
+          obs, info = env.reset()
+          print(f'Environment initialized: {obs.shape}')
+          env.close()
+          
+          print('All GPU tests passed!')
+          "
+
+  # 分散学習テスト
+  distributed-test:
+    runs-on: ubuntu-latest
+    needs: gpu-test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          pip install torch==2.1.2+cu121 torchvision==0.16.2+cu121 torchaudio==2.1.2+cu121 --index-url https://download.pytorch.org/whl/cu121
+          pip install ray[rllib]==2.8.0
+          pip install -r requirements-gpu.txt
+          
+      - name: Test distributed training
+        run: |
+          python3 src/high_performance_training.py \
+            --config config/rl_config.yaml \
+            --mode profile \
+            --algorithm PPO \
+            --duration 60
+
+  # パフォーマンスベンチマーク
+  performance-benchmark:
+    runs-on: ubuntu-latest
+    needs: distributed-test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          pip install torch==2.1.2+cu121 torchvision==0.16.2+cu121 torchaudio==2.1.2+cu121 --index-url https://download.pytorch.org/whl/cu121
+          pip install ray[rllib]==2.8.0
+          pip install -r requirements-gpu.txt
+          
+      - name: Run performance benchmarks
+        run: |
+          python3 tools/gpu_monitor.py --duration 30 --export benchmark_results.json
+          
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmark_results.json
+
+  # セキュリティスキャン
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: performance-benchmark
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Run security scan
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: drone-rl-gpu:latest
+          args: --severity-threshold=high
+
+  # デプロイメント
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [security-scan]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Deploy to registry
+        run: |
+          echo "Deploying GPU images to registry..."
+          # ここにデプロイメントロジックを追加
+          
+      - name: Update documentation
+        run: |
+          echo "Updating GPU documentation..."
+          # ここにドキュメント更新ロジックを追加 

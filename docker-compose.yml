@@ -1,71 +1,211 @@
+version: '3.8'
+
+# 共通環境変数
+x-common-env: &common-env
+  ROS_DOMAIN_ID: 0
+  PYTHONPATH: /workspace/src
+  DISPLAY: ${DISPLAY:-:0}
+
+# 共通ボリューム
+x-common-volumes: &common-volumes
+  - ./src:/workspace/src:ro
+  - ./config:/workspace/config:ro
+  - ./custom_airframes:/workspace/custom_airframes:ro
+  - ./custom_model:/workspace/custom_model:ro
+  - ./models:/workspace/models:ro
+
 services:
-  sim:
-    # image: ghcr.io/hinata-koizumi/drone-avoidance-sim:2.0.1
-    platform: linux/arm64
-    build:
-      context: docker/px4-simulator
-      dockerfile: Dockerfile.px4_sitl
-    environment:
-      - ROS_DOMAIN_ID=0
-      - HEADLESS=1
-      - PX4_SIM_SPEED_FACTOR=2
-    volumes:
-      - "./assets/models:/models:ro"
-    entrypoint: ["/entrypoint.sh"]
-    networks:
-      - default
-    # depends_on:
-    #   - msgs
-    #   - bridge
-    mem_limit: 4g
-    cpus: 2
-
-  bridge:
-    # image: ghcr.io/hinata-koizumi/drone-avoidance-bridge:2.0.1
-    platform: linux/arm64
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.bridge
-    environment:
-      - ROS_DOMAIN_ID=0
-    command: bash -c "/entrypoint.sh"
-    networks:
-      - default
-    # depends_on:
-    #   - msgs
-    mem_limit: 4g
-    cpus: 2
-
-  rl-agent:
-    # image: ghcr.io/hinata-koizumi/drone-avoidance-rl-agent:2.0.1
-    platform: linux/arm64
-    build:
-      context: docker/rl-agent
-      dockerfile: Dockerfile
-    environment:
-      - ROS_DOMAIN_ID=0
-    working_dir: /drone_ws
-    networks:
-      - default
-    command: ["bash", "-c", "sleep infinity"]
-    # depends_on:
-    #   - sim
-    #   - bridge
-    #   - msgs
-    mem_limit: 4g
-    cpus: 2
-
+  # メッセージビルドサービス（全プロファイルで共通）
   msgs:
-    # image: ghcr.io/hinata-koizumi/drone-avoidance-msgs:2.0.1
-    platform: linux/arm64
     build:
       context: .
       dockerfile: docker/Dockerfile.msgs
-    networks:
-      - default
-    mem_limit: 4g
-    cpus: 2
+      target: builder
+    image: drone-avoidance:msgs
+    profiles: ["default", "test", "gpu"]
+    volumes: *common-volumes
+    environment: *common-env
+    command: ["tail", "-f", "/dev/null"]
+    healthcheck:
+      test: ["CMD", "ls", "/msgs_ws/install/lib/python3.10/site-packages/drone_msgs/msg/_drone_control_command.py"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # シミュレーションサービス
+  sim:
+    build:
+      context: .
+      dockerfile: docker/px4-simulator/Dockerfile.px4_sitl
+      target: runtime
+    image: drone-avoidance:sim
+    profiles: ["default", "test", "gpu"]
+    depends_on:
+      msgs:
+        condition: service_healthy
+    volumes: *common-volumes
+    environment:
+      <<: *common-env
+      HEADLESS: 1
+      # テストプロファイル用の最適化
+      GAZEBO_VERBOSE: ${GAZEBO_VERBOSE:-0}
+      PX4_SITL_ARGS: ${PX4_SITL_ARGS:-}
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.sh &&
+        source /sim_ws/install/setup.sh &&
+        ros2 launch sim_launch sim_all.launch.py headless:=true"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "ros2 topic list | grep /drone0/state"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Bridge サービス
+  bridge:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.bridge
+      target: builder
+    image: drone-avoidance:bridge
+    profiles: ["default", "test", "gpu"]
+    depends_on:
+      sim:
+        condition: service_healthy
+    volumes: *common-volumes
+    environment: *common-env
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.sh &&
+        source /bridge_ws/install/setup.sh &&
+        ros2 run state_bridge state_bridge_node"
+    healthcheck:
+      test: ["CMD", "ros2 node list | grep state_bridge_node"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RL Agent サービス（GPU対応）
+  rl-agent:
+    build:
+      context: .
+      dockerfile: docker/rl-agent/Dockerfile
+      target: runtime
+    image: drone-avoidance:rl-agent
+    profiles: ["default", "gpu"]
+    depends_on:
+      bridge:
+        condition: service_healthy
+    volumes: *common-volumes
+    environment:
+      <<: *common-env
+      # GPU プロファイル用の環境変数
+      CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES:-0}
+      NCCL_DEBUG: ${NCCL_DEBUG:-INFO}
+      NCCL_IB_DISABLE: ${NCCL_IB_DISABLE:-1}
+      NCCL_P2P_DISABLE: ${NCCL_P2P_DISABLE:-1}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: ${GPU_COUNT:-1}
+              capabilities: [gpu]
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.sh &&
+        source /rl_ws/install/setup.sh &&
+        python3 /workspace/src/train_agent.py"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import torch; print('GPU available:', torch.cuda.is_available())"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Manual Control サービス
+  manual-control:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.manual_control
+      target: runtime
+    image: drone-avoidance:manual-control
+    profiles: ["default"]
+    depends_on:
+      bridge:
+        condition: service_healthy
+    volumes: *common-volumes
+    environment: *common-env
+    ports:
+      - "8080:8080"  # Web UI
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.sh &&
+        source /workspace/install/setup.sh &&
+        ros2 run manual_control action_executor"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # テスト用軽量シミュレーション
+  test-sim:
+    build:
+      context: .
+      dockerfile: docker/px4-simulator/Dockerfile.px4_sitl
+      target: runtime
+    image: drone-avoidance:test-sim
+    profiles: ["test"]
+    depends_on:
+      msgs:
+        condition: service_healthy
+    volumes: *common-volumes
+    environment:
+      <<: *common-env
+      HEADLESS: 1
+      TEST_MODE: 1
+      # テスト用の軽量設定
+      GAZEBO_VERBOSE: 0
+      PX4_SITL_ARGS: "-t"
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.sh &&
+        source /sim_ws/install/setup.sh &&
+        timeout 60 ros2 launch sim_launch sim_all.launch.py headless:=true test_mode:=true"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "ros2 topic list | grep /drone0/state"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  # テスト用 Bridge
+  test-bridge:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.bridge
+      target: builder
+    image: drone-avoidance:test-bridge
+    profiles: ["test"]
+    depends_on:
+      test-sim:
+        condition: service_healthy
+    volumes: *common-volumes
+    environment: *common-env
+    command: >
+      bash -c "
+        source /opt/ros/humble/setup.sh &&
+        source /bridge_ws/install/setup.sh &&
+        timeout 30 ros2 run state_bridge state_bridge_node"
+    healthcheck:
+      test: ["CMD", "ros2 node list | grep state_bridge_node"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+# ネットワーク設定
 networks:
   default:
-    driver: bridge 
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 
