@@ -36,6 +36,10 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
 # Return to PX4 directory for runtime defaults
 WORKDIR /PX4-Autopilot
 
+# Ensure packages installed in /sim_ws are discoverable at runtime
+ENV AMENT_PREFIX_PATH=/sim_ws/install:$AMENT_PREFIX_PATH
+ENV ROS_PACKAGE_PATH=/sim_ws/install/share:$ROS_PACKAGE_PATH
+
 RUN id px4user || (echo "px4user does not exist in base image!" && exit 1)
 USER px4user
 
