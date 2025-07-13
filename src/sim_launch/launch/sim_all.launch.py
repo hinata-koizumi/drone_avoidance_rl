@@ -27,8 +27,8 @@ def generate_launch_description() -> LaunchDescription:
     gz_world = LaunchConfiguration('gz_world')
     physics_engine = LaunchConfiguration('physics_engine')
 
-    # Gazebo起動引数
-    gz_args_str = TextSubstitution(text='-r ') + gz_world + TextSubstitution(text=' --physics-engine ') + physics_engine
+    # Gazebo起動引数 - デフォルト値を直接指定
+    gz_args_str = '-r ' + params['gz_world'] + ' --physics-engine ' + params['physics_engine']
 
     ign_gazebo_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
