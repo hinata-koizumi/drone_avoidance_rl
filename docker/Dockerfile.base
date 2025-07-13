@@ -42,10 +42,6 @@ RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     pip3 install --no-cache-dir kconfiglib pyros-genmsg jsonschema && \
     make px4_sitl_default -j$(nproc) && \
     ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
-    # ビルド出力の構造を確認
-    echo "=== PX4 Build Output Structure ===" && \
-    find /PX4-Autopilot/build/px4_sitl_default -type f -name "px4*" && \
-    find /PX4-Autopilot/build/px4_sitl_default -type d && \
     # ビルド後のクリーンアップ
     rm -rf /tmp/* /var/tmp/* /PX4-Autopilot/.git /PX4-Autopilot/build/px4_sitl_default/src && \
     find /PX4-Autopilot -name "*.o" -delete && \
@@ -56,14 +52,11 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list
 
+# GazeboとROS-Gazebo bridgeを一度にインストール（重複削除）
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     for i in {1..3}; do apt-get update && apt-get install -y --no-install-recommends \
-      gz-${IGNITION_VERSION} libgz-sim8 libgz-sim8-plugins libogre-next-2.3.0 && break || sleep 10; done && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/* && \
-    apt-get clean && apt-get autoremove -y
-
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    for i in {1..3}; do apt-get update && apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-ros-gz-sim && break || sleep 10; done && \
+      gz-${IGNITION_VERSION} libgz-sim8 libgz-sim8-plugins libogre-next-2.3.0 \
+      ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-ros-gz-sim && break || sleep 10; done && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/* && \
     apt-get clean && apt-get autoremove -y
 
@@ -74,7 +67,6 @@ FROM base AS runtime
 COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/bin/px4 /PX4-Autopilot/build/px4_sitl_default/bin/px4
 COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/etc /PX4-Autopilot/build/px4_sitl_default/etc
 COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/ROMFS /PX4-Autopilot/build/px4_sitl_default/ROMFS
-# PX4の実行ファイルは通常binディレクトリにあるため、個別のファイルコピーを削除
 WORKDIR /PX4-Autopilot
 
 # ビルドステージからGazebo関連ファイルをコピー
@@ -84,12 +76,8 @@ COPY --from=builder /etc/apt/sources.list.d/gazebo-stable.list /etc/apt/sources.
 # Gazebo Gardenランタイムのみをインストール（容量削減）
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     for i in {1..3}; do apt-get update && apt-get install -y --no-install-recommends \
-      gz-${IGNITION_VERSION} libgz-sim8 libgz-sim8-plugins libogre-next-2.3.0 && break || sleep 10; done && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/* && \
-    apt-get clean && apt-get autoremove -y
-
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    for i in {1..3}; do apt-get update && apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-ros-gz-sim && break || sleep 10; done && \
+      gz-${IGNITION_VERSION} libgz-sim8 libgz-sim8-plugins libogre-next-2.3.0 \
+      ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-ros-gz-sim && break || sleep 10; done && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/* && \
     apt-get clean && apt-get autoremove -y
 
