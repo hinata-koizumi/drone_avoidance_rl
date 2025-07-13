@@ -5,7 +5,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, TextSubstitution, ConcatSubstitution
+from launch.substitutions import LaunchConfiguration, TextSubstitution, JoinSubstitution
 from launch_ros.actions import Node
 import yaml
 
@@ -34,7 +34,7 @@ def generate_launch_description() -> LaunchDescription:
         TextSubstitution(text=' --physics-engine '), physics_engine,
     ]
     # headless オプションは下位 launch で再確認されるためここでは付与しない
-    gz_args_str = ConcatSubstitution(gz_args_subs)
+    gz_args_str = JoinSubstitution(gz_args_subs)
 
     ign_gazebo_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
