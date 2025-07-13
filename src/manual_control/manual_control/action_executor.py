@@ -3,7 +3,7 @@
 import os
 import yaml
 import time
-from typing import Dict, List, Any
+from typing import Dict, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
 import numpy as np
@@ -39,7 +39,7 @@ class ActionSequence:
     action_type: ActionType
     duration: float
     parameters: Dict[str, Any]
-    next_action: str = None
+    next_action: Optional[str] = None
 
 
 class ActionExecutorNode(Node):
@@ -72,9 +72,9 @@ class ActionExecutorNode(Node):
             self.get_logger().warn("Failed to load drone_specs.yaml or file is empty")
         
         # 現在の状態
-        self.current_action = None
-        self.action_start_time = None
-        self.drone_state = None
+        self.current_action: Optional[ActionSequence] = None
+        self.action_start_time: Optional[float] = None
+        self.drone_state: Optional[TwistStamped] = None
         
         # タイマー設定
         self.timer = self.create_timer(0.1, self._execute_action)  # 10Hz
@@ -202,7 +202,7 @@ class ActionExecutorNode(Node):
         if command:
             self.control_pub.publish(command)
     
-    def _generate_command(self) -> TwistStamped:
+    def _generate_command(self) -> Optional[TwistStamped]:
         """現在の行動に基づいて制御コマンドを生成"""
         if not self.current_action:
             return None
