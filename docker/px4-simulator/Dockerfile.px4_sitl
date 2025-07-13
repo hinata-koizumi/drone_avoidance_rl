@@ -1,19 +1,8 @@
 ARG GITHUB_REPOSITORY_OWNER=hinata-koizumi
 ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
-FROM ${BASE_IMAGE}
 
-WORKDIR /PX4-Autopilot
-
-COPY docker/px4-simulator/entrypoint-px4-sitl.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# -----------------------------
-# Build ROS 2 workspace for simulation launch files
-# This provides /sim_ws/install/setup.sh required by CI tests and
-# entrypoint scripts that source this overlay.  The workspace only
-# contains the lightweight sim_launch package (launch files & SDF), so
-# the impact on image size is minimal.
-# -----------------------------
+# Build stage for ROS 2 workspace
+FROM ${BASE_IMAGE} as builder
 
 WORKDIR /sim_ws
 
@@ -22,7 +11,7 @@ COPY src/sim_launch src/sim_launch
 # Copy shared simulation config referenced by setup.py (../../config/...)
 COPY config/ config/
 
-# Install dependencies (none beyond ROS base, but run rosdep for safety)
+# Install dependencies and build workspace
 RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     rosdep update && \
     rosdep install --from-paths src --rosdistro humble -y --ignore-src && \
@@ -33,8 +22,16 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     find /usr -name "*.pyc" -delete && \
     find /usr -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
-# Return to PX4 directory for runtime defaults
+# Runtime stage
+FROM ${BASE_IMAGE} as runtime
+
 WORKDIR /PX4-Autopilot
+
+COPY docker/px4-simulator/entrypoint-px4-sitl.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Copy built ROS 2 workspace from builder stage
+COPY --from=builder /sim_ws /sim_ws
 
 # Ensure packages installed in /sim_ws are discoverable at runtime
 ENV AMENT_PREFIX_PATH=/sim_ws/install:$AMENT_PREFIX_PATH
