@@ -1,4 +1,4 @@
-# Drone Avoidance RL 🚁
+# Drone Avoidance RL
 
 **統合されたROS 2 + PX4 + Ignition Gazebo + 強化学習環境**
 
@@ -7,17 +7,17 @@
 [![ROS 2](https://img.shields.io/badge/ROS%202-Humble-brightgreen.svg)](https://docs.ros.org/en/humble/)
 [![Gazebo](https://img.shields.io/badge/Gazebo-Garden-orange.svg)](https://gazebosim.org/)
 
-## 🎯 概要
+## 概要
 
 このプロジェクトは、**単一の統合環境**で以下を提供します：
 
-- 🚁 **PX4 SITL** + **Ignition Gazebo Garden** による高精度シミュレーション
-- 🧠 **強化学習環境** (SAC, PPO, DDPG対応)
-- 🎮 **手動制御インターフェース** (Web UI)
-- 🔧 **統合CI/CD** (自動テスト、パフォーマンス測定、セキュリティスキャン)
-- ⚡ **最適化されたパフォーマンス** (GPU対応、Fast DDS最適化)
+- **PX4 SITL** + **Ignition Gazebo Garden** による高精度シミュレーション
+- **強化学習環境** (SAC, PPO, DDPG対応)
+- **手動制御インターフェース** (Web UI)
+- **統合CI/CD** (自動テスト、パフォーマンス測定、セキュリティスキャン)
+- **最適化されたパフォーマンス** (GPU対応、Fast DDS最適化)
 
-## 🚀 クイックスタート
+## クイックスタート
 
 ### 1. 環境セットアップ
 
@@ -60,7 +60,7 @@ make manual
 # Web UI: http://localhost:8080
 ```
 
-## 📋 利用可能なコマンド
+## 利用可能なコマンド
 
 | コマンド | 説明 | 用途 |
 |---------|------|------|
@@ -75,7 +75,7 @@ make manual
 | `make logs` | ログ表示 | デバッグ |
 | `make status` | サービス状態確認 | 監視 |
 
-## 🏗️ アーキテクチャ
+## アーキテクチャ
 
 ### 統合Docker環境
 
@@ -83,12 +83,12 @@ make manual
 ┌─────────────────────────────────────────────────────────────┐
 │                    Drone Avoidance RL                      │
 ├─────────────────────────────────────────────────────────────┤
-│  🐳 Docker Compose (Profiles)                             │
+│  Docker Compose (Profiles)                                 │
 │  ├── default: 本番環境 (sim + bridge + manual-control)    │
 │  ├── test: テスト環境 (軽量シミュレーション)               │
 │  └── gpu: GPU学習環境 (sim + bridge + rl-agent)          │
 ├─────────────────────────────────────────────────────────────┤
-│  🔧 最適化機能                                            │
+│  最適化機能                                                │
 │  ├── BuildKit キャッシュ (40-60%高速化)                   │
 │  ├── Fast DDS QoS最適化 (20-30%通信効率向上)              │
 │  ├── GPU対応 (NCCL最適化)                                 │
@@ -106,7 +106,7 @@ make manual
 | `rl-agent` | 強化学習エージェント | gpu | GPU対応 |
 | `manual-control` | 手動制御Web UI | default | 軽量Webサーバー |
 
-## ⚡ パフォーマンス最適化
+## パフォーマンス最適化
 
 ### ビルド最適化
 - **BuildKit キャッシュ**: 40-60% ビルド時間短縮
@@ -123,7 +123,7 @@ make manual
 - **キャッシュ戦略**: Docker layer、pip、apt キャッシュ
 - **セキュリティスキャン**: Trivyによる脆弱性検出
 
-## 🧪 テスト戦略
+## テスト戦略
 
 ### テスト階層
 
@@ -131,17 +131,17 @@ make manual
 ┌─────────────────────────────────────────────────────────────┐
 │                    テストピラミッド                          │
 ├─────────────────────────────────────────────────────────────┤
-│  🔬 単体テスト (Unit Tests)                               │
+│  単体テスト (Unit Tests)                                   │
 │  ├── Bridge Nodes テスト                                   │
 │  ├── Gym API テスト                                       │
 │  └── 共通ユーティリティテスト                              │
 ├─────────────────────────────────────────────────────────────┤
-│  🔗 統合テスト (Integration Tests)                        │
+│  統合テスト (Integration Tests)                            │
 │  ├── Docker Compose テスト                                 │
 │  ├── ROS 2 通信テスト                                     │
 │  └── Gazebo シミュレーションテスト                        │
 ├─────────────────────────────────────────────────────────────┤
-│  🚀 E2Eテスト (End-to-End Tests)                         │
+│  E2Eテスト (End-to-End Tests)                             │
 │  ├── 完全シミュレーション環境                             │
 │  ├── RL学習フロー                                         │
 │  └── 手動制御フロー                                       │
@@ -164,7 +164,7 @@ make test-gpu
 make perf-test
 ```
 
-## 📊 監視・メトリクス
+## 監視・メトリクス
 
 ### パフォーマンス指標
 
@@ -189,7 +189,7 @@ make status
 docker stats
 ```
 
-## 🔧 開発環境
+## 開発環境
 
 ### 前提条件
 
