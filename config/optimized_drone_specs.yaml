@@ -1,0 +1,220 @@
+# Optimized Aether-SL Drone Specifications
+# 高性能・高効率に最適化されたドローン設定
+
+drone_specifications:
+  # Basic Information
+  name: "Aether_SL_Optimized"
+  type: "High-Performance Quadcopter"
+  version: "2.0"
+  
+  # Physical Specifications (最適化)
+  physical:
+    weight: 0.58  # kg (軽量化)
+    dimensions:
+      length: 0.325  # m
+      width: 0.325   # m
+      height: 0.065  # m (さらに低プロファイル)
+    rotor_arm_length: 0.1625  # m
+    ducted_fan_offset: 0.0  # 無し
+  
+  # Motor Specifications (最適化)
+  motors:
+    main_rotors:
+      count: 4
+      diameter: 0.152  # m (6インチ)
+      max_rpm: 12000  # 増加
+      thrust_constant: 1.8  # 向上
+      torque_constant: 0.025  # 改善
+      direction: ["ccw", "cw", "ccw", "cw"]
+      efficiency: 0.92  # 高効率モーター
+      
+    ducted_fans:
+      count: 0
+      diameter: 0.0
+      max_rpm: 0
+      thrust_constant: 0.0
+      torque_constant: 0.0
+      direction: []
+  
+  # Performance Limits (最適化)
+  performance:
+    max_speed_horizontal: 28.0  # m/s (100 km/h) 向上
+    max_speed_vertical: 10.0    # m/s 向上
+    max_acceleration: 15.0      # m/s² 向上
+    max_altitude: 100.0         # m 向上
+    max_distance: 25000.0       # m 向上
+    flight_time: 1800           # seconds (30 minutes) 向上
+    energy_efficiency: 0.85     # エネルギー効率
+    
+  # Control Parameters (最適化されたPID)
+  control:
+    attitude:
+      # 高速応答のための最適化
+      roll_p: 6.2
+      roll_i: 0.15
+      roll_d: 0.12
+      pitch_p: 6.2
+      pitch_i: 0.15
+      pitch_d: 0.12
+      yaw_p: 4.0
+      yaw_i: 0.10
+      yaw_d: 0.08
+      
+    position:
+      # 精密制御のための最適化
+      xy_p: 1.2
+      xy_i: 0.08
+      xy_d: 0.06
+      z_p: 1.5
+      z_i: 0.10
+      z_d: 0.08
+      
+    manual:
+      # レスポンス向上
+      tilt_tau: 0.25  # より高速
+      y_tau: 0.25
+      y_max: 0.85
+      tilt_max: 0.85
+    
+    # 新しい最適化パラメータ
+    adaptive:
+      enabled: true
+      learning_rate: 0.01
+      adaptation_threshold: 0.1
+  
+  # Safety Features (強化)
+  safety:
+    geofence:
+      enabled: true
+      max_horizontal_distance: 25000.0  # m 拡張
+      max_vertical_distance: 100.0      # m 拡張
+      action: "RTL"
+      
+    failsafe:
+      rc_loss_timeout: 0.3  # seconds 短縮
+      data_link_loss_timeout: 6.0  # seconds 短縮
+      arm_without_gps: false
+      
+    limits:
+      min_altitude: 0.3  # m 改善
+      max_altitude: 100.0  # m 拡張
+      max_velocity: 30.0  # m/s 向上
+      max_acceleration: 15.0  # m/s² 向上
+    
+    # 新しい安全機能
+    collision_avoidance:
+      enabled: true
+      detection_range: 10.0  # m
+      avoidance_distance: 2.0  # m
+  
+  # Sensors (最適化)
+  sensors:
+    imu:
+      type: "9-axis High-Precision"
+      update_rate: 1000  # Hz 向上
+      noise:
+        angular_velocity: 0.00005  # rad/s 改善
+        linear_acceleration: 0.002  # m/s² 改善
+        
+    gps:
+      type: "Dual-band GNSS High-Precision"
+      update_rate: 20  # Hz 向上
+      noise:
+        horizontal_position: 0.15  # m 改善
+        vertical_position: 0.3     # m 改善
+        
+    barometer:
+      type: "High-Precision Barometric"
+      update_rate: 100  # Hz 向上
+      noise: 0.04  # m 改善
+      
+    magnetometer:
+      type: "3-axis High-Precision"
+      update_rate: 100  # Hz 向上
+      noise: 0.00002  # Tesla 改善
+  
+  # Battery (最適化)
+  battery:
+    type: "High-Energy Li-Ion"
+    capacity: 3500  # mAh 増加
+    voltage:
+      empty: 3.2    # V per cell 改善
+      charged: 4.25  # V per cell 改善
+    cells: 4
+    max_current: 20  # A 増加
+    energy_density: 280  # Wh/kg
+    
+  # Flight Modes (拡張)
+  flight_modes:
+    mode1: "STABILIZE"
+    mode2: "ALT_HOLD"
+    mode3: "LOITER"
+    mode4: "AUTO"
+    mode5: "RTL"
+    mode6: "MANUAL"
+    mode7: "SPORT"  # 新しいスポーツモード
+    mode8: "PRECISION"  # 精密制御モード
+    
+  # Manual Control Actions (最適化)
+  actions:
+    hover:
+      duration: 20.0  # seconds 延長
+      target_altitude: 5.0  # m 向上
+      precision: 0.1  # m 精度向上
+      
+    takeoff:
+      duration: 3.0  # seconds 短縮
+      target_altitude: 5.0  # m 向上
+      ascent_rate: 2.0  # m/s 向上
+      
+    landing:
+      duration: 4.0  # seconds 短縮
+      descent_rate: 1.0  # m/s 向上
+      precision: 0.05  # m 精度向上
+      
+    waypoint:
+      max_distance: 15.0  # m 拡張
+      duration: 25.0  # seconds 延長
+      precision: 0.2  # m 精度向上
+      
+    circle:
+      radius: 8.0  # m 拡張
+      duration: 30.0  # seconds 延長
+      speed: 3.0  # m/s 向上
+      
+    square:
+      side_length: 8.0  # m 拡張
+      duration: 50.0  # seconds 延長
+      speed: 3.0  # m/s 向上
+    
+    # 新しいアクション
+    figure8:
+      radius: 6.0  # m
+      duration: 40.0  # seconds
+      speed: 2.5  # m/s
+      
+    spiral:
+      radius: 5.0  # m
+      height_gain: 10.0  # m
+      duration: 60.0  # seconds
+      speed: 2.0  # m/s
+  
+  # Optimization Features
+  optimization:
+    # エネルギー効率最適化
+    energy_management:
+      enabled: true
+      power_saving_mode: true
+      adaptive_throttle: true
+      
+    # 飛行パフォーマンス最適化
+    flight_performance:
+      auto_tune_enabled: true
+      wind_compensation: true
+      turbulence_reduction: true
+      
+    # 制御最適化
+    control_optimization:
+      predictive_control: true
+      adaptive_gains: true
+      noise_reduction: true 

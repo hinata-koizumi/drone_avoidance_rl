@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, develop ]
     paths:
-      - 'drone_manual_control/**'
+      - 'src/manual_control/**'
       - 'models/**'
       - 'docker/**'
       - 'config/**'
@@ -14,7 +14,7 @@ on:
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'drone_manual_control/**'
+      - 'src/manual_control/**'
       - 'models/**'
       - 'docker/**'
       - 'config/**'
@@ -228,26 +228,26 @@ jobs:
       run: |
         source /opt/ros/humble/setup.bash
         source install/setup.bash
-        flake8 vendor/drone_manual_control/src/ --count --select=E9,F63,F7,F82 --show-source --statistics
-        mypy vendor/drone_manual_control/src/ --config-file=mypy.ini
+        flake8 src/manual_control/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        mypy src/manual_control/ --config-file=mypy.ini
         
     - name: Run unit tests for manual control
       run: |
         source /opt/ros/humble/setup.bash
         source install/setup.bash
-        python -m pytest vendor/drone_manual_control/tests/ -v
+        python -m pytest tests/ -v
         
     - name: Build Docker images for manual control
       run: |
         docker build -f docker/Dockerfile.msgs -t drone-manual-msgs .
         docker build -f docker/Dockerfile.bridge -t drone-manual-bridge .
-        docker build -f vendor/drone_manual_control/docker/Dockerfile.manual_control -t drone-manual-control ./vendor/drone_manual_control
+        docker build -f vendor/drone_manual_control/docker/Dockerfile.manual_control -t drone-manual-control .
         
     - name: Test Aether-SL drone specifications
       run: |
-        cd vendor/drone_manual_control
         python -c "
         import yaml
+        from pathlib import Path
         with open('config/drone_specs.yaml', 'r') as f:
             data = yaml.safe_load(f)
         specs = data['drone_specifications']
@@ -257,17 +257,39 @@ jobs:
         print('✅ Aether-SL drone specifications are valid')
         "
         
-    - name: Test action sequences
+    - name: Validate all action sequences
       run: |
-        cd vendor/drone_manual_control
         python -c "
         import yaml
-        with open('config/action_sequences.yaml', 'r') as f:
-            data = yaml.safe_load(f)
-        assert 'action_sequences' in data, 'action_sequences not found'
-        assert len(data['action_sequences']) > 0, 'No action sequences defined'
-        assert data['drone_specs']['airframe_name'] == 'Aether_SL', 'Should use Aether_SL airframe'
-        print(f'✅ Found {len(data[\"action_sequences\"])} action sequences for Aether-SL')
+        from pathlib import Path
+        import jsonschema
+
+        action_path = Path('config/action_sequences.yaml')
+        assert action_path.exists(), f'Action sequence file not found at {action_path}'
+
+        with open(action_path, 'r') as f:
+            sequences = yaml.safe_load(f)
+
+        schema = {
+            'type': 'object',
+            'patternProperties': {
+                '.*': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'object',
+                        'properties': {
+                            'action': {'type': 'string'},
+                            'value': {'type': 'number'},
+                            'duration': {'type': 'number'}
+                        },
+                        'required': ['action', 'value', 'duration']
+                    }
+                }
+            }
+        }
+        
+        jsonschema.validate(instance=sequences, schema=schema)
+        print('✅ All action sequences validated successfully')
         "
         
     - name: Test Docker Compose configuration

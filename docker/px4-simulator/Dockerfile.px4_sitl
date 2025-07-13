@@ -27,7 +27,7 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     rosdep update && \
     rosdep install --from-paths src --rosdistro humble -y --ignore-src && \
     . /opt/ros/humble/setup.sh && \
-    colcon build --merge-install --packages-select sim_launch --parallel-workers $(nproc) && \
+    colcon build --merge-install --symlink-install --packages-select sim_launch --parallel-workers $(nproc) && \
     # Cleanup caches (keep build directory for symlink integrity)
     rm -rf log/ /tmp/* /var/tmp/* /root/.cache/* && \
     find /usr -name "*.pyc" -delete && \

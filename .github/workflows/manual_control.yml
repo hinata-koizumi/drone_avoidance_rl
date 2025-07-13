@@ -21,8 +21,6 @@ jobs:
     steps:
       - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Set up QEMU (multi-arch builds)
         uses: docker/setup-qemu-action@v3

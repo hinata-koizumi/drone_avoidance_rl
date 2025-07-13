@@ -46,8 +46,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
       
       - name: Monitor disk space before build
         run: ./tools/disk_monitor.sh
@@ -132,14 +130,13 @@ jobs:
       
       - name: Build manual control image
         run: |
-          cd vendor/drone_manual_control
           docker buildx build \
             --platform linux/amd64 \
             --build-arg BUILDKIT_INLINE_CACHE=1 \
             --progress=plain \
             --no-cache \
             -t drone-manual-control:latest \
-            -f docker/Dockerfile.manual_control \
+            -f vendor/drone_manual_control/docker/Dockerfile.manual_control \
             .
           docker system prune -f || true
           df -h
@@ -149,27 +146,23 @@ jobs:
       
       - name: Build all compose images
         run: |
-          cd $GITHUB_WORKSPACE
           docker compose -f tests/ci-compose.yml build
 
       - name: Launch all services and run E2E tests
         run: |
-          cd $GITHUB_WORKSPACE
           docker compose -f tests/ci-compose.yml up --abort-on-container-exit
       
       - name: Run manual control tests
         run: |
           # 専用のCIテストファイルを使用
-          cd vendor/drone_manual_control
           docker compose -f tests/ci-compose.yml up --abort-on-container-exit --timeout 300
       
       - name: Run unit tests
         run: |
-          cd vendor/drone_manual_control
           docker run --rm \
-            -v $(pwd)/src:/workspace/src:ro \
-            -v $(pwd)/config:/workspace/config:ro \
-            -v $(pwd)/tests:/workspace/tests:ro \
+            -v $GITHUB_WORKSPACE/src:/workspace/src:ro \
+            -v $GITHUB_WORKSPACE/config:/workspace/config:ro \
+            -v $GITHUB_WORKSPACE/tests:/workspace/tests:ro \
             drone-manual-control:latest \
             bash -c "
               source /opt/ros/humble/setup.sh &&
@@ -178,11 +171,10 @@ jobs:
       
       - name: Run integration tests
         run: |
-          cd vendor/drone_manual_control
           docker run --rm \
-            -v $(pwd)/src:/workspace/src:ro \
-            -v $(pwd)/config:/workspace/config:ro \
-            -v $(pwd)/tests:/workspace/tests:ro \
+            -v $GITHUB_WORKSPACE/src:/workspace/src:ro \
+            -v $GITHUB_WORKSPACE/config:/workspace/config:ro \
+            -v $GITHUB_WORKSPACE/tests:/workspace/tests:ro \
             drone-manual-control:latest \
             bash -c "
               source /opt/ros/humble/setup.sh &&
@@ -191,7 +183,6 @@ jobs:
       
       - name: Test node startup
         run: |
-          cd vendor/drone_manual_control
           timeout 30 docker run --rm \
             -e ROS_DOMAIN_ID=0 \
             drone-manual-control:latest \
@@ -202,7 +193,6 @@ jobs:
       
       - name: Run comprehensive tests
         run: |
-          cd vendor/drone_manual_control
           docker run --rm \
             -v $(pwd)/src:/workspace/src:ro \
             -v $(pwd)/config:/workspace/config:ro \
