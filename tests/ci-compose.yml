@@ -5,7 +5,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.msgs
     image: drone_rl:msgs
-    command: bash -c "ls /msgs_ws/install/lib/python3.10/site-packages/drone_msgs/msg/_drone_control_command.py"
+    command: ["tail", "-f", "/dev/null"]
     healthcheck:
       test: ["CMD", "ls", "/msgs_ws/install/lib/python3.10/site-packages/drone_msgs/msg/_drone_control_command.py"]
       interval: 10s
