@@ -7,6 +7,35 @@ WORKDIR /PX4-Autopilot
 COPY docker/px4-simulator/entrypoint-px4-sitl.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+# -----------------------------
+# Build ROS 2 workspace for simulation launch files
+# This provides /sim_ws/install/setup.sh required by CI tests and
+# entrypoint scripts that source this overlay.  The workspace only
+# contains the lightweight sim_launch package (launch files & SDF), so
+# the impact on image size is minimal.
+# -----------------------------
+
+WORKDIR /sim_ws
+
+# Copy package sources
+COPY src/sim_launch src/sim_launch
+# Copy shared simulation config referenced by setup.py (../../config/...)
+COPY config/ src/config
+
+# Install dependencies (none beyond ROS base, but run rosdep for safety)
+RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
+    rosdep update && \
+    rosdep install --from-paths src --rosdistro humble -y --ignore-src && \
+    . /opt/ros/humble/setup.sh && \
+    colcon build --symlink-install --merge-install --packages-select sim_launch --parallel-workers $(nproc) && \
+    # Cleanup build caches to keep the runtime layer slim
+    rm -rf build/ log/ /tmp/* /var/tmp/* /root/.cache/* && \
+    find /usr -name "*.pyc" -delete && \
+    find /usr -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+
+# Return to PX4 directory for runtime defaults
+WORKDIR /PX4-Autopilot
+
 RUN id px4user || (echo "px4user does not exist in base image!" && exit 1)
 USER px4user
 
