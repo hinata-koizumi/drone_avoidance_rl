@@ -173,7 +173,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r drone_manual_control/requirements.txt
+        pip install -r vendor/drone_manual_control/requirements.txt
         
     - name: Install Python dependencies for ROS 2 message generation
       run: |
@@ -228,24 +228,24 @@ jobs:
       run: |
         source /opt/ros/humble/setup.bash
         source install/setup.bash
-        flake8 drone_manual_control/src/ --count --select=E9,F63,F7,F82 --show-source --statistics
-        mypy drone_manual_control/src/ --config-file=mypy.ini
+        flake8 vendor/drone_manual_control/src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        mypy vendor/drone_manual_control/src/ --config-file=mypy.ini
         
     - name: Run unit tests for manual control
       run: |
         source /opt/ros/humble/setup.bash
         source install/setup.bash
-        python -m pytest drone_manual_control/tests/ -v
+        python -m pytest vendor/drone_manual_control/tests/ -v
         
     - name: Build Docker images for manual control
       run: |
         docker build -f docker/Dockerfile.msgs -t drone-manual-msgs .
         docker build -f docker/Dockerfile.bridge -t drone-manual-bridge .
-        docker build -f drone_manual_control/docker/Dockerfile.manual_control -t drone-manual-control ./drone_manual_control
+        docker build -f vendor/drone_manual_control/docker/Dockerfile.manual_control -t drone-manual-control ./vendor/drone_manual_control
         
     - name: Test Aether-SL drone specifications
       run: |
-        cd drone_manual_control
+        cd vendor/drone_manual_control
         python -c "
         import yaml
         with open('config/drone_specs.yaml', 'r') as f:
@@ -259,7 +259,7 @@ jobs:
         
     - name: Test action sequences
       run: |
-        cd drone_manual_control
+        cd vendor/drone_manual_control
         python -c "
         import yaml
         with open('config/action_sequences.yaml', 'r') as f:
@@ -272,12 +272,12 @@ jobs:
         
     - name: Test Docker Compose configuration
       run: |
-        cd drone_manual_control
+        cd vendor/drone_manual_control
         docker-compose config
         
     - name: Run integration tests for manual control
       run: |
-        cd drone_manual_control
+        cd vendor/drone_manual_control
         cat > ci-test-compose.yml << 'EOF'
         version: '3.8'
         services:
@@ -296,8 +296,8 @@ jobs:
       with:
         name: manual-test-results
         path: |
-          drone_manual_control/test-results/
-          drone_manual_control/coverage.xml
+          vendor/drone_manual_control/test-results/
+          vendor/drone_manual_control/coverage.xml
           
   deployment-test:
     runs-on: ubuntu-22.04
@@ -309,13 +309,13 @@ jobs:
       
     - name: Test deployment
       run: |
-        cd drone_manual_control
+        cd vendor/drone_manual_control
         echo "Testing deployment configuration..."
         docker-compose config
         
     - name: Validate configuration files
       run: |
-        cd drone_manual_control
+        cd vendor/drone_manual_control
         python -c "
         import yaml
         import sys

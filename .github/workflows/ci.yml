@@ -132,7 +132,7 @@ jobs:
       
       - name: Build manual control image
         run: |
-          cd drone_manual_control
+          cd vendor/drone_manual_control
           docker buildx build \
             --platform linux/amd64 \
             --build-arg BUILDKIT_INLINE_CACHE=1 \
@@ -160,12 +160,12 @@ jobs:
       - name: Run manual control tests
         run: |
           # 専用のCIテストファイルを使用
-          cd drone_manual_control
+          cd vendor/drone_manual_control
           docker compose -f tests/ci-compose.yml up --abort-on-container-exit --timeout 300
       
       - name: Run unit tests
         run: |
-          cd drone_manual_control
+          cd vendor/drone_manual_control
           docker run --rm \
             -v $(pwd)/src:/workspace/src:ro \
             -v $(pwd)/config:/workspace/config:ro \
@@ -178,7 +178,7 @@ jobs:
       
       - name: Run integration tests
         run: |
-          cd drone_manual_control
+          cd vendor/drone_manual_control
           docker run --rm \
             -v $(pwd)/src:/workspace/src:ro \
             -v $(pwd)/config:/workspace/config:ro \
@@ -191,7 +191,7 @@ jobs:
       
       - name: Test node startup
         run: |
-          cd drone_manual_control
+          cd vendor/drone_manual_control
           timeout 30 docker run --rm \
             -e ROS_DOMAIN_ID=0 \
             drone-manual-control:latest \
@@ -202,7 +202,7 @@ jobs:
       
       - name: Run comprehensive tests
         run: |
-          cd drone_manual_control
+          cd vendor/drone_manual_control
           docker run --rm \
             -v $(pwd)/src:/workspace/src:ro \
             -v $(pwd)/config:/workspace/config:ro \
@@ -218,7 +218,7 @@ jobs:
       - name: Show logs on failure
         if: failure()
         run: |
-          cd drone_manual_control
+          cd vendor/drone_manual_control
           docker compose -f tests/ci-compose.yml logs
       
       - name: Final cleanup

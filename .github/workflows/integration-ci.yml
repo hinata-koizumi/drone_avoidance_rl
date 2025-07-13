@@ -157,7 +157,7 @@ jobs:
         docker build -f docker/Dockerfile.bridge -t drone-rl-bridge .
         
         # 手動制御環境のDockerイメージ
-        cd drone_manual_control
+        cd vendor/drone_manual_control
         docker build -f docker/Dockerfile.manual_control -t drone-manual-control .
         
     - name: Test full system integration
