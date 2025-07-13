@@ -218,7 +218,7 @@ jobs:
       - name: Show logs on failure
         if: failure()
         run: |
-          cd vendor/drone_manual_control
+          cd $GITHUB_WORKSPACE
           docker compose -f tests/ci-compose.yml logs
       
       - name: Final cleanup
@@ -998,7 +998,7 @@ jobs:
       - name: Pull base image by digest
         run: docker pull ${{ needs.build-base.outputs.digest }}
       - name: Build PX4 SITL image
-        run: docker build --no-cache -t px4-sitl:ci --build-arg BASE_IMAGE=${{ needs.build-base.outputs.digest }} -f docker/px4-simulator/Dockerfile.px4_sitl docker/px4-simulator
+        run: docker build --no-cache -t px4-sitl:ci --build-arg BASE_IMAGE=${{ needs.build-base.outputs.digest }} -f docker/px4-simulator/Dockerfile.px4_sitl .
       - name: Run PX4 SITL (smoke test)
         run: |
           docker run -d --name px4-sitl-test px4-sitl:ci

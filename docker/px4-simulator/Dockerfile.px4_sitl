@@ -20,7 +20,7 @@ WORKDIR /sim_ws
 # Copy package sources
 COPY src/sim_launch src/sim_launch
 # Copy shared simulation config referenced by setup.py (../../config/...)
-COPY config/ src/config
+COPY config/ config/
 
 # Install dependencies (none beyond ROS base, but run rosdep for safety)
 RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
