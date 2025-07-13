@@ -8,7 +8,7 @@ ARG BUILDKIT_INLINE_CACHE=1
 ENV ROS_DISTRO=${ROS_DISTRO}
 ENV IGNITION_VERSION=${IGNITION_VERSION}
 
-# 共通依存関係をインストール（キャッシュ最適化）
+# 共通依存関係をインストール（キャッシュ最適化 + 容量削減）
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     apt-get update && \
@@ -20,7 +20,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         libopencv-dev protobuf-compiler libprotobuf-dev \
         lsb-release sudo gnupg2 apt-transport-https ca-certificates netcat \
         ninja-build git wget curl \
-        && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+        && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/* && \
+        apt-get clean && apt-get autoremove -y
 
 # rosdep初期化（キャッシュ最適化）
 RUN --mount=type=cache,target=/root/.cache/rosdep,sharing=locked \
@@ -30,20 +31,23 @@ RUN --mount=type=cache,target=/root/.cache/rosdep,sharing=locked \
 # ビルドステージ
 FROM base AS builder
 
-# PX4 cloneとビルド（キャッシュ最適化）
+# PX4 cloneとビルド（キャッシュ最適化 + 容量削減）
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     git clone --depth 1 --recursive -b main https://github.com/PX4/PX4-Autopilot.git /PX4-Autopilot
 WORKDIR /PX4-Autopilot
 ENV PX4_WITH_GZ_TRANSPORT=ON
 
-# PX4 SITL build（並列化最適化）
+# PX4 SITL build（並列化最適化 + 容量削減）
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     pip3 install --no-cache-dir kconfiglib pyros-genmsg jsonschema && \
     make px4_sitl_default -j$(nproc) && \
     ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
-    rm -rf /tmp/* /var/tmp/* /PX4-Autopilot/.git
+    # ビルド後のクリーンアップ
+    rm -rf /tmp/* /var/tmp/* /PX4-Autopilot/.git /PX4-Autopilot/build/px4_sitl_default/src && \
+    find /PX4-Autopilot -name "*.o" -delete && \
+    find /PX4-Autopilot -name "*.a" -delete
 
-# Gazebo Garden install（キャッシュ最適化）
+# Gazebo Garden install（キャッシュ最適化 + 容量削減）
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list
@@ -51,43 +55,54 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     for i in {1..3}; do apt-get update && apt-get install -y --no-install-recommends \
       gz-${IGNITION_VERSION} libgz-sim8 libgz-sim8-plugins libogre-next-2.3.0 && break || sleep 10; done && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/* && \
+    apt-get clean && apt-get autoremove -y
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     for i in {1..3}; do apt-get update && apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-ros-gz-sim && break || sleep 10; done && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/* && \
+    apt-get clean && apt-get autoremove -y
 
 # ランタイムステージ
 FROM base AS runtime
 
-# ビルドステージからPX4バイナリをコピー
-COPY --from=builder /PX4-Autopilot /PX4-Autopilot
+# ビルドステージからPX4バイナリをコピー（必要なファイルのみ）
+COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/bin/px4 /PX4-Autopilot/build/px4_sitl_default/bin/px4
+COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/etc /PX4-Autopilot/build/px4_sitl_default/etc
+COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/ROMFS /PX4-Autopilot/build/px4_sitl_default/ROMFS
+COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/px4_sitl_default /PX4-Autopilot/build/px4_sitl_default/px4_sitl_default
 WORKDIR /PX4-Autopilot
 
 # ビルドステージからGazebo関連ファイルをコピー
 COPY --from=builder /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
 COPY --from=builder /etc/apt/sources.list.d/gazebo-stable.list /etc/apt/sources.list.d/gazebo-stable.list
 
-# Gazebo Gardenランタイムのみをインストール
+# Gazebo Gardenランタイムのみをインストール（容量削減）
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     for i in {1..3}; do apt-get update && apt-get install -y --no-install-recommends \
       gz-${IGNITION_VERSION} libgz-sim8 libgz-sim8-plugins libogre-next-2.3.0 && break || sleep 10; done && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/* && \
+    apt-get clean && apt-get autoremove -y
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     for i in {1..3}; do apt-get update && apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-ros-gz-bridge ros-${ROS_DISTRO}-ros-gz-sim && break || sleep 10; done && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/* && \
+    apt-get clean && apt-get autoremove -y
 
 # px4userを作成
 RUN useradd -m px4user && chown -R px4user:px4user /PX4-Autopilot
 
-# 最終クリーンアップ（スリム化）
-RUN rm -rf /tmp/* /var/tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* /var/lib/apt/lists/* || true && \
+# 最終クリーンアップ（スリム化 + 性能維持）
+RUN rm -rf /tmp/* /var/tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/* /var/lib/apt/lists/* || true && \
     apt-get clean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* && \
     find /usr -name "*.pyc" -delete && \
-    find /usr -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+    find /usr -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true && \
+    # 不要なビルドツールを削除（ランタイムでは不要）
+    apt-get purge -y build-essential gcc g++ make cmake pkg-config || true && \
+    apt-get autoremove -y && \
+    apt-get clean
 
 USER root
 WORKDIR /workspace
