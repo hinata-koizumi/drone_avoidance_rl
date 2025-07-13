@@ -27,9 +27,9 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     rosdep update && \
     rosdep install --from-paths src --rosdistro humble -y --ignore-src && \
     . /opt/ros/humble/setup.sh && \
-    colcon build --symlink-install --merge-install --packages-select sim_launch --parallel-workers $(nproc) && \
-    # Cleanup build caches to keep the runtime layer slim
-    rm -rf build/ log/ /tmp/* /var/tmp/* /root/.cache/* && \
+    colcon build --merge-install --packages-select sim_launch --parallel-workers $(nproc) && \
+    # Cleanup caches (keep build directory for symlink integrity)
+    rm -rf log/ /tmp/* /var/tmp/* /root/.cache/* && \
     find /usr -name "*.pyc" -delete && \
     find /usr -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
