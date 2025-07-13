@@ -187,7 +187,7 @@ class ActionExecutorNode(Node):
     
     def _execute_action(self) -> None:
         """行動実行（タイマーコールバック）"""
-        if self.current_action is None:
+        if self.current_action is None or self.action_start_time is None:
             return
         
         elapsed_time = time.time() - self.action_start_time
@@ -254,6 +254,8 @@ class ActionExecutorNode(Node):
         elif self.current_action.action_type == ActionType.CIRCLE:
             # 円形飛行
             radius = self.current_action.parameters.get('radius', 5.0)
+            if self.action_start_time is None:
+                return None
             elapsed_time = time.time() - self.action_start_time
             duration = self.current_action.duration
             # 1周分の角速度を計算
@@ -270,6 +272,8 @@ class ActionExecutorNode(Node):
         elif self.current_action.action_type == ActionType.SQUARE:
             # 四角形パターン飛行
             side_length = self.current_action.parameters.get('side_length', 5.0)
+            if self.action_start_time is None:
+                return None
             elapsed_time = time.time() - self.action_start_time
             side_duration = self.current_action.duration / 4
             
