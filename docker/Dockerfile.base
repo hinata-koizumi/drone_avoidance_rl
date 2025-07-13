@@ -42,6 +42,10 @@ RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     pip3 install --no-cache-dir kconfiglib pyros-genmsg jsonschema && \
     make px4_sitl_default -j$(nproc) && \
     ls -l /PX4-Autopilot/build/px4_sitl_default/bin/px4 && \
+    # ビルド出力の構造を確認
+    echo "=== PX4 Build Output Structure ===" && \
+    find /PX4-Autopilot/build/px4_sitl_default -type f -name "px4*" && \
+    find /PX4-Autopilot/build/px4_sitl_default -type d && \
     # ビルド後のクリーンアップ
     rm -rf /tmp/* /var/tmp/* /PX4-Autopilot/.git /PX4-Autopilot/build/px4_sitl_default/src && \
     find /PX4-Autopilot -name "*.o" -delete && \
@@ -70,7 +74,7 @@ FROM base AS runtime
 COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/bin/px4 /PX4-Autopilot/build/px4_sitl_default/bin/px4
 COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/etc /PX4-Autopilot/build/px4_sitl_default/etc
 COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/ROMFS /PX4-Autopilot/build/px4_sitl_default/ROMFS
-COPY --from=builder /PX4-Autopilot/build/px4_sitl_default/px4_sitl_default /PX4-Autopilot/build/px4_sitl_default/px4_sitl_default
+# PX4の実行ファイルは通常binディレクトリにあるため、個別のファイルコピーを削除
 WORKDIR /PX4-Autopilot
 
 # ビルドステージからGazebo関連ファイルをコピー
