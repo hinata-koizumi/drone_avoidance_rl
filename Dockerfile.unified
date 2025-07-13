@@ -26,7 +26,7 @@ RUN apt-get update && \
     curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list && \
     apt-get update && \
-    apt-get install -y ros-humble python3-colcon-common-extensions python3-rosdep && \
+    apt-get install -y ros-humble-ros-base python3-colcon-common-extensions python3-rosdep && \
     rm -rf /var/lib/apt/lists/*
 
 # --- PX4 clone & build ---
