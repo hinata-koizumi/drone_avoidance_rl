@@ -23,7 +23,7 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     find /usr -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
 # ランタイムステージ
-FROM ${BASE_IMAGE} AS msgs_ws
+FROM ${BASE_IMAGE} AS runtime
 
 USER root
 WORKDIR /msgs_ws

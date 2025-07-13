@@ -1,5 +1,3 @@
-version: '3.8'
-
 # 共通環境変数
 x-common-env: &common-env
   ROS_DOMAIN_ID: 0
