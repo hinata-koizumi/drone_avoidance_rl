@@ -18,7 +18,7 @@ if os.path.exists(launch_dir):
 
 setup(
     name=package_name,
-    version='0.1.0',
+    version='2.0.1',
     packages=find_packages(),
     python_requires='>=3.8',
     data_files=[
