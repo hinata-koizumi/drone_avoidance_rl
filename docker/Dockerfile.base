@@ -106,7 +106,9 @@ RUN rm -rf /tmp/* /var/tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* /u
     # 不要なビルドツールを削除（ランタイムでは不要）
     apt-get purge -y build-essential gcc g++ make cmake pkg-config || true && \
     apt-get autoremove -y && \
-    apt-get clean
+    apt-get clean && \
+    # boost等のdocを念のため再度削除
+    rm -rf /usr/share/doc/* /usr/share/man/* /usr/share/locale/* || true
 
 USER root
 WORKDIR /workspace
