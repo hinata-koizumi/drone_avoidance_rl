@@ -255,6 +255,4 @@ make clean        # 環境クリーンアップ
 - [Ignition Gazebo](https://gazebosim.org/) - 物理シミュレーター
 - [Stable Baselines3](https://stable-baselines3.readthedocs.io/) - 強化学習ライブラリ
 
----
 
-**統合された高性能ドローン強化学習環境で、次世代の自律飛行を実現しましょう！**
