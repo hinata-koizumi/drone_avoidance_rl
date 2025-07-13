@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
 
-import os
-import yaml
-import time
-from typing import Dict, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
-import numpy as np
-
-import rclpy
-from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
-from rclpy.executors import MultiThreadedExecutor
-
-from geometry_msgs.msg import PoseStamped, TwistStamped
-from sensor_msgs.msg import Imu, MagneticField, FluidPressure
-from std_msgs.msg import Header
+import os
+import time
+from typing import Any, Dict, Optional
 
 from ament_index_python.packages import get_package_share_directory
+from geometry_msgs.msg import TwistStamped
+import numpy as np
+import rclpy
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.node import Node
+from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
+from sensor_msgs.msg import Imu
+from std_msgs.msg import Header
+import yaml
 
 
 class ActionType(Enum):
@@ -367,7 +365,7 @@ def main() -> None:
         try:
             if rclpy.ok():
                 rclpy.shutdown()
-        except Exception as e:
+        except Exception:
             # 既にシャットダウンされている場合は無視
             pass
 

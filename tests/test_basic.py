@@ -1,5 +1,6 @@
 import importlib
 
+
 def test_manual_control_import():
     assert importlib.import_module("manual_control") is not None
 

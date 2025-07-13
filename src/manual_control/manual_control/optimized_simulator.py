@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 
-import rclpy
-from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
-from rclpy.executors import MultiThreadedExecutor
-import numpy as np
 import time
-from typing import Dict, Any
-import yaml
+from typing import Any, Dict
 
 from geometry_msgs.msg import PoseStamped, TwistStamped
+import numpy as np
+import rclpy
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.node import Node
+from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import Imu
-from std_msgs.msg import Header
+import yaml
 
 
 class OptimizedDroneSimulator(Node):
@@ -256,8 +255,9 @@ class OptimizedDroneSimulator(Node):
     
     def _euler_to_quaternion(self, roll: float, pitch: float, yaw: float):
         """オイラー角からクォータニオンへの変換（最適化）"""
-        from geometry_msgs.msg import Quaternion
         import math
+
+        from geometry_msgs.msg import Quaternion
         
         cy = math.cos(yaw * 0.5)
         sy = math.sin(yaw * 0.5)

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import rclpy
-from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
-from rclpy.executors import MultiThreadedExecutor
 import math
 
 from geometry_msgs.msg import PoseStamped, TwistStamped
+import rclpy
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.node import Node
+from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import Imu
 
 
@@ -137,7 +137,7 @@ class StateMonitorNode(Node):
         
         # 表示
         self.get_logger().info("=" * 60)
-        self.get_logger().info(f"🚁 Drone State Monitor")
+        self.get_logger().info("🚁 Drone State Monitor")
         self.get_logger().info("=" * 60)
         self.get_logger().info(pos_str)
         self.get_logger().info(vel_str)
@@ -170,7 +170,7 @@ def main() -> None:
         try:
             if rclpy.ok():
                 rclpy.shutdown()
-        except Exception as e:
+        except Exception:
             # 既にシャットダウンされている場合は無視
             pass
 

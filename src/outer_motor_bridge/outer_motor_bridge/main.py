@@ -7,12 +7,12 @@ std_msgs/Float32MultiArray で /drone/outer_motor_pwm へ転送。
 import os
 
 from ament_index_python.packages import get_package_share_directory
-from px4_msgs.msg import ActuatorMotors
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
 from std_msgs.msg import Float32MultiArray
 import yaml
 
+from px4_msgs.msg import ActuatorMotors
 from src.common.bridge_base import BridgeBase
 
 

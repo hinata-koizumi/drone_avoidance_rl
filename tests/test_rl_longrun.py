@@ -1,5 +1,6 @@
-from drone_sim_env import DroneSimEnv
 import numpy as np
+
+from drone_sim_env import DroneSimEnv
 
 
 def test_rl_longrun_stability():

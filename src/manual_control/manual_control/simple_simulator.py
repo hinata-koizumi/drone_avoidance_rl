@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
-import rclpy
-from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
-from rclpy.executors import MultiThreadedExecutor
-import numpy as np
 import time
 
 from geometry_msgs.msg import PoseStamped, TwistStamped
+import numpy as np
+import rclpy
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.node import Node
+from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import Imu
-from std_msgs.msg import Header, Float32
+from std_msgs.msg import Float32
 
 
 class SimpleDroneSimulator(Node):
@@ -298,7 +298,7 @@ class SimpleDroneSimulator(Node):
                 # 目標高度に近づいたら即座に重力と釣り合う推力に切り替え
                 if altitude_error < 0.2:  # 目標高度から0.2m以内の場合
                     thrust = hover_thrust
-                    self.get_logger().debug(f"Hover target reached, switching to hover thrust")
+                    self.get_logger().debug("Hover target reached, switching to hover thrust")
                 else:
                     # まだ目標高度に達していない場合は適度な推力
                     thrust = hover_thrust * 1.02  # 2%大きい推力（より保守的）
@@ -491,7 +491,7 @@ def main():
         try:
             if rclpy.ok():
                 rclpy.shutdown()
-        except Exception as e:
+        except Exception:
             # 既にシャットダウンされている場合は無視
             pass
 

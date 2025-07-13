@@ -3,11 +3,11 @@ Common utilities test suite for local GitHub Actions testing.
 Tests the common utility functions and base classes.
 """
 import pytest
-import numpy as np
+
+from src.common.common.bridge_base import BridgeBase
 
 # Import common utilities
 from src.common.common.utils import clamp
-from src.common.common.bridge_base import BridgeBase
 
 
 class TestCommonUtils:

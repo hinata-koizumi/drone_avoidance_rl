@@ -1,6 +1,5 @@
+
 from setuptools import setup
-import os
-from glob import glob
 
 package_name = 'common'
 
@@ -18,7 +17,7 @@ setup(
     entry_points={},
     data_files=[
         (f'share/{package_name}', ['package.xml']),
-        (f'share/ament_index/resource_index/packages', [f'resource/{package_name}'])
+        ('share/ament_index/resource_index/packages', [f'resource/{package_name}'])
     ],
     # Development mode options - remove deprecated options
     python_requires='>=3.8',

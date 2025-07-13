@@ -2,10 +2,10 @@
 Simulation launch test suite for local GitHub Actions testing.
 Tests the simulation launch files and configuration.
 """
+from pathlib import Path
+
 import pytest
 import yaml
-import os
-from pathlib import Path
 
 
 class TestSimulationLaunch:
@@ -56,9 +56,9 @@ class TestSimulationLaunch:
     
     def test_launch_files_importable(self):
         """Test that launch files can be imported without syntax errors."""
+        from importlib.machinery import SourceFileLoader
         import importlib.util
         from typing import cast
-        from importlib.machinery import ModuleSpec, SourceFileLoader
         
         # Test sim_all.launch.py
         try:

@@ -2,18 +2,20 @@
 Sample agents test suite for local GitHub Actions testing.
 Tests the sample agent implementations.
 """
-import pytest
-import numpy as np
-import torch
 import os
 import tempfile
-import shutil
+
+import numpy as np
+import pytest
 
 # Import sample agents
 from src.sample_agent.sample_cartpole_agent import (
-    RandomPolicyAgent, AlwaysRightAgent, LinearPolicyAgent,
-    run_episode, train_cartpole_agent, test_always_right_agent,
-    train_linear_policy_agent, save_state, load_state
+    AlwaysRightAgent,
+    LinearPolicyAgent,
+    RandomPolicyAgent,
+    load_state,
+    run_episode,
+    save_state,
 )
 
 

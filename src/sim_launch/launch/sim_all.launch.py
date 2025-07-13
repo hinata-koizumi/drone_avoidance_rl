@@ -5,7 +5,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, TextSubstitution
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 import yaml
 
@@ -24,8 +24,6 @@ def generate_launch_description() -> LaunchDescription:
     ]
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
-    gz_world = LaunchConfiguration('gz_world')
-    physics_engine = LaunchConfiguration('physics_engine')
 
     # Gazebo起動引数 - デフォルト値を直接指定
     gz_args_str = '-r ' + params['gz_world'] + ' --physics-engine ' + params['physics_engine']

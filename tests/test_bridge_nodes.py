@@ -2,23 +2,20 @@
 Bridge nodes test suite for local GitHub Actions testing.
 Tests the core functionality of all bridge nodes.
 """
+
 import pytest
 import rclpy
-from rclpy.node import Node
-from rclpy.executors import MultiThreadedExecutor
-import time
-import threading
 
-# Import bridge nodes
-from src.state_bridge.state_bridge.state_bridge import StateBridgeNode
+from drone_msgs.msg import DroneControlCommand
+
+# Import message types
+from px4_msgs.msg import ActuatorMotors, VehicleOdometry
 from src.angle_bridge.angle_bridge.main import AngleBridgeNode
 from src.command_bridge.command_bridge.main import CommandBridgeNode
 from src.outer_motor_bridge.outer_motor_bridge.main import OuterMotorBridge
 
-# Import message types
-from px4_msgs.msg import VehicleOdometry, ActuatorMotors
-from drone_msgs.msg import DroneControlCommand, DroneState
-from std_msgs.msg import Float64, Float32MultiArray
+# Import bridge nodes
+from src.state_bridge.state_bridge.state_bridge import StateBridgeNode
 
 
 class TestBridgeNodes:

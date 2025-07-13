@@ -1,6 +1,7 @@
-import os
-from setuptools import setup, find_packages
 from glob import glob
+import os
+
+from setuptools import find_packages, setup
 
 package_name = 'manual_control'
 
