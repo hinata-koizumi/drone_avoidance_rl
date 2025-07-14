@@ -5,7 +5,7 @@ WORKDIR /rl_ws
 
 # 必要最小限のPythonライブラリ（互換性のあるバージョン）
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
-    pip install --no-cache-dir torch==2.0.1+cpu -f https://download.pytorch.org/whl/cpu/torch_stable.html gymnasium>=0.29.0,<0.30.0 numpy && \
+    pip install --no-cache-dir torch==2.0.1+cpu -f https://download.pytorch.org/whl/cpu/torch_stable.html gymnasium==1.0.0 numpy && \
     rm -rf /tmp/* /var/tmp/*
 
 # デフォルトコマンド：5ステップだけ回して終了

@@ -32,7 +32,6 @@ def register_drone_env(max_episode_steps: int = 2000) -> None:
         id=ENV_ID,
         entry_point="drone_sim_env:DroneSimEnv",
         max_episode_steps=max_episode_steps,
-        order_enforce=True,
     )
 
 
