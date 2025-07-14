@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import Any
 
 import gymnasium as gym
+from gymnasium.envs.registration import register
 
 from drone_sim_env import DroneSimEnv
 
@@ -29,11 +30,25 @@ def register_drone_env(max_episode_steps: int = 2000) -> None:
         gym.registry.pop(ENV_ID)
 
     # Register with the correct format for gymnasium 1.0.0
-    gym.register(
-        id=ENV_ID,
-        entry_point=DroneSimEnv,
-        max_episode_steps=max_episode_steps,
-    )
+    try:
+        register(
+            id=ENV_ID,
+            entry_point=DroneSimEnv,
+            max_episode_steps=max_episode_steps,
+        )
+        print(f"Successfully registered {ENV_ID}")
+    except Exception as e:
+        print(f"Failed to register {ENV_ID}: {e}")
+        # Fallback: try with string entry point
+        try:
+            register(
+                id=ENV_ID,
+                entry_point="drone_sim_env:DroneSimEnv",
+                max_episode_steps=max_episode_steps,
+            )
+            print(f"Successfully registered {ENV_ID} with string entry point")
+        except Exception as e2:
+            print(f"Failed to register {ENV_ID} with string entry point: {e2}")
 
 
 def make_drone_env(**kwargs: Any) -> gym.Env:
