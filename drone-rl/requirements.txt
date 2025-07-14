@@ -1,6 +1,8 @@
-gymnasium==1.1.1
+# RL環境の依存関係 - 互換性を重視したバージョン指定
+gymnasium>=0.29.0,<0.30.0
 numpy>=1.24
 # Torch CPU or GPU variant is selected at build time; keep base specification.
 torch>=2.0
-ray[rllib]==2.10.0
+# Ray最新版（gymnasium 0.29.xと互換）
+ray[rllib]>=2.8.0
 tensorboard>=2.15 
