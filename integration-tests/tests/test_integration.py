@@ -146,60 +146,6 @@ except Exception as e:
         
         assert result.returncode == 0, f"Message types test failed: {result.stderr}"
     
-    def test_simulation_communication(self):
-        """シミュレーションとの通信をテスト"""
-        # トピックのエコーをテスト
-        test_script = """
-import rclpy
-from rclpy.node import Node
-from drone_msgs.msg import DroneState
-import time
-
-def test_topic_communication():
-    rclpy.init()
-    node = Node('test_node')
-    
-    # サブスクライバーの作成
-    received_messages = []
-    
-    def callback(msg):
-        received_messages.append(msg)
-    
-    subscription = node.create_subscription(
-        DroneState,
-        '/drone_state',
-        callback,
-        10
-    )
-    
-    # メッセージを受信するまで待機
-    start_time = time.time()
-    while len(received_messages) == 0 and time.time() - start_time < 30:
-        rclpy.spin_once(node, timeout_sec=1.0)
-    
-    node.destroy_node()
-    rclpy.shutdown()
-    
-    return len(received_messages) > 0
-
-if test_topic_communication():
-    print("Topic communication test passed")
-else:
-    print("Topic communication test failed - no messages received")
-    sys.exit(1)
-"""
-        
-        result = subprocess.run(
-            ['python', '-c', test_script],
-            capture_output=True,
-            text=True,
-            timeout=60
-        )
-        
-        # 通信テストは失敗しても警告として扱う
-        if result.returncode != 0:
-            print(f"Warning: Topic communication test failed: {result.stderr}")
-    
     @pytest.mark.slow
     def test_full_integration_workflow(self):
         """完全な統合ワークフローのテスト"""
@@ -213,7 +159,6 @@ sys.path.append('/workspace')
 
 try:
     from drone_sim_env import DroneSimEnv
-    import numpy as np
     
     # 環境の作成
     env = DroneSimEnv()

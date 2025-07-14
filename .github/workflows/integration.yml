@@ -29,7 +29,7 @@ jobs:
       uses: docker/setup-buildx-action@v3
     
     - name: Cache Docker layers
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -60,7 +60,7 @@ jobs:
         docker-compose down
     
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: integration-test-results
@@ -69,7 +69,7 @@ jobs:
           integration-tests/integration_logs.txt
     
     - name: Upload Docker logs
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: docker-logs
@@ -86,7 +86,7 @@ jobs:
         submodules: recursive
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
     
@@ -101,7 +101,7 @@ jobs:
         python tests/run_integration_tests.py --quick
     
     - name: Upload quick test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: quick-test-results
@@ -126,7 +126,7 @@ jobs:
         output: 'trivy-results.sarif'
     
     - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       if: always()
       with:
         sarif_file: 'trivy-results.sarif' 
