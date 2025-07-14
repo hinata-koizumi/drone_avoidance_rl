@@ -1,31 +1,4 @@
-angle_bridge:
+# Local rosdep rules for drone-msgs package
+drone_msgs:
   ubuntu:
-    jammy:
-      - python3
-      - ros-${ROS_DISTRO}-std-msgs
-
-command_bridge:
-  ubuntu:
-    jammy:
-      - python3
-      - ros-${ROS_DISTRO}-geometry-msgs
-      - ros-${ROS_DISTRO}-std-msgs
-
-outer_motor_bridge:
-  ubuntu:
-    jammy:
-      - python3
-      - ros-${ROS_DISTRO}-std-msgs
-
-state_bridge:
-  ubuntu:
-    jammy:
-      - python3
-      - ros-${ROS_DISTRO}-std-msgs
-
-# 他の bridge も同様に必要な依存を追加
-
-sim_launch:
-  ubuntu:
-    jammy:
-      - python3
+    jammy: [ros-humble-geometry-msgs]

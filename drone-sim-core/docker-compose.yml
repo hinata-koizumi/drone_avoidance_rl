@@ -8,19 +8,16 @@ x-common-env: &common-env
 x-common-volumes: &common-volumes
   - ./src:/workspace/src:ro
   - ./config:/workspace/config:ro
-  - ./custom_airframes:/workspace/custom_airframes:ro
-  - ./custom_model:/workspace/custom_model:ro
-  - ./models:/workspace/models:ro
 
 services:
-  # メッセージビルドサービス（全プロファイルで共通）
+  # メッセージビルドサービス
   msgs:
     build:
       context: .
       dockerfile: docker/Dockerfile.msgs
-      target: builder
+      target: runtime
     image: drone-avoidance:msgs
-    profiles: ["default", "test", "gpu"]
+    profiles: ["default", "test"]
     volumes: *common-volumes
     environment: *common-env
     command: ["tail", "-f", "/dev/null"]
@@ -30,138 +27,25 @@ services:
       timeout: 5s
       retries: 5
 
-  # シミュレーションサービス
-  sim:
-    build:
-      context: .
-      dockerfile: docker/px4-simulator/Dockerfile.px4_sitl
-      target: runtime
-    image: drone-avoidance:sim
-    profiles: ["default", "test", "gpu"]
-    depends_on:
-      msgs:
-        condition: service_healthy
-    volumes: *common-volumes
-    environment:
-      <<: *common-env
-      HEADLESS: 1
-      # テストプロファイル用の最適化
-      GAZEBO_VERBOSE: ${GAZEBO_VERBOSE:-0}
-      PX4_SITL_ARGS: ${PX4_SITL_ARGS:-}
-    command: >
-      bash -c "
-        source /opt/ros/humble/setup.sh &&
-        source /sim_ws/install/setup.sh &&
-        ros2 launch sim_launch sim_all.launch.py headless:=true"
-    healthcheck:
-      test: ["CMD", "bash", "-c", "ros2 topic list | grep /drone0/state"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Bridge サービス
   bridge:
     build:
       context: .
       dockerfile: docker/Dockerfile.bridge
-      target: builder
+      target: runtime
     image: drone-avoidance:bridge
-    profiles: ["default", "test", "gpu"]
-    depends_on:
-      sim:
-        condition: service_healthy
-    volumes: *common-volumes
-    environment: *common-env
-    command: >
-      bash -c "
-        source /opt/ros/humble/setup.sh &&
-        source /bridge_ws/install/setup.sh &&
-        ros2 run state_bridge state_bridge_node"
-    healthcheck:
-      test: ["CMD", "ros2 node list | grep state_bridge_node"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Manual Control サービス
-  manual-control:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.manual_control
-      target: runtime
-    image: drone-avoidance:manual-control
-    profiles: ["default"]
-    depends_on:
-      bridge:
-        condition: service_healthy
-    volumes: *common-volumes
-    environment: *common-env
-    ports:
-      - "8080:8080"  # Web UI
-    command: >
-      bash -c "
-        source /opt/ros/humble/setup.sh &&
-        source /workspace/install/setup.sh &&
-        ros2 run manual_control action_executor"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-  # テスト用軽量シミュレーション
-  test-sim:
-    build:
-      context: .
-      dockerfile: docker/px4-simulator/Dockerfile.px4_sitl
-      target: runtime
-    image: drone-avoidance:test-sim
-    profiles: ["test"]
+    profiles: ["default", "test"]
     depends_on:
       msgs:
         condition: service_healthy
     volumes: *common-volumes
-    environment:
-      <<: *common-env
-      HEADLESS: 1
-      TEST_MODE: 1
-      # テスト用の軽量設定
-      GAZEBO_VERBOSE: 0
-      PX4_SITL_ARGS: "-t"
-    command: >
-      bash -c "
-        source /opt/ros/humble/setup.sh &&
-        source /sim_ws/install/setup.sh &&
-        timeout 60 ros2 launch sim_launch sim_all.launch.py headless:=true test_mode:=true"
-    healthcheck:
-      test: ["CMD", "bash", "-c", "ros2 topic list | grep /drone0/state"]
-      interval: 5s
-      timeout: 3s
-      retries: 3
-
-  # テスト用 Bridge
-  test-bridge:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.bridge
-      target: builder
-    image: drone-avoidance:test-bridge
-    profiles: ["test"]
-    depends_on:
-      test-sim:
-        condition: service_healthy
-    volumes: *common-volumes
     environment: *common-env
-    command: >
-      bash -c "
-        source /opt/ros/humble/setup.sh &&
-        source /bridge_ws/install/setup.sh &&
-        timeout 30 ros2 run state_bridge state_bridge_node"
+    command: ["ros2", "run", "state_bridge", "state_bridge_node"]
     healthcheck:
-      test: ["CMD", "ros2 node list | grep state_bridge_node"]
-      interval: 5s
-      timeout: 3s
-      retries: 3
+      test: ["CMD", "ros2", "node", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 # ネットワーク設定
 networks:

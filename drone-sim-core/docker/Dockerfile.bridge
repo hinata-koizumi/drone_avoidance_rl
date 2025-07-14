@@ -1,17 +1,15 @@
-ARG GITHUB_REPOSITORY_OWNER=hinata-koizumi
-ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
 # syntax=docker/dockerfile:1.4
 ARG BUILDKIT_INLINE_CACHE=1
 
 # ビルドステージ
-FROM ${BASE_IMAGE} AS builder
+FROM ros:humble AS builder
+
+ARG ROS_DISTRO=humble
+ENV ROS_DISTRO=${ROS_DISTRO}
 
 USER root
 WORKDIR /bridge_ws
 
-COPY src/angle_bridge src/angle_bridge
-COPY src/command_bridge src/command_bridge
-COPY src/outer_motor_bridge src/outer_motor_bridge
 COPY src/state_bridge src/state_bridge
 COPY src/common src/common
 COPY src/drone_msgs src/drone_msgs
@@ -32,7 +30,10 @@ RUN rm -rf build/ install/ log/ && \
     find /usr -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
 # ランタイムステージ
-FROM ${BASE_IMAGE} AS runtime
+FROM ros:humble AS runtime
+
+ARG ROS_DISTRO=humble
+ENV ROS_DISTRO=${ROS_DISTRO}
 
 USER root
 WORKDIR /bridge_ws

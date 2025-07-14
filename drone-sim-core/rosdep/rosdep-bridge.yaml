@@ -1,65 +1,12 @@
+# Local rosdep rules for bridge packages
+state_bridge:
+  ubuntu:
+    jammy: [ros-humble-rclpy, ros-humble-std-msgs, ros-humble-geometry-msgs]
+
+common:
+  ubuntu:
+    jammy: [ros-humble-rclpy, ros-humble-std-msgs]
+
 px4_msgs:
-  type: "package"
   ubuntu:
-    apt:
-      packages: [ ros-humble-px4-msgs ]
-pytest:
-  ubuntu:
-    apt:
-      packages: [ python3-pytest ]
-ament_python:
-  type: "package"
-  ubuntu:
-    apt:
-      packages: [ python3-pip, python3-ament-package ]
-  debian:
-    apt:
-      packages: [ python3-pip ]
-  arch:
-    pacman:
-      packages: [ python-pip ]
-  fedora:
-    dnf:
-      packages: [ python3-pip ]
-  macos:
-    homebrew:
-      packages: [ python3 ]
-symforce:
-  pip:
-    packages: [symforce]
-ros_gz_bridge:
-  ubuntu:
-    apt:
-      packages: [ ros-gz-bridge ]
-  debian:
-    apt:
-      packages: [ ros-gz-bridge ]
-  arch:
-    pacman:
-      packages: [ ros-gz-bridge ]
-  fedora:
-    dnf:
-      packages: [ ros-gz-bridge ]
-  macos:
-    homebrew:
-      packages: [ ros-gz-bridge ]
-ros-humble-ros-gz-bridge:
-  ubuntu:
-    apt:
-      packages: [ ros-gz-bridge ]
-setuptools:
-  ubuntu:
-    apt:
-      packages: [python3-setuptools]
-  debian:
-    apt:
-      packages: [python3-setuptools]
-  arch:
-    pacman:
-      packages: [python-setuptools]
-  fedora:
-    dnf:
-      packages: [python3-setuptools]
-  macos:
-    homebrew:
-      packages: [setuptools]
+    jammy: []

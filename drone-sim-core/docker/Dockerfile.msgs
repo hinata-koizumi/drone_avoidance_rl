@@ -1,10 +1,11 @@
-ARG GITHUB_REPOSITORY_OWNER=hinata-koizumi
-ARG BASE_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/drone-avoidance-base:2.0.1
 # syntax=docker/dockerfile:1.4
 ARG BUILDKIT_INLINE_CACHE=1
 
 # ビルドステージ
-FROM ${BASE_IMAGE} AS builder
+FROM ros:humble AS builder
+
+ARG ROS_DISTRO=humble
+ENV ROS_DISTRO=${ROS_DISTRO}
 
 USER root
 WORKDIR /msgs_ws
@@ -23,7 +24,10 @@ RUN mkdir -p /etc/ros/rosdep/sources.list.d && \
     find /usr -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
 # ランタイムステージ
-FROM ${BASE_IMAGE} AS runtime
+FROM ros:humble AS runtime
+
+ARG ROS_DISTRO=humble
+ENV ROS_DISTRO=${ROS_DISTRO}
 
 USER root
 WORKDIR /msgs_ws

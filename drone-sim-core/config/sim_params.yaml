@@ -1,60 +1,15 @@
-# シミュレーション共通パラメータ
-cmd_topic: "/drone/inner_propeller_cmd"  # [str] 内部プロペラ指令トピック
-fan1_topic: "/drone/servo/fan1_tilt"      # [str] ファン1角度トピック
-fan2_topic: "/drone/servo/fan2_tilt"      # [str] ファン2角度トピック
-input_topic: "/drone/command"             # [str] コマンド入力トピック
-output_topic: "/drone/px4/actuator_motors" # [str] PX4出力トピック
-state_input_topic: "/drone/px4/odom"      # [str] PX4オドメトリ入力
-state_output_topic: "/drone/state"        # [str] 状態出力トピック
-outer_motor_input_topic: "/drone/px4/actuator_motors" # [str] 外周ロータ入力
-outer_motor_output_topic: "/drone/outer_motor_pwm"    # [str] 外周PWM出力
-physics_engine: "bullet"                  # [str] 物理エンジン
-model_path: "/models/drone_model"         # [str] モデルパス
-gz_world: "src/sim_launch/resource/empty_custom.sdf" # [str] Gazeboワールド
+# Simulation parameters
+simulation:
+  headless: true
+  gazebo_verbose: false
+  px4_sitl_args: ""
 
-# 報酬重み（型・説明付き）
-reward:
-  ori:    # [float] 姿勢誤差ペナルティ
-    value: -1.0
-    type: float
-    desc: "姿勢誤差に対するペナルティ重み"
-  pos:    # [float] 位置誤差ペナルティ
-    value: -1.0
-    type: float
-    desc: "位置誤差に対するペナルティ重み"
-  smooth: # [float] 行動変化ペナルティ
-    value: -0.02
-    type: float
-    desc: "行動変化（スムーズさ）に対するペナルティ重み"
+# ROS parameters
+ros:
+  domain_id: 0
+  topic_prefix: "/drone0"
 
-# 物理パラメータ例
-physics:
-  mass:
-    value: 1.0
-    type: float
-    desc: "機体質量[kg]"
-  inertia:
-    value: 0.1
-    type: float
-    desc: "慣性モーメント（簡易）"
-
-# 風・乱流パラメータ（シンプル環境用、全て0.0で明示）
-wind_max: 0.0      # [float] 最大風速[m/s]
-gust_max: 0.0      # [float] 最大突風[m/s]
-gust_prob: 0.0     # [float] 突風発生確率
-
-# ブリッジトピックリスト（自動生成用）
-bridge_topics:
-  - topic: "/clock"
-    ros_type: "rosgraph_msgs/msg/Clock"
-    ign_type: "ignition.msgs.Clock"
-    direction: "bidirectional"
-  - topic: "/drone/inner_propeller_cmd"
-    ros_type: "drone_msgs/msg/DroneControlCommand"
-    ign_type: "drone_msgs.msgs.DroneControlCommand"
-    direction: "ros_to_ign"
-  - topic: "/drone/state"
-    ros_type: "drone_msgs/msg/DroneState"
-    ign_type: "drone_msgs.msgs.DroneState"
-    direction: "ign_to_ros"
-  # 必要に応じて他のトピックも追加 
+# Bridge parameters
+bridge:
+  state_publish_rate: 10.0  # Hz
+  control_timeout: 1.0      # seconds 
