@@ -1,0 +1,132 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # 毎日午前2時に実行
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+env:
+  ROS_DOMAIN_ID: 0
+
+jobs:
+  integration-test:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+    
+    - name: Build and test integration environment
+      run: |
+        # サブモジュールの更新
+        git submodule update --init --recursive
+        
+        # Docker Composeで統合テストを実行
+        cd integration-tests
+        docker-compose build
+        docker-compose up -d
+        
+        # サービスの起動を待つ
+        echo "Waiting for services to start..."
+        sleep 60
+        
+        # 統合テストの実行
+        docker-compose run --rm integration-test
+        
+        # 結果の保存
+        docker-compose logs > integration_logs.txt
+        
+        # クリーンアップ
+        docker-compose down
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: integration-test-results
+        path: |
+          integration-tests/results/
+          integration-tests/integration_logs.txt
+    
+    - name: Upload Docker logs
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: docker-logs
+        path: integration-tests/integration_logs.txt
+
+  quick-integration-test:
+    name: Quick Integration Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        cd integration-tests
+        pip install -r requirements-test.txt
+    
+    - name: Run quick integration tests
+      run: |
+        cd integration-tests
+        python tests/run_integration_tests.py --quick
+    
+    - name: Upload quick test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: quick-test-results
+        path: integration-tests/results/
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif' 

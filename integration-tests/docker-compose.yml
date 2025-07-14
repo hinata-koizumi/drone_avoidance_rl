@@ -1,51 +1,102 @@
 version: '3.8'
 
 services:
+  # メッセージ定義のビルド
   msgs:
     build:
-      context: ./external/drone-msgs
-      dockerfile: Dockerfile.msgs
-    image: drone-msgs:ci
+      context: ../drone-msgs
+      dockerfile: Dockerfile
+    image: drone-msgs:integration
     healthcheck:
-      test: ["CMD", "bash", "-c", "ls /msgs_ws/install/lib/python*/site-packages/drone_msgs"]
+      test: ["CMD", "bash", "-c", "ls /opt/ros/humble/lib/python*/site-packages/drone_msgs"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  # シミュレーション環境
   sim:
     build:
-      context: ./external/drone-sim-core
+      context: ../drone-sim-core
       dockerfile: docker/Dockerfile.base
-    image: drone-sim-core:ci
+    image: drone-sim-core:integration
     depends_on:
       msgs:
         condition: service_healthy
     environment:
       ROS_DOMAIN_ID: 0
+      IGN_GUI_PLUGIN_PATH: /opt/ros/humble/lib/ign_gazebo_plugins
+    volumes:
+      - ../drone-sim-core:/workspace
     command: >
-      bash -c "source /opt/ros/humble/setup.sh && ros2 launch sim_launch sim_all.launch.py headless:=true"
+      bash -c "
+        source /opt/ros/humble/setup.sh &&
+        source /workspace/install/setup.sh &&
+        ros2 launch sim_launch gz_sim.launch.py headless:=true
+      "
+    healthcheck:
+      test: ["CMD", "ros2", "node", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # ブリッジノード
   bridge:
     build:
-      context: ./external/drone-sim-core
+      context: ../drone-sim-core
       dockerfile: docker/Dockerfile.bridge
-    image: drone-bridge:ci
+    image: drone-bridge:integration
     depends_on:
       sim:
         condition: service_healthy
     environment:
       ROS_DOMAIN_ID: 0
+    volumes:
+      - ../drone-sim-core:/workspace
     command: >
-      bash -c "source /opt/ros/humble/setup.sh && ros2 run state_bridge state_bridge_node"
+      bash -c "
+        source /opt/ros/humble/setup.sh &&
+        source /workspace/install/setup.sh &&
+        ros2 run state_bridge state_bridge_node
+      "
+    healthcheck:
+      test: ["CMD", "ros2", "topic", "list", "|", "grep", "drone_state"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
 
+  # RLエージェント
   rl-agent:
     build:
-      context: ./external/drone-rl
-      dockerfile: docker/rl-agent-cpu/Dockerfile
-    image: drone-rl:ci
+      context: ../drone-rl
+      dockerfile: docker/Dockerfile
+    image: drone-rl:integration
     depends_on:
       bridge:
         condition: service_healthy
     environment:
+      ROS_DOMAIN_ID: 0
       PYTHONPATH: /workspace
-    command: ["python", "-m", "pytest", "tests/test_gym_api.py", "-q"] 
+    volumes:
+      - ../drone-rl:/workspace
+    command: ["python", "-m", "pytest", "tests/test_integration.py", "-v"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import gymnasium; print('RL env ready')"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+
+  # 統合テスト実行
+  integration-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    image: integration-test:latest
+    depends_on:
+      rl-agent:
+        condition: service_healthy
+    environment:
+      ROS_DOMAIN_ID: 0
+    volumes:
+      - ./tests:/workspace/tests
+      - ./results:/workspace/results
+    command: ["python", "tests/run_integration_tests.py"] 

@@ -1,0 +1,25 @@
+FROM python:3.10-slim
+
+# システム依存関係のインストール
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# 作業ディレクトリの設定
+WORKDIR /workspace
+
+# Python依存関係のインストール
+COPY requirements-test.txt .
+RUN pip install --no-cache-dir -r requirements-test.txt
+
+# テストスクリプトのコピー
+COPY tests/ ./tests/
+COPY scripts/ ./scripts/
+
+# 実行権限の付与
+RUN chmod +x scripts/*.sh
+
+# デフォルトコマンド
+CMD ["python", "tests/run_integration_tests.py"] 

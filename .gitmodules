@@ -1,3 +1,15 @@
 [submodule "src/px4_msgs"]
 	path = src/px4_msgs
 	url = https://github.com/PX4/px4_msgs.git
+
+[submodule "drone-msgs"]
+	path = drone-msgs
+	url = https://github.com/your-org/drone-msgs.git
+
+[submodule "drone-sim-core"]
+	path = drone-sim-core
+	url = https://github.com/your-org/drone-sim-core.git
+
+[submodule "drone-rl"]
+	path = drone-rl
+	url = https://github.com/your-org/drone-rl.git
