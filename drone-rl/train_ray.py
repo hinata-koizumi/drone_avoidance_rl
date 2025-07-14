@@ -28,6 +28,9 @@ def parse_args() -> argparse.Namespace:
         "--output", type=Path, default=Path("./rllib_results"), help="Directory to store checkpoints & logs."
     )
     parser.add_argument("--stop-reward", type=float, default=None, help="Stop when mean reward reaches value.")
+    parser.add_argument("--target-pos", type=float, nargs=3, default=[5.0,0.0,4.0], help="Target position [x y z]")
+    parser.add_argument("--init-pos", type=float, nargs=3, default=[0.0,0.0,4.0], help="Initial position [x y z]")
+    parser.add_argument("--randomize", action="store_true", help="Enable domain randomization")
     return parser.parse_args()
 
 
@@ -38,9 +41,21 @@ def main() -> None:
     register_drone_env()
     ray.init(ignore_reinit_error=True)
 
+    env_config = {
+        "target_pos": args.target_pos,
+        "init_pos": args.init_pos,
+    }
+    if args.randomize:
+        env_config["randomization_params"] = {
+            "init_pos_range": [[-2, -2, 3.5], [2, 2, 4.5]],
+            "target_pos_range": [[4, -2, 3.5], [6, 2, 4.5]],
+            "mass_range": [0.6, 0.7],
+            "wind_range": [[-1, -1, 0], [1, 1, 0]],
+        }
+
     config = (
         PPOConfig()
-        .environment(env=args.env_id)
+        .environment(env=args.env_id, env_config=env_config)
         .framework("torch")
         .rollouts(num_rollout_workers=args.num_workers)
     )
