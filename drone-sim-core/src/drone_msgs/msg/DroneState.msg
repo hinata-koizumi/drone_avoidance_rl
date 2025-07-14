@@ -1,5 +1,6 @@
 # DroneState.msg
 # Drone state information
+import std_msgs/Header.msg
 
 Header header
 

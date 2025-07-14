@@ -5,6 +5,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
+find_package(std_msgs REQUIRED)
 
 # メッセージファイルの設定
 set(msg_files
@@ -15,11 +16,11 @@ set(msg_files
 # ROS2標準のメッセージ生成設定
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
-  DEPENDENCIES geometry_msgs builtin_interfaces
+  DEPENDENCIES geometry_msgs builtin_interfaces std_msgs
   ADD_LINTER_TESTS
 )
 
 # 生成されたメッセージ用のランタイム依存関係をエクスポート
-ament_export_dependencies(rosidl_default_runtime geometry_msgs builtin_interfaces)
+ament_export_dependencies(rosidl_default_runtime geometry_msgs builtin_interfaces std_msgs)
 
 ament_package() 
