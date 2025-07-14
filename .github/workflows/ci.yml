@@ -19,11 +19,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
-      with:
-        path: drone-msgs
     - name: Setup ROS 2
       run: |
-        cd drone-msgs
         sudo apt update
         sudo apt install -y software-properties-common
         sudo add-apt-repository ppa:ros/ppa
@@ -40,8 +37,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
-      with:
-        path: drone-sim-core
     - name: Setup Docker Buildx
       uses: docker/setup-buildx-action@v3
     - name: Test drone-sim-core
@@ -54,15 +49,21 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
-      with:
-        path: drone-rl
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
+    - name: Debug directory structure
+      run: |
+        pwd
+        ls -la
+        echo "=== drone-rl contents ==="
+        ls -la drone-rl/ || echo "drone-rl directory not found"
     - name: Install dependencies
       run: |
         cd drone-rl
+        pwd
+        ls -la
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Test drone-rl
