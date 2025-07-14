@@ -61,7 +61,7 @@ echo "=== System Requirements ==="
 
 # システムコマンドの確認
 check_command "docker" "Docker" && ((passed++)) || ((failed++))
-check_command "docker-compose" "Docker Compose" && ((passed++)) || ((failed++))
+check_command "docker" "Docker Compose" && ((passed++)) || ((failed++))
 check_command "git" "Git" && ((passed++)) || ((failed++))
 check_command "python3" "Python 3" && ((passed++)) || ((failed++))
 

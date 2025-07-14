@@ -43,21 +43,21 @@ jobs:
         
         # Docker Composeで統合テストを実行
         cd integration-tests
-        docker-compose build
-        docker-compose up -d
+        docker compose build
+        docker compose up -d
         
         # サービスの起動を待つ
         echo "Waiting for services to start..."
         sleep 60
         
         # 統合テストの実行
-        docker-compose run --rm integration-test
+        docker compose run --rm integration-test
         
         # 結果の保存
-        docker-compose logs > integration_logs.txt
+        docker compose logs > integration_logs.txt
         
         # クリーンアップ
-        docker-compose down
+        docker compose down
     
     - name: Upload test results
       uses: actions/upload-artifact@v4

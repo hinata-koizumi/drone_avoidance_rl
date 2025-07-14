@@ -157,7 +157,7 @@ except Exception as e:
         try:
             # Docker Composeサービスの状態確認
             result = subprocess.run(
-                ['docker-compose', 'ps'],
+                ['docker', 'compose', 'ps'],
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -182,7 +182,7 @@ except Exception as e:
             # 基本的なシステムコマンドの確認
             commands = [
                 ['docker', '--version'],
-                ['docker-compose', '--version'],
+                ['docker', 'compose', '--version'],
                 ['python', '--version'],
                 ['git', '--version']
             ]
