@@ -28,9 +28,10 @@ def register_drone_env(max_episode_steps: int = 2000) -> None:
     if ENV_ID in gym.registry:
         gym.registry.pop(ENV_ID)
 
+    # Register with the correct format for gymnasium 1.0.0
     gym.register(
         id=ENV_ID,
-        entry_point="gym_env:make_drone_env",
+        entry_point=DroneSimEnv,
         max_episode_steps=max_episode_steps,
     )
 

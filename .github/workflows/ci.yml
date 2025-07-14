@@ -81,6 +81,10 @@ jobs:
         # Register environment
         echo "=== Registering environment ==="
         python -c "from gym_env import register_drone_env; register_drone_env(); print('Environment registered')"
+        # Debug: Check registry
+        echo "=== Checking registry ==="
+        python -c "import gymnasium as gym; print('Available envs:', list(gym.registry.keys())[:10])"
+        python -c "import gymnasium as gym; print('DroneSimEnv-v0 in registry:', 'DroneSimEnv-v0' in gym.registry)"
         # Test environment creation
         echo "=== Testing environment creation ==="
         python -c "import gymnasium as gym; env=gym.make('DroneSimEnv-v0'); print('Environment test OK')"
