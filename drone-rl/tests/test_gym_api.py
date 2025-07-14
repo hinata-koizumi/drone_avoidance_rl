@@ -5,15 +5,15 @@ import pytest
 import numpy as np
 import gymnasium as gym
 
-from gym_env import register_drone_env, ENV_ID
+from gym_env import register_drone_env, create_env, ENV_ID
 
 
 def test_environment_registration():
     """Test that the environment can be registered and created."""
     register_drone_env()
     
-    # Should be able to make the environment
-    env = gym.make(ENV_ID)
+    # Should be able to make the environment using create_env
+    env = create_env()
     assert env is not None
     assert hasattr(env, 'reset')
     assert hasattr(env, 'step')
@@ -26,7 +26,7 @@ def test_environment_registration():
 def test_environment_reset():
     """Test that environment reset works correctly."""
     register_drone_env()
-    env = gym.make(ENV_ID)
+    env = create_env()
     
     obs, info = env.reset()
     
@@ -41,7 +41,7 @@ def test_environment_reset():
 def test_environment_step():
     """Test that environment step works correctly."""
     register_drone_env()
-    env = gym.make(ENV_ID)
+    env = create_env()
     
     obs, info = env.reset()
     
@@ -65,7 +65,7 @@ def test_environment_step():
 def test_action_space():
     """Test that action space is correctly defined."""
     register_drone_env()
-    env = gym.make(ENV_ID)
+    env = create_env()
     
     # Check action space properties
     assert isinstance(env.action_space, gym.spaces.Box)
@@ -84,7 +84,7 @@ def test_action_space():
 def test_observation_space():
     """Test that observation space is correctly defined."""
     register_drone_env()
-    env = gym.make(ENV_ID)
+    env = create_env()
     
     # Check observation space properties
     assert isinstance(env.observation_space, gym.spaces.Box)

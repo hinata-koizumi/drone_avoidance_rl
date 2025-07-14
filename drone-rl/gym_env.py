@@ -39,16 +39,7 @@ def register_drone_env(max_episode_steps: int = 2000) -> None:
         print(f"Successfully registered {ENV_ID}")
     except Exception as e:
         print(f"Failed to register {ENV_ID}: {e}")
-        # Fallback: try with string entry point
-        try:
-            register(
-                id=ENV_ID,
-                entry_point="drone_sim_env:DroneSimEnv",
-                max_episode_steps=max_episode_steps,
-            )
-            print(f"Successfully registered {ENV_ID} with string entry point")
-        except Exception as e2:
-            print(f"Failed to register {ENV_ID} with string entry point: {e2}")
+        print("Using direct environment creation instead")
 
 
 def make_drone_env(**kwargs: Any) -> gym.Env:
@@ -57,3 +48,13 @@ def make_drone_env(**kwargs: Any) -> gym.Env:
     Parameters are forwarded to :class:`DroneSimEnv`.
     """
     return DroneSimEnv(**kwargs)
+
+
+def create_env(env_id: str = ENV_ID, **kwargs: Any) -> gym.Env:
+    """Create environment with fallback to direct creation if registry fails."""
+    try:
+        return gym.make(env_id, **kwargs)
+    except Exception as e:
+        print(f"Failed to create environment from registry: {e}")
+        print("Creating environment directly")
+        return DroneSimEnv(**kwargs)
