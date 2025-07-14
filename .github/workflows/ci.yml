@@ -19,11 +19,13 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
-    - name: Setup ROS 2
+    - name: Setup ROS 2 Humble
       run: |
+        # Ubuntu 22.04用のROS 2 Humbleインストール
         sudo apt update
-        sudo apt install -y software-properties-common
-        sudo add-apt-repository ppa:ros/ppa
+        sudo apt install -y software-properties-common curl gnupg lsb-release
+        sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
         sudo apt update
         sudo apt install -y ros-humble-ros-base python3-colcon-common-extensions
     - name: Test drone-msgs
