@@ -18,9 +18,9 @@ ament_python_install_package(${PROJECT_NAME})
 # )
 
 # 起動ファイルのインストール
-install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME}
-)
+# install(DIRECTORY
+#   launch
+#   DESTINATION share/${PROJECT_NAME}
+# )
 
 ament_package() 
