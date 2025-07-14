@@ -11,6 +11,7 @@ import subprocess
 import requests
 import json
 import logging
+import argparse
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime
@@ -34,9 +35,10 @@ class TestResult:
 class IntegrationTestRunner:
     """統合テスト実行クラス"""
     
-    def __init__(self):
+    def __init__(self, quick_mode: bool = False):
         self.results: List[TestResult] = []
         self.ros_domain_id = os.getenv('ROS_DOMAIN_ID', '0')
+        self.quick_mode = quick_mode
         
     def run_test(self, test_name: str, test_func, timeout: int = 300) -> TestResult:
         """個別テストを実行"""
@@ -175,6 +177,53 @@ except Exception as e:
         except subprocess.TimeoutExpired:
             raise Exception("Timeout while checking Docker services")
     
+    def test_basic_system_health(self) -> None:
+        """基本的なシステムヘルスチェック"""
+        try:
+            # 基本的なシステムコマンドの確認
+            commands = [
+                ['docker', '--version'],
+                ['docker-compose', '--version'],
+                ['python', '--version'],
+                ['git', '--version']
+            ]
+            
+            for cmd in commands:
+                result = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                
+                if result.returncode != 0:
+                    raise Exception(f"Command {cmd[0]} failed: {result.stderr}")
+                    
+            logger.info("Basic system health check passed")
+            
+        except subprocess.TimeoutExpired:
+            raise Exception("Timeout while checking system health")
+    
+    def test_file_structure(self) -> None:
+        """ファイル構造の確認"""
+        try:
+            required_files = [
+                'docker-compose.yml',
+                'requirements-test.txt',
+                'Dockerfile.test',
+                'tests/run_integration_tests.py',
+                'tests/test_integration.py'
+            ]
+            
+            for file_path in required_files:
+                if not os.path.exists(file_path):
+                    raise Exception(f"Required file {file_path} not found")
+                    
+            logger.info("File structure check passed")
+            
+        except Exception as e:
+            raise Exception(f"File structure check failed: {str(e)}")
+    
     def generate_report(self) -> None:
         """テスト結果レポートの生成"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -186,6 +235,7 @@ except Exception as e:
         # レポートデータの準備
         report_data = {
             "timestamp": timestamp,
+            "quick_mode": self.quick_mode,
             "total_tests": len(self.results),
             "passed": len([r for r in self.results if r.status == 'PASS']),
             "failed": len([r for r in self.results if r.status == 'FAIL']),
@@ -210,6 +260,7 @@ except Exception as e:
         logger.info("=" * 50)
         logger.info("INTEGRATION TEST SUMMARY")
         logger.info("=" * 50)
+        logger.info(f"Mode: {'Quick' if self.quick_mode else 'Full'}")
         logger.info(f"Total tests: {report_data['total_tests']}")
         logger.info(f"Passed: {report_data['passed']}")
         logger.info(f"Failed: {report_data['failed']}")
@@ -230,17 +281,30 @@ except Exception as e:
 
 def main():
     """メイン実行関数"""
-    logger.info("Starting integration tests...")
+    parser = argparse.ArgumentParser(description='Integration Test Runner')
+    parser.add_argument('--quick', action='store_true', help='Run quick tests only')
+    args = parser.parse_args()
     
-    runner = IntegrationTestRunner()
+    logger.info("Starting integration tests...")
+    logger.info(f"Quick mode: {args.quick}")
+    
+    runner = IntegrationTestRunner(quick_mode=args.quick)
     
     # テストの実行
-    tests = [
-        ("Docker Services", runner.test_docker_services, 60),
-        ("ROS2 Nodes", runner.test_ros2_nodes, 120),
-        ("ROS2 Topics", runner.test_ros2_topics, 120),
-        ("Gym Environment", runner.test_gym_environment, 180),
-    ]
+    if args.quick:
+        # クイックテスト（基本的なチェックのみ）
+        tests = [
+            ("Basic System Health", runner.test_basic_system_health, 30),
+            ("File Structure", runner.test_file_structure, 30),
+        ]
+    else:
+        # 完全なテスト
+        tests = [
+            ("Docker Services", runner.test_docker_services, 60),
+            ("ROS2 Nodes", runner.test_ros2_nodes, 120),
+            ("ROS2 Topics", runner.test_ros2_topics, 120),
+            ("Gym Environment", runner.test_gym_environment, 180),
+        ]
     
     for test_name, test_func, timeout in tests:
         result = runner.run_test(test_name, test_func, timeout)
