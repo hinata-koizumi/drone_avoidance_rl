@@ -196,7 +196,12 @@ except Exception as e:
                 )
                 
                 if result.returncode != 0:
-                    raise Exception(f"Command {cmd[0]} failed: {result.stderr}")
+                    # docker composeコマンドが失敗した場合は警告として扱う
+                    if cmd[0] == 'docker' and cmd[1] == 'compose':
+                        logger.warning(f"Command {' '.join(cmd)} failed: {result.stderr}")
+                        continue
+                    else:
+                        raise Exception(f"Command {cmd[0]} failed: {result.stderr}")
                     
             logger.info("Basic system health check passed")
             

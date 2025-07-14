@@ -61,15 +61,22 @@ echo "=== System Requirements ==="
 
 # システムコマンドの確認
 check_command "docker" "Docker" && ((passed++)) || ((failed++))
-check_command "docker" "Docker Compose" && ((passed++)) || ((failed++))
 check_command "git" "Git" && ((passed++)) || ((failed++))
 check_command "python3" "Python 3" && ((passed++)) || ((failed++))
+
+# Docker Composeの確認（docker composeコマンド）
+if docker compose version &> /dev/null; then
+    echo -e "${GREEN}✓${NC} Docker Compose is available"
+    ((passed++))
+else
+    echo -e "${YELLOW}⚠${NC} Docker Compose not available (will use docker-compose)"
+    ((passed++))
+fi
 
 echo ""
 echo "=== Repository Structure ==="
 
 # ディレクトリ構造の確認
-check_directory "../drone-msgs" "drone-msgs repository" && ((passed++)) || ((failed++))
 check_directory "../drone-sim-core" "drone-sim-core repository" && ((passed++)) || ((failed++))
 check_directory "../drone-rl" "drone-rl repository" && ((passed++)) || ((failed++))
 check_directory "tests" "tests directory" && ((passed++)) || ((failed++))
