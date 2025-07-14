@@ -12,10 +12,10 @@ find_package(drone_msgs REQUIRED)
 ament_python_install_package(${PROJECT_NAME})
 
 # 実行ファイルのインストール
-install(TARGETS
-  state_bridge_node
-  DESTINATION lib/${PROJECT_NAME}
-)
+# install(TARGETS
+#   state_bridge_node
+#   DESTINATION lib/${PROJECT_NAME}
+# )
 
 # 起動ファイルのインストール
 install(DIRECTORY
