@@ -1,0 +1,21 @@
+{
+  "timestamp": "20250714_122556",
+  "quick_mode": true,
+  "total_tests": 2,
+  "passed": 2,
+  "failed": 0,
+  "results": [
+    {
+      "test_name": "Basic System Health",
+      "status": "PASS",
+      "duration": 0.09911894798278809,
+      "error_message": null
+    },
+    {
+      "test_name": "File Structure",
+      "status": "PASS",
+      "duration": 5.984306335449219e-05,
+      "error_message": null
+    }
+  ]
+}

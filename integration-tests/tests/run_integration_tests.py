@@ -227,10 +227,17 @@ except Exception as e:
     def generate_report(self) -> None:
         """テスト結果レポートの生成"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        report_file = f"/workspace/results/integration_test_report_{timestamp}.json"
+        
+        # 結果ディレクトリのパスを環境に応じて設定
+        if os.path.exists("/workspace"):
+            results_dir = "/workspace/results"
+        else:
+            results_dir = "results"
+        
+        report_file = f"{results_dir}/integration_test_report_{timestamp}.json"
         
         # 結果ディレクトリの作成
-        os.makedirs("/workspace/results", exist_ok=True)
+        os.makedirs(results_dir, exist_ok=True)
         
         # レポートデータの準備
         report_data = {
