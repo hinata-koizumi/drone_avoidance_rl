@@ -71,9 +71,21 @@ jobs:
     - name: Test drone-rl
       run: |
         cd drone-rl
-        # Register environment and run tests
-        python -c "from gym_env import register_drone_env; register_drone_env()"
+        # Debug: Check if files exist
+        echo "=== Checking files ==="
+        ls -la
+        echo "=== Checking imports ==="
+        python -c "import sys; print('Python path:', sys.path)"
+        python -c "import gym_env; print('gym_env imported successfully')"
+        python -c "import drone_sim_env; print('drone_sim_env imported successfully')"
+        # Register environment
+        echo "=== Registering environment ==="
+        python -c "from gym_env import register_drone_env; register_drone_env(); print('Environment registered')"
+        # Test environment creation
+        echo "=== Testing environment creation ==="
         python -c "import gymnasium as gym; env=gym.make('DroneSimEnv-v0'); print('Environment test OK')"
+        # Run pytest
+        echo "=== Running pytest ==="
         python -m pytest tests/test_gym_api.py -v
     - name: Build Docker image
       run: |
