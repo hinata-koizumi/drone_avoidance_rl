@@ -83,43 +83,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # RL Agent サービス（GPU対応）
-  rl-agent:
-    build:
-      context: .
-      dockerfile: docker/rl-agent/Dockerfile
-      target: runtime
-    image: drone-avoidance:rl-agent
-    profiles: ["default", "gpu"]
-    depends_on:
-      bridge:
-        condition: service_healthy
-    volumes: *common-volumes
-    environment:
-      <<: *common-env
-      # GPU プロファイル用の環境変数
-      CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES:-0}
-      NCCL_DEBUG: ${NCCL_DEBUG:-INFO}
-      NCCL_IB_DISABLE: ${NCCL_IB_DISABLE:-1}
-      NCCL_P2P_DISABLE: ${NCCL_P2P_DISABLE:-1}
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: ${GPU_COUNT:-1}
-              capabilities: [gpu]
-    command: >
-      bash -c "
-        source /opt/ros/humble/setup.sh &&
-        source /rl_ws/install/setup.sh &&
-        python3 /workspace/src/train_agent.py"
-    healthcheck:
-      test: ["CMD", "python3", "-c", "import torch; print('GPU available:', torch.cuda.is_available())"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   # Manual Control サービス
   manual-control:
     build:

@@ -12,7 +12,7 @@ fi
 if [ -z "$PYTHONPATH" ]; then
   export PYTHONPATH="/drone_ws/src"
 else
-  export PYTHONPATH="/drone_ws/src:$PYTHONPATH"
+  export PYTHONPATH="/drone_ws:/drone_ws/src:${PYTHONPATH:-}"
 fi
 
 exec "$@"

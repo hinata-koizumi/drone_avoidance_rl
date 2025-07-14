@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        profile: [default, test]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker images
+      run: |
+        docker compose --profile ${{ matrix.profile }} build --no-cache
+
+    - name: Run integration tests
+      run: |
+        docker compose --profile test up --abort-on-container-exit --exit-code-from test-bridge
+        docker compose --profile test down
+
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check Docker Compose syntax
+      run: |
+        docker compose config
+
+    - name: Check Makefile targets
+      run: |
+        make help
+
+    - name: Validate package.xml files
+      run: |
+        find . -name "package.xml" -exec echo "Checking {}" \; -exec head -5 {} \; 

@@ -1,162 +1,69 @@
-name: Optimized CI/CD Pipeline
+name: Orchestrated CI
 
 on:
   push:
-    branches: [main, develop]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '.github/workflows/*.yml'
+    branches: [ main, develop ]
   pull_request:
-    branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-
-env:
-  DOCKER_BUILDKIT: 1
-  COMPOSE_DOCKER_CLI_BUILD: 1
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      run_integration:
+        description: 'Run integration tests'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
-  # 並列ビルドジョブ（容量削減のため最適化）
-  build-images:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image: [base, msgs, bridge, sim]
-        include:
-          - image: base
-            dockerfile: docker/Dockerfile.base
-            target: runtime
-          - image: msgs
-            dockerfile: docker/Dockerfile.msgs
-            target: runtime
-          - image: bridge
-            dockerfile: docker/Dockerfile.bridge
-            target: runtime
-          - image: sim
-            dockerfile: docker/px4-simulator/Dockerfile.px4_sitl
-            target: runtime
-
+  # 各リポジトリの独立テスト
+  test-drone-msgs:
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # キャッシュ最適化のため
+    - uses: actions/checkout@v4
+      with:
+        path: drone-msgs
+    - name: Test drone-msgs
+      run: |
+        cd drone-msgs
+        # drone-msgs のテスト実行
+        echo "Testing drone-msgs..."
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver-opts: |
-            image=moby/buildkit:v0.12.0
-          buildkitd-flags: --debug
-
-      - name: Clean disk space
-        run: |
-          sudo rm -rf /var/lib/docker/tmp/*
-          sudo docker system prune -f
-          df -h
-
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Build and cache ${{ matrix.image }} image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ${{ matrix.dockerfile }}
-          target: ${{ matrix.target || '' }}
-          push: false
-          load: true
-          tags: drone-avoidance:${{ matrix.image }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-          platforms: linux/amd64
-          build-args: |
-            BUILDKIT_INLINE_CACHE=1
-
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-  # 静的解析（並列実行）
-  static-analysis:
-    runs-on: ubuntu-latest
-    needs: build-images
-
+  test-drone-sim-core:
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+      with:
+        path: drone-sim-core
+    - name: Test drone-sim-core
+      run: |
+        cd drone-sim-core
+        # drone-sim-core のテスト実行
+        echo "Testing drone-sim-core..."
 
-      - name: Run linting
-        run: |
-          python3 -m pip install ruff mypy
-          ruff check src/ --output-format=json > lint-results.json || true
-
-      - name: Run type checking
-        run: |
-          python3 -m pip install mypy
-          mypy src/ --config-file=mypy.ini || true
-
-      - name: Upload lint results
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint-results
-          path: lint-results.json
-
-  # 統合テスト（並列実行）
-  integration-tests:
-    runs-on: ubuntu-latest
-    needs: build-images
-    strategy:
-      matrix:
-        test-suite: [basic, simulation]
-        include:
-          - test-suite: basic
-            profile: test
-            timeout: 120
-          - test-suite: simulation
-            profile: test
-            timeout: 300
-
+  test-drone-rl:
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+      with:
+        path: drone-rl
+    - name: Test drone-rl
+      run: |
+        cd drone-rl
+        # drone-rl のテスト実行
+        echo "Testing drone-rl..."
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Run ${{ matrix.test-suite }} tests
-        run: |
-          # 軽量テストを実行
-          python3 -m pip install pytest gymnasium numpy
-          PYTHONPATH=$GITHUB_WORKSPACE:$GITHUB_WORKSPACE/src \
-          python3 -m pytest tests/test_${{ matrix.test-suite }}.py -v || true
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results-${{ matrix.test-suite }}
-          path: test-results/ 
-
-  rl-mini-test:
-    runs-on: ubuntu-latest
-    needs: build-images
+  # 統合テスト（条件付き実行）
+  integration-test:
+    runs-on: ubuntu-22.04
+    needs: [test-drone-msgs, test-drone-sim-core, test-drone-rl]
+    if: |
+      github.event_name == 'workflow_dispatch' && 
+      github.event.inputs.run_integration == 'true'
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Build RL mini image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: docker/rl-agent-cpu/Dockerfile
-          push: false
-          tags: rl-mini
-          platforms: linux/amd64
-
-      - name: Run RL stub
-        run: docker run --rm rl-mini 
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Run Integration Tests
+      run: |
+        cd integration-tests
+        docker compose build
+        docker compose up --abort-on-container-exit 

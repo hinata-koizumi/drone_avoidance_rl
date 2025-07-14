@@ -7,16 +7,18 @@ FROM ${BASE_IMAGE}
 WORKDIR /drone_ws
 
 # Python依存パッケージのインストール（キャッシュ最適化）
-COPY requirements.txt requirements.txt
+COPY requirements.txt ./requirements.txt
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     pip install --no-cache-dir -r requirements.txt && \
     rm -rf /tmp/* /var/tmp/*
 
 # RL関連のソースコードをコピー
-COPY src/drone_sim_env.py src/drone_sim_env.py
-COPY src/vector_env_example.py src/vector_env_example.py
+COPY drone_sim_env.py drone_sim_env.py
+COPY gym_env.py gym_env.py
+COPY train_ray.py train_ray.py
+COPY vector_env_example.py vector_env_example.py
 COPY tests/ tests/
-COPY src/sample_agent/ src/sample_agent/
+COPY sample_agent/ sample_agent/
 
 # Entrypoint（正しいパスでコピー）
 COPY docker/rl-agent/entrypoint-rl-agent.sh /entrypoint.sh

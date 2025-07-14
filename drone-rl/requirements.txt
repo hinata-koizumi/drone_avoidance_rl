@@ -1,0 +1,6 @@
+gymnasium==1.1.1
+numpy>=1.24
+# Torch CPU or GPU variant is selected at build time; keep base specification.
+torch>=2.0
+ray[rllib]==2.10.0
+tensorboard>=2.15 
