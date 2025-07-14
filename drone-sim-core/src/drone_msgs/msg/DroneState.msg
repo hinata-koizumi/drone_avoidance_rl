@@ -1,7 +1,7 @@
 # DroneState.msg
 # Drone state information
 
-Header header
+std_msgs/Header header
 
 # Position (x, y, z) in meters
 geometry_msgs/Point position

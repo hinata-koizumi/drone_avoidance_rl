@@ -1,7 +1,7 @@
 # DroneControlCommand.msg
 # Drone control command
 
-Header header
+std_msgs/Header header
 
 # Thrust command (0.0 to 1.0)
 float32 thrust
