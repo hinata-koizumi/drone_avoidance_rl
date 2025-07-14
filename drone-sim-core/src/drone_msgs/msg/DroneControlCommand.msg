@@ -1,6 +1,5 @@
 # DroneControlCommand.msg
 # Drone control command
-import std_msgs/Header.msg
 
 Header header
 
