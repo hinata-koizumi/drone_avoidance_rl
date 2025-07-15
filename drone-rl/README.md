@@ -108,3 +108,10 @@ docker run --gpus all -v $(pwd)/results:/workspace/results drone-rl:gpu \
 
 ## 貢献
 - Pull Request歓迎。新規アルゴリズム・エージェント・ベンチマーク等の追加も歓迎。 
+
+## セキュリティスキャン（CodeQL）について
+
+- 本リポジトリでは **GitHub ActionsによるカスタムCodeQLワークフロー（.github/workflows/codeql-analysis.yml）** のみを有効化しています。
+- **GitHubの「デフォルトセットアップ」CodeQLは無効化** しています（両者の併用はできません）。
+- 今後も「カスタムワークフローのみ」を維持してください。
+- Trivyによる脆弱性スキャンも併用していますが、カテゴリ分けされているため競合しません。 
