@@ -207,13 +207,6 @@ python tests/run_integration_tests.py --quick
    docker-compose restart
    ```
 
-4. **メモリ不足**
-   ```bash
-   # Docker Desktopのメモリ制限を増やす
-   # または
-   docker-compose down
-   docker system prune -a
-   ```
 
 ## 技術仕様
 
