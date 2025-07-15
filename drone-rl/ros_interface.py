@@ -10,6 +10,21 @@ try:
     ROS_AVAILABLE = True
 except ImportError:
     ROS_AVAILABLE = False
+    # Define dummy message classes to avoid NameError during type checking/execution
+    class Header:  # type: ignore
+        pass
+
+    class Point:  # type: ignore
+        pass
+
+    class Vector3:  # type: ignore
+        pass
+
+    class DroneState:  # type: ignore
+        pass
+
+    class DroneControlCommand:  # type: ignore
+        pass
 
 class DummyROSNode:
     def __init__(self, *args, **kwargs):
