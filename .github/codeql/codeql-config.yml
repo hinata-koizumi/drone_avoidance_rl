@@ -1,0 +1,26 @@
+name: "CodeQL Config"
+
+# Pythonのみをスキャン対象とする
+# C/C++は除外（ROS 2環境では不要）
+queries:
+  - uses: security-and-quality
+
+# スキャン対象の言語を明示的に指定
+paths:
+  - "drone-rl/**"
+  - "drone-sim-core/**"
+  - "integration-tests/**"
+
+# 除外パス（C/C++関連ファイルを除外）
+paths-ignore:
+  - "**/*.cpp"
+  - "**/*.c"
+  - "**/*.h"
+  - "**/*.hpp"
+  - "**/CMakeLists.txt"
+  - "**/Makefile"
+  - "**/build/**"
+  - "**/install/**"
+
+# エラー時の動作
+run-mode: "manual" 

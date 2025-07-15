@@ -30,13 +30,17 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here
+        # Pythonのみに限定し、C/C++を除外
         # queries: security-extended,security-and-quality
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@v3
+      # Pythonプロジェクトの場合はビルド不要の場合もある
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
       with:
-        category: "/language:${{matrix.language}}" 
+        category: "/language:${{matrix.language}}"
+        # エラーハンドリングを改善
+        upload-database: true
+        wait-for-processing: true 
