@@ -1,0 +1,32 @@
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  # Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/drone-rl"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "koizumihinata"
+    assignees:
+      - "koizumihinata"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/drone-rl/docker/rl-agent"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "docker"
+    directory: "/drone-sim-core/docker"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10 
