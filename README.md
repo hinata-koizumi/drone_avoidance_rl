@@ -254,3 +254,4 @@ python tests/run_integration_tests.py --quick
 問題や質問がある場合は、GitHubのIssuesページで報告してください。
 
 
+# CodeQL設定修正完了
