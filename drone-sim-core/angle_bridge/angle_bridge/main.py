@@ -34,9 +34,9 @@ class AngleBridgeNode(BridgeBase):
         with open(config_path, 'r') as f:
             params = yaml.safe_load(f)
         super().__init__("angle_bridge", {
-            "cmd_topic": params["cmd_topic"],
-            "fan1_topic": params["fan1_topic"],
-            "fan2_topic": params["fan2_topic"],
+            "cmd_topic": params.get("cmd_topic", "/drone_control"),
+            "fan1_topic": params.get("fan1_topic", "/servo/fan1_tilt"),
+            "fan2_topic": params.get("fan2_topic", "/servo/fan2_tilt"),
             "qos_depth": 10,
             "qos_reliability": "reliable",
             "qos_history": "keep_last",
@@ -59,6 +59,7 @@ class AngleBridgeNode(BridgeBase):
                 f"QoS: {self.qos_profile}"
             )
 
+    @BridgeBase.safe_callback
     def _cb(self, cmd: _DroneControlCommand) -> None:
         """
         Callback for DroneControlCommand subscription. Clamps and converts angles to radians,

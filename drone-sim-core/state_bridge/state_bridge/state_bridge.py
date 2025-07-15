@@ -11,6 +11,7 @@ from rclpy.node import Node
 from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 import yaml
 
+from src.common.bridge_base import BridgeBase
 from drone_msgs.msg import DroneState
 from px4_msgs.msg import VehicleOdometry
 
@@ -31,10 +32,10 @@ class StateBridgeNode(Node):
         config_path = os.path.join(get_package_share_directory('sim_launch'), 'config', 'sim_params.yaml')
         with open(config_path, 'r') as f:
             params = yaml.safe_load(f)
-        super().__init__('state_bridge')
+        super().__init__('state_bridge_node')
         self.log_level = params.get('log_level', 'info')
-        self.declare_parameter('input_topic', params['state_input_topic'])
-        self.declare_parameter('output_topic', params['state_output_topic'])
+        self.declare_parameter('input_topic', params.get('state_input_topic', '/px4_odom'))
+        self.declare_parameter('output_topic', params.get('state_output_topic', '/drone_state'))
         input_topic = self.get_parameter('input_topic').get_parameter_value().string_value
         output_topic = self.get_parameter('output_topic').get_parameter_value().string_value
         self.qos_profile = QoSProfile(
@@ -60,6 +61,7 @@ class StateBridgeNode(Node):
                 f"Subscribed to: {input_topic}, Publishing to: {output_topic}, "
                 f"QoS: {self.qos_profile}"
             )
+    @BridgeBase.safe_callback
     def _cb(self, msg: VehicleOdometry):
         # PX4 VehicleOdometry → DroneState 変換
         out = DroneState()

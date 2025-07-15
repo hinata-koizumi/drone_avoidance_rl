@@ -19,7 +19,8 @@ class DummyROSNode:
     def set_state_callback(self, cb):
         self.state_cb = cb
     def reset_sim(self):
-        pass
+        # Placeholder for simulation reset in non-ROS mode
+        print("[DummyROSNode] reset_sim called (no-op)")
 
 class DroneROSInterface:
     _instance = None
@@ -77,6 +78,20 @@ class DroneROSInterface:
     def reset_sim(self):
         # TODO: Implement reset via ROS2 service or topic if available
         if ROS_AVAILABLE:
-            pass
+            # Attempt to trigger /sim/reset service of type std_srvs/Empty
+            from std_srvs.srv import Empty  # type: ignore
+            client = self.node.create_client(Empty, "/sim/reset")
+            if not client.wait_for_service(timeout_sec=1.0):
+                self.node.get_logger().error("/sim/reset service unavailable")
+                return False
+            req = Empty.Request()
+            future = client.call_async(req)
+            # Wait synchronously with short timeout to avoid blocking indefinitely
+            rclpy.spin_until_future_complete(self.node, future, timeout_sec=2.0)
+            if future.result() is None:
+                self.node.get_logger().error("Reset service call failed")
+                return False
+            return True
         else:
-            self.node.reset_sim() 
+            self.node.reset_sim()
+            return True 

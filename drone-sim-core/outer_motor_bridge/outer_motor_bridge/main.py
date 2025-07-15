@@ -30,8 +30,8 @@ class OuterMotorBridge(BridgeBase):
         with open(config_path, 'r') as f:
             params = yaml.safe_load(f)
         super().__init__("outer_motor_bridge", {
-            "input_topic": params['outer_motor_input_topic'],
-            "output_topic": params['outer_motor_output_topic'],
+            "input_topic": params.get('outer_motor_input_topic', '/px4_actuator_motors'),
+            "output_topic": params.get('outer_motor_output_topic', '/drone/outer_motor_pwm'),
             "qos_depth": 10,
             "qos_reliability": "reliable",
             "qos_history": "keep_last",
@@ -59,6 +59,7 @@ class OuterMotorBridge(BridgeBase):
             )
 
     # ---------- callback ----------
+    @BridgeBase.safe_callback
     def _cb(self, msg: ActuatorMotors) -> None:
         """
         Callback for ActuatorMotors subscription. Converts to Float32MultiArray and publishes.

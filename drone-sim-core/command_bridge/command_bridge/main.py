@@ -26,8 +26,8 @@ class CommandBridgeNode(BridgeBase):
         with open(config_path, 'r') as f:
             params = yaml.safe_load(f)
         super().__init__('command_bridge_node', {
-            'input_topic': params['input_topic'],
-            'output_topic': params['output_topic'],
+            'input_topic': params.get('input_topic', '/drone_control'),
+            'output_topic': params.get('output_topic', '/px4_actuator_motors'),
             'qos_depth': 10,
             'qos_reliability': 'reliable',
             'qos_history': 'keep_last',
@@ -51,6 +51,7 @@ class CommandBridgeNode(BridgeBase):
                 f"Subscribed to: {input_topic}, Publishing to: {output_topic}, "
                 f"QoS: {self.qos_profile}"
             )
+    @BridgeBase.safe_callback
     def _cb(self, msg: DroneControlCommand) -> None:
         """
         Callback for DroneControlCommand subscription. Converts to ActuatorMotors and publishes.
