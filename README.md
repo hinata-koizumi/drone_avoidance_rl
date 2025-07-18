@@ -1,4 +1,4 @@
-# 🇯🇵 [Japanese README](README_ja.md)
+# [Japanese README](README_ja.md)
 
 # drone-rl
 
