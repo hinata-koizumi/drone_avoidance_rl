@@ -17,12 +17,12 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install semantic-release and plugins
+      - name: Install semantic-release and plugins (no npm)
         run: |
-          npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
+          npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github @semantic-release/commit-analyzer @semantic-release/release-notes-generator
 
-      - name: Run semantic-release
+      - name: Run semantic-release (Python/OSS mode)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          semantic-release 
+          semantic-release --config release.config.js 
