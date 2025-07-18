@@ -5,7 +5,6 @@
 [![License](https://img.shields.io/github/license/drone_avoidance_rl/drone_avoidance_rl)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/drone_avoidance_rl/drone_avoidance_rl?include_prereleases)](https://github.com/drone_avoidance_rl/drone_avoidance_rl/releases)
 
-> **Note:** Replace `<OWNER>/<REPO>` with your actual GitHub repository path.
 
 ---
 
