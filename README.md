@@ -1,3 +1,5 @@
+# 🇯🇵 [Japanese README](README_ja.md)
+
 # drone-rl
 
 A world-class reinforcement learning environment for drones (OpenAI Gym API, ROS 2 integration, domain randomization supported)
