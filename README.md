@@ -4,14 +4,16 @@
 
 Reinforcement learning environment for drones (OpenAI Gym API, ROS 2 integration, domain randomization supported)
 
+> **Note:** All main source files are located in the `drone-rl/` directory. If running examples from the repository root, set `PYTHONPATH=drone-rl` or run scripts from within the `drone-rl/` directory.
+
 ## Overview
 
 This repository provides a reinforcement learning (RL) environment for autonomous drone control, avoidance, and navigation.
-- **Fully compatible with OpenAI Gymnasium API**
-- **Distributed training and vectorized environments via Ray RLlib**
-- **ROS 2 Humble / simulator integration**
-- **Domain randomization (initial position, target, mass, wind)**
-- **Tested, CI-ready, Docker support**
+- Compatible with OpenAI Gymnasium API
+- Distributed training and vectorized environments via Ray RLlib
+- ROS 2 Humble / simulator integration
+- Domain randomization (initial position, target, mass, wind)
+- Tested, CI-ready, Docker support
 
 ## Main Files
 - `drone_sim_env.py`: Main Gym environment for RL (reset/step/render/close, ROS2 integration, randomization)
@@ -58,7 +60,8 @@ python -c "from gym_env import register_drone_env; register_drone_env()"
 pytest tests/
 ```
 
-### Standalone Example
+### Basic Usage Example
+
 ```python
 from gym_env import create_env
 env = create_env(target_pos=[5,0,4], init_pos=[0,0,4], use_ros=False)
@@ -102,10 +105,10 @@ docker run --gpus all -v $(pwd)/results:/workspace/results drone-rl:gpu \
 - Standalone operation possible with `use_ros=False`
 - `ros_interface.py` abstracts publish/subscribe
 
-## Testing
+## Running Tests
 - Run `pytest tests/` to comprehensively verify API, specifications, randomization, termination conditions, and dummy operation
 
-## Extensions
+## Extending the Environment
 - Easy to add image sensors, multi-drone support, custom rewards, CI auto-verification, etc.
 
 ## Contributing
@@ -113,7 +116,7 @@ docker run --gpus all -v $(pwd)/results:/workspace/results drone-rl:gpu \
 
 ## Security Scanning (CodeQL)
 
-- This repository **enables only a custom CodeQL workflow via GitHub Actions (`.github/workflows/codeql-analysis.yml`)**.
-- **GitHub's "default setup" CodeQL is disabled** (cannot be used together).
+- This repository enables only a custom CodeQL workflow via GitHub Actions (`.github/workflows/codeql-analysis.yml`).
+- GitHub's "default setup" CodeQL is disabled (cannot be used together).
 - Please continue to use "custom workflow only".
 - Trivy vulnerability scanning is also used, but is categorized separately and does not conflict. 
