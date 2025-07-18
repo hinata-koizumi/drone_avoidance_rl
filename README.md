@@ -1,3 +1,62 @@
+# drone_avoidance_rl
+
+[![CI](https://img.shields.io/github/actions/workflow/status/drone_avoidance_rl/drone_avoidance_rl/integration.yml?branch=main&label=CI)](https://github.com/drone_avoidance_rl/drone_avoidance_rl/actions)
+[![Coverage](https://img.shields.io/badge/coverage-unknown-lightgrey)](https://github.com/drone_avoidance_rl/drone_avoidance_rl/actions)
+[![License](https://img.shields.io/github/license/drone_avoidance_rl/drone_avoidance_rl)](./LICENSE)
+[![Release](https://img.shields.io/github/v/release/drone_avoidance_rl/drone_avoidance_rl?include_prereleases)](https://github.com/drone_avoidance_rl/drone_avoidance_rl/releases)
+
+> **Note:** Replace `<OWNER>/<REPO>` with your actual GitHub repository path.
+
+---
+
+## Project Architecture
+
+```mermaid
+flowchart TD
+    A["User"] -->|"Web UI (http://localhost:8080)"| B["drone-sim-core/web_viz"]
+    B --> C["ROS 2 Nodes (drone-sim-core/*_bridge, manual_control, state_bridge)"]
+    C --> D["Ignition Gazebo (Garden)"]
+    C --> E["PX4 Autopilot"]
+    D --> F["Simulated Drone Model"]
+    E --> F
+    F --> G["drone-rl (Gymnasium API)"]
+    G --> H["RL Agent (train_ray.py, sample_agent)"]
+    H -->|"Action/Observation"| G
+    G -->|"ROS 2 Bridge"| C
+```
+
+---
+
+## Simulation Demo
+
+![Simulation Demo](docs/assets/sim_demo_placeholder.gif)
+
+> Replace this GIF with an actual simulation capture.
+
+---
+
+## Quick Start
+
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/<OWNER>/<REPO>.git
+   cd drone_avoidance_rl
+   ```
+2. **Start all services with Docker Compose:**
+   ```sh
+   docker-compose up --build
+   ```
+3. **Access the Web UI:**
+   - Open [http://localhost:8080](http://localhost:8080) in your browser.
+   - The simulation and RL environment will be available via the web interface.
+
+4. **(Optional) Run tests:**
+   ```sh
+   docker-compose exec <service> pytest
+   ```
+
+---
+
 # [Japanese README](README_ja.md)
 
 # drone-rl

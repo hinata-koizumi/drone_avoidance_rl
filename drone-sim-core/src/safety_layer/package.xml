@@ -1,0 +1,9 @@
+<package format="3">
+  <name>safety_layer</name>
+  <version>0.1.0</version>
+  <description>Safety layer (CBF) ROS 2 package</description>
+  <maintainer email="hkoizumi1123@gmail.com">Koizumi Hinata</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <exec_depend>rclpy</exec_depend>
+</package> 

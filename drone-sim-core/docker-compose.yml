@@ -47,6 +47,28 @@ services:
       timeout: 5s
       retries: 5
 
+# --- Swarm/Multi-agent profile example ---
+# 複数ドローンを起動する場合のテンプレート例
+# docker-compose --profile swarm up で有効化
+#
+# services:
+#   drone1:
+#     <<: *common-env
+#     image: drone-avoidance:drone
+#     environment:
+#       DRONE_NAMESPACE: /drone_1
+#     profiles: ["swarm"]
+#     command: ["ros2", "run", "state_bridge", "state_bridge_node", "--ros-args", "-r", "__ns:=/drone_1"]
+#   drone2:
+#     <<: *common-env
+#     image: drone-avoidance:drone
+#     environment:
+#       DRONE_NAMESPACE: /drone_2
+#     profiles: ["swarm"]
+#     command: ["ros2", "run", "state_bridge", "state_bridge_node", "--ros-args", "-r", "__ns:=/drone_2"]
+#   ...
+#
+# docker-compose --profile swarm up で複数インスタンスを起動可能
 # ネットワーク設定
 networks:
   default:

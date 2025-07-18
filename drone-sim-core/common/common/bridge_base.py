@@ -50,7 +50,7 @@ class BridgeBase(Node):
             history=HistoryPolicy.KEEP_LAST if qos_history == 'keep_last' else HistoryPolicy.KEEP_ALL
         )
         # ログレベル
-        self.log_level = self.get_parameter('log_level').value
+        self.log_level = self.get_parameter('log_level').value 
         self.logger.setLevel(self.log_level.upper() if isinstance(self.log_level, str) else logging.INFO)
 
     # ------------------------------------------------------------------

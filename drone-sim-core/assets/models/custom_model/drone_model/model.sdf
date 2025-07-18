@@ -107,6 +107,57 @@
           </z>
         </magnetometer>
       </sensor>
+      <!-- Camera sensor (RGB) -->
+      <sensor name="camera_sensor" type="camera">
+        <always_on>true</always_on>
+        <update_rate>30</update_rate>
+        <pose>0.1 0 0.08 0 0 0</pose>
+        <camera>
+          <horizontal_fov>1.3962634</horizontal_fov> <!-- 80deg -->
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+        </camera>
+        <plugin name="gz_camera_system" filename="libgz-sim-camera-system.so">
+          <topic>/camera/image_raw</topic>
+        </plugin>
+      </sensor>
+      <!-- 3D LiDAR sensor -->
+      <sensor name="lidar_sensor" type="gpu_lidar">
+        <always_on>true</always_on>
+        <update_rate>10</update_rate>
+        <pose>0.1 0 0.09 0 0 0</pose>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>512</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.14</min_angle>
+              <max_angle>3.14</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>32</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.26</min_angle>
+              <max_angle>0.26</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.2</min>
+            <max>30.0</max>
+            <resolution>0.01</resolution>
+          </range>
+        </ray>
+        <plugin name="gz_lidar_system" filename="libgz-sim-lidar-system.so">
+          <topic>/lidar/points</topic>
+        </plugin>
+      </sensor>
     </link>
 
     <!-- 4 rotors -->
