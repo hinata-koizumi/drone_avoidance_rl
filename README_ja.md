@@ -1,4 +1,4 @@
-# 🇬🇧 [English README](README_en.md)
+# [English README](README.md)
 
 # drone-rl
 
