@@ -37,7 +37,8 @@ jobs:
           ls -la interfaces/
           echo "Testing Docker build..."
           cd drone-sim-core
-          docker-compose build msgs
+          # ストレージ容量を節約するための最適化
+          DOCKER_BUILDKIT=1 docker-compose build --no-cache --compress msgs
 
   release:
     runs-on: ubuntu-latest

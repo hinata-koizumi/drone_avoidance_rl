@@ -10,9 +10,11 @@ WORKDIR /drone_ws
 COPY drone-rl/requirements.txt ./requirements.txt
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     pip install --no-cache-dir -r requirements.txt && \
-    rm -rf /tmp/* /var/tmp/*
+    rm -rf /tmp/* /var/tmp/* /root/.cache/* && \
+    find /usr -name "*.pyc" -delete && \
+    find /usr -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
-# RL関連のソースコードをコピー
+# RL関連のソースコードをコピー（最小限）
 COPY drone-rl/gym_env.py gym_env.py
 COPY drone-rl/environments/ environments/
 COPY drone-rl/agents/ agents/
@@ -27,5 +29,8 @@ RUN chmod +x /entrypoint.sh
 # PYTHONPATHの安全な設定
 ENV PYTHONPATH=/drone_ws/src:${PYTHONPATH:-}
 ENV ROS_DOMAIN_ID=0
+
+# クリーンアップ
+RUN rm -rf /tmp/* /var/tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* /var/lib/apt/lists/* || true
 
 ENTRYPOINT ["/entrypoint.sh"] 

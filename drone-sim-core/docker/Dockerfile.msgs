@@ -42,4 +42,5 @@ RUN if [ "$(dpkg --print-architecture)" != "amd64" ]; then \
   echo "[WARN] This image is officially supported only on amd64. For arm64 or other architectures, additional validation and support are required."; \
 fi
 
+# クリーンアップ
 RUN rm -rf /tmp/* /var/tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* /var/lib/apt/lists/* || true

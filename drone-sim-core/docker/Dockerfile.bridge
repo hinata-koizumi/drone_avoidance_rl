@@ -44,4 +44,8 @@ COPY --from=builder /etc/ros/rosdep/sources.list.d/10-local.yaml /etc/ros/rosdep
 
 COPY drone-sim-core/docker/entrypoint-bridge.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# クリーンアップ
+RUN rm -rf /tmp/* /var/tmp/* /root/.cache/* /usr/share/doc/* /usr/share/man/* /var/lib/apt/lists/* || true
+
 ENTRYPOINT ["/entrypoint.sh"]
