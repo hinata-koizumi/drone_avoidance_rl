@@ -19,7 +19,6 @@ COPY drone-rl/agents/ agents/
 COPY drone-rl/utils/ utils/
 COPY drone-rl/scripts/ scripts/
 COPY drone-rl/tests/ tests/
-COPY drone-rl/sample_agent/ sample_agent/
 
 # Entrypoint（正しいパスでコピー）
 COPY drone-rl/docker/rl-agent/entrypoint-rl-agent.sh /entrypoint.sh
