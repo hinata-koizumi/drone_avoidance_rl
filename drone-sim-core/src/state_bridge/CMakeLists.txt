@@ -6,7 +6,7 @@ find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(drone_msgs REQUIRED)
+# find_package(drone_msgs REQUIRED)  # 一時的にコメントアウト
 
 # Pythonモジュールのインストール
 ament_python_install_package(${PROJECT_NAME})

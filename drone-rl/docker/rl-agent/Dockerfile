@@ -13,10 +13,11 @@ RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     rm -rf /tmp/* /var/tmp/*
 
 # RL関連のソースコードをコピー
-COPY drone-rl/drone_sim_env.py drone_sim_env.py
 COPY drone-rl/gym_env.py gym_env.py
-COPY drone-rl/train_ray.py train_ray.py
-COPY drone-rl/vector_env_example.py vector_env_example.py
+COPY drone-rl/environments/ environments/
+COPY drone-rl/agents/ agents/
+COPY drone-rl/utils/ utils/
+COPY drone-rl/scripts/ scripts/
 COPY drone-rl/tests/ tests/
 COPY drone-rl/sample_agent/ sample_agent/
 
