@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/hinata-koizumi/drone_avoidance_rl/compare/v1.0.3...v1.0.4) (2025-07-19)
+
+
+### Bug Fixes
+
+* resolve state_bridge build dependency and RL agent file paths ([9e97c92](https://github.com/hinata-koizumi/drone_avoidance_rl/commit/9e97c9251fffb59779fd4f8c699d927fcb94b1ca))
+
 ## [1.0.3](https://github.com/hinata-koizumi/drone_avoidance_rl/compare/v1.0.2...v1.0.3) (2025-07-19)
 
 
