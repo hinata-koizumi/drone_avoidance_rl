@@ -13,7 +13,7 @@ services:
   # メッセージビルドサービス
   msgs:
     build:
-      context: .
+      context: ..
       dockerfile: drone-sim-core/docker/Dockerfile.msgs
       target: runtime
     image: drone-avoidance:msgs
@@ -30,7 +30,7 @@ services:
   # Bridge サービス
   bridge:
     build:
-      context: .
+      context: ..
       dockerfile: drone-sim-core/docker/Dockerfile.bridge
       target: runtime
     image: drone-avoidance:bridge
