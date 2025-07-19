@@ -6,14 +6,14 @@ x-common-env: &common-env
 
 # 共通ボリューム
 x-common-volumes: &common-volumes
-  - ./src:/workspace/src:ro
-  - ./config:/workspace/config:ro
+  - ./drone-sim-core/src:/workspace/src:ro
+  - ./drone-sim-core/config:/workspace/config:ro
 
 services:
   # メッセージビルドサービス
   msgs:
     build:
-      context: ..
+      context: .
       dockerfile: drone-sim-core/docker/Dockerfile.msgs
       target: runtime
     image: drone-avoidance:msgs
@@ -31,7 +31,7 @@ services:
   bridge:
     build:
       context: .
-      dockerfile: docker/Dockerfile.bridge
+      dockerfile: drone-sim-core/docker/Dockerfile.bridge
       target: runtime
     image: drone-avoidance:bridge
     profiles: ["default", "test"]
