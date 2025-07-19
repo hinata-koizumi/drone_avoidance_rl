@@ -1,0 +1,7 @@
+{
+  "name": "drone-avoidance-rl",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Drone reinforcement learning environment with ROS 2 and Gazebo",
+  "private": true
+} 
