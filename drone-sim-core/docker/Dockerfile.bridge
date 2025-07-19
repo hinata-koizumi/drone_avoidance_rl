@@ -10,12 +10,12 @@ ENV ROS_DISTRO=${ROS_DISTRO}
 USER root
 WORKDIR /bridge_ws
 
-COPY src/state_bridge src/state_bridge
-COPY src/common src/common
-COPY src/drone_msgs src/drone_msgs
-COPY src/px4_msgs src/px4_msgs
-COPY config/ config/
-COPY rosdep/rosdep-bridge.yaml rosdep/rosdep-bridge.yaml
+COPY drone-sim-core/src/state_bridge src/state_bridge
+COPY drone-sim-core/src/common src/common
+COPY interfaces/drone_msgs src/drone_msgs
+COPY drone-sim-core/src/px4_msgs src/px4_msgs
+COPY drone-sim-core/config/ config/
+COPY drone-sim-core/rosdep/rosdep-bridge.yaml rosdep/rosdep-bridge.yaml
 
 RUN rm -rf build/ install/ log/ && \
     mkdir -p /etc/ros/rosdep/sources.list.d && \
@@ -42,6 +42,6 @@ WORKDIR /bridge_ws
 COPY --from=builder /bridge_ws/install /bridge_ws/install
 COPY --from=builder /etc/ros/rosdep/sources.list.d/10-local.yaml /etc/ros/rosdep/sources.list.d/10-local.yaml
 
-COPY docker/entrypoint-bridge.sh /entrypoint.sh
+COPY drone-sim-core/docker/entrypoint-bridge.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
