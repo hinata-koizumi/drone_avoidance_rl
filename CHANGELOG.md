@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/hinata-koizumi/drone_avoidance_rl/compare/v1.0.4...v1.0.5) (2025-07-19)
+
+
+### Bug Fixes
+
+* remove empty sample_agent directory from Docker build ([ccbc1a8](https://github.com/hinata-koizumi/drone_avoidance_rl/commit/ccbc1a83d01d244784289ef71816c78588ec1206))
+
 ## [1.0.4](https://github.com/hinata-koizumi/drone_avoidance_rl/compare/v1.0.3...v1.0.4) (2025-07-19)
 
 
