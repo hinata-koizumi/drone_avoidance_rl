@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/hinata-koizumi/drone_avoidance_rl/compare/v1.0.1...v1.0.2) (2025-07-19)
+
+
+### Bug Fixes
+
+* **docker:** correct paths in Dockerfile.bridge for repository root context ([7937bd0](https://github.com/hinata-koizumi/drone_avoidance_rl/commit/7937bd07135c4f692d64e90789d5e39032e29f87))
+
 ## [1.0.1](https://github.com/hinata-koizumi/drone_avoidance_rl/compare/v1.0.0...v1.0.1) (2025-07-19)
 
 
