@@ -1,6 +1,9 @@
 # DroneState.msg
 # Current state of the drone
 
+# Header with timestamp
+std_msgs/Header header
+
 # Position (x, y, z)
 geometry_msgs/Point position
 
@@ -11,7 +14,4 @@ geometry_msgs/Vector3 orientation
 geometry_msgs/Vector3 velocity
 
 # Battery level (0.0 to 1.0)
-float32 battery_level
-
-# Timestamp
-time stamp 
+float32 battery_level 

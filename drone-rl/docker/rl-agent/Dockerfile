@@ -7,21 +7,21 @@ FROM ${BASE_IMAGE}
 WORKDIR /drone_ws
 
 # Python依存パッケージのインストール（キャッシュ最適化）
-COPY requirements.txt ./requirements.txt
+COPY drone-rl/requirements.txt ./requirements.txt
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     pip install --no-cache-dir -r requirements.txt && \
     rm -rf /tmp/* /var/tmp/*
 
 # RL関連のソースコードをコピー
-COPY drone_sim_env.py drone_sim_env.py
-COPY gym_env.py gym_env.py
-COPY train_ray.py train_ray.py
-COPY vector_env_example.py vector_env_example.py
-COPY tests/ tests/
-COPY sample_agent/ sample_agent/
+COPY drone-rl/drone_sim_env.py drone_sim_env.py
+COPY drone-rl/gym_env.py gym_env.py
+COPY drone-rl/train_ray.py train_ray.py
+COPY drone-rl/vector_env_example.py vector_env_example.py
+COPY drone-rl/tests/ tests/
+COPY drone-rl/sample_agent/ sample_agent/
 
 # Entrypoint（正しいパスでコピー）
-COPY docker/rl-agent/entrypoint-rl-agent.sh /entrypoint.sh
+COPY drone-rl/docker/rl-agent/entrypoint-rl-agent.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # PYTHONPATHの安全な設定
