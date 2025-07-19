@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/hinata-koizumi/drone_avoidance_rl/compare/v1.0.0...v1.0.1) (2025-07-19)
+
+
+### Bug Fixes
+
+* **integration:** correct Docker build context for integration tests ([0c37e2c](https://github.com/hinata-koizumi/drone_avoidance_rl/commit/0c37e2cf44986ddbc49ba9ef4251d862ca2a39bd))
+
 # 1.0.0 (2025-07-19)
 
 
