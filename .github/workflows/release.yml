@@ -57,9 +57,9 @@ jobs:
         run: |
           npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github @semantic-release/commit-analyzer @semantic-release/release-notes-generator
 
-      - name: Run semantic-release (Python/OSS mode)
+      - name: Run semantic-release (inline config)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd ${{ github.workspace }}
-          semantic-release --config release.config.js 
+          npx semantic-release --branches main --plugins @semantic-release/commit-analyzer,@semantic-release/release-notes-generator,@semantic-release/changelog,@semantic-release/github,@semantic-release/git 
