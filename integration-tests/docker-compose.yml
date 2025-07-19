@@ -4,8 +4,8 @@ services:
   # メッセージ定義のビルド
   msgs:
     build:
-      context: ../drone-sim-core
-      dockerfile: docker/Dockerfile.msgs
+      context: ..
+      dockerfile: drone-sim-core/docker/Dockerfile.msgs
     image: drone-msgs:integration
     healthcheck:
       test: ["CMD", "bash", "-c", "ls /opt/ros/humble/lib/python*/site-packages/drone_msgs"]
@@ -16,8 +16,8 @@ services:
   # シミュレーション環境
   sim:
     build:
-      context: ../drone-sim-core
-      dockerfile: docker/Dockerfile.base
+      context: ..
+      dockerfile: drone-sim-core/docker/Dockerfile.base
     image: drone-sim-core:integration
     depends_on:
       msgs:
@@ -42,8 +42,8 @@ services:
   # ブリッジノード
   bridge:
     build:
-      context: ../drone-sim-core
-      dockerfile: docker/Dockerfile.bridge
+      context: ..
+      dockerfile: drone-sim-core/docker/Dockerfile.bridge
     image: drone-bridge:integration
     depends_on:
       sim:
@@ -67,8 +67,8 @@ services:
   # RLエージェント
   rl-agent:
     build:
-      context: ../drone-rl
-      dockerfile: docker/rl-agent/Dockerfile
+      context: ..
+      dockerfile: drone-rl/docker/rl-agent/Dockerfile
     image: drone-rl:integration
     depends_on:
       bridge:
