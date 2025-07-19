@@ -13,8 +13,8 @@ services:
   # メッセージビルドサービス
   msgs:
     build:
-      context: .
-      dockerfile: docker/Dockerfile.msgs
+      context: ..
+      dockerfile: drone-sim-core/docker/Dockerfile.msgs
       target: runtime
     image: drone-avoidance:msgs
     profiles: ["default", "test"]
