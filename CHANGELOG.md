@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/hinata-koizumi/drone_avoidance_rl/compare/v1.0.5...v1.0.6) (2025-07-19)
+
+
+### Bug Fixes
+
+* optimize Docker images to reduce storage usage in GitHub Actions ([8c127e3](https://github.com/hinata-koizumi/drone_avoidance_rl/commit/8c127e3c0db2e71ff9641c56c00f3bbecb9e5330))
+
 ## [1.0.5](https://github.com/hinata-koizumi/drone_avoidance_rl/compare/v1.0.4...v1.0.5) (2025-07-19)
 
 
